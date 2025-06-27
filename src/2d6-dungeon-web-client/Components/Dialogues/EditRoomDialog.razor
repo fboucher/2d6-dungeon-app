@@ -10,16 +10,28 @@
                 <FluentRadio Value="@door.Key">@door.Key</FluentRadio>
             }
         </FluentRadioGroup>
-        <div id="verticalAxe" hidden="@verticalAxeHidden">
-            <FluentButton OnClick="@(() => MoveExit('U'))" >move up</FluentButton>
-            <FluentButton OnClick="@(() => MoveExit('D'))" >move down</FluentButton>
-        </div>
-        <div id="horizontalAxe" hidden="@horizontalAxeHidden">
-            <FluentButton OnClick="@(() => MoveExit('L'))" >move left</FluentButton>
-            <FluentButton OnClick="@(() => MoveExit('R'))" >move right</FluentButton>
-        </div>
-        <div>
-            Position on wall: from <span>@initialPosition</span> to <span>@finalPosition</span> 
+
+        <div hidden="@detailsHidden">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" >
+                <FluentSlider   Label="Move the door" 
+                                Orientation="@sliderOrientation" 
+                                Min="@wallMinPosition" 
+                                Max="@wallMaxPosition" 
+                                Step="1"
+                                @bind-Value="@finalPosition"
+                                @bind-Value:after="@ExitMoved"
+                                >
+                    <FluentIcon Value="@(new Icons.Filled.Size28.Door())" Color="@Color.Accent" Slot="thumb" />
+                    @for (int i = 1; i <= wallMaxPosition; i++)
+                    {
+                        var aPosition = i;
+                        <FluentSliderLabel Position="@aPosition">@aPosition</FluentSliderLabel>
+                    }
+                </FluentSlider>
+                <div>
+                    Position on wall: from <span>@initialPosition</span> to <span>@finalPosition</span> 
+                </div> 
+            </FluentStack>
         </div>
     </div>
 
@@ -36,13 +48,16 @@
 
     private Direction? selectedExitKey { get; set; } = null;
     private Direction selectedDirection { get; set; } = default!;
-    @* private Exit selectedExit { get; set; } = default!; *@
 
-    private bool verticalAxeHidden = true;
-    private bool horizontalAxeHidden = true;
+    private bool detailsHidden = true;
 
     private int initialPosition = 0;
     private int finalPosition = 0;
+
+    private int wallMinPosition = 0;
+    private int wallMaxPosition = 0;
+
+    private Orientation sliderOrientation = Orientation.Horizontal;
 
     protected override void OnInitialized()
     {
@@ -51,56 +66,36 @@
 
     private async Task SaveAsync()
     {
-        @* Content.Exits[(Direction)selectedExitKey!] = selectedExit; *@
+        Content.Exits![selectedDirection].PositionOnWall = finalPosition;
         await Dialog.CloseAsync(Content);
     }
 
     private void SelectedExit_onchange(ChangeEventArgs value){
-
-        @* selectedExitKey = (Direction)Enum.Parse(typeof(Direction), value.Value!.ToString()!); *@
-        @* var myExit = Content.Exits[(Direction)selectedExitKey!]; *@
-
-        //var myExit = Content.Exits[selectedExitKey]!;
 
         selectedDirection = (Direction)Enum.Parse(typeof(Direction), value.Value!.ToString()!);
      
         switch(Content.Exits![selectedDirection].Direction){
             case Direction.North:
             case Direction.South:
-                    verticalAxeHidden = true;
-                    horizontalAxeHidden = false;
+                    sliderOrientation = Orientation.Horizontal;
+                    wallMaxPosition = Content.Width;
+
                     break;
             case Direction.East:
             case Direction.West:
-                    verticalAxeHidden = false;
-                    horizontalAxeHidden = true;
+                    sliderOrientation = Orientation.Vertical;
+                    wallMaxPosition = Content.Height;
                     break;
         }
 
         initialPosition = finalPosition = Content.Exits![selectedDirection].PositionOnWall;
+        wallMinPosition = 1;
+        detailsHidden = false;
     }
 
-    private void MoveExit(char moveTo)
+    private void ExitMoved()
     {
-        @* selectedExit = Content.Exits[(Direction)selectedExitKey!]; *@
-        
-        switch (moveTo)
-        {
-            case 'L':
-            case 'D':
-                @* selectedExit.PositionOnWall = selectedExit.PositionOnWall--; *@
-                Content.Exits![selectedDirection].PositionOnWall--;
-                break;
-            case 'R':
-            case 'U':
-                @* selectedExit.PositionOnWall = selectedExit.PositionOnWall++; *@
-                Content.Exits![selectedDirection].PositionOnWall++;
-                break;
-            default:
-                return; // Invalid direction
-        }
-
-        finalPosition = Content.Exits![selectedDirection].PositionOnWall;
+        Content.Exits![selectedDirection].PositionOnWall = finalPosition;
         Dialog.TogglePrimaryActionButton(true);
     }
 
