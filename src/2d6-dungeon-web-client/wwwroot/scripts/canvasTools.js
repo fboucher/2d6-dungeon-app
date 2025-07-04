@@ -81,31 +81,21 @@ function DrawDoor(posX, posY, orientation, isMain=false){
     doorColor = '#DEC5C0'
   }
 
+  // Always draw a full square (30x30)
+  let doorWidth = cubeSize; // one square
+  let doorHeight = cubeSize; // one square
+  
+  posX = posX * cubeSize;
+  posY = posY * cubeSize;
 
-  if(orientation == "H"){
-    let doorWith = 30; // one square
-    let doorHeight = 10;
-    posX = (posX - 1) * cubeSize;
-    posY = (posY * cubeSize) - 5;
-
-    context.fillStyle = '#000000'; 
-    context.fillRect(posX, posY, doorWith, doorHeight);
-    context.stroke();
-    context.fillStyle = doorColor;
-    context.fillRect(posX+1, posY+1, doorWith-2, doorHeight-2);
-    context.stroke();
+  if(orientation == 'V') {
+    posY = posY - cubeSize;
   }
-  else{
-    let doorWith = 10; 
-    let doorHeight = 30;// one square
-    posX = (posX * cubeSize) - 5;
-    posY = (posY - 1) * cubeSize;
 
-    context.fillStyle = '#000000'; 
-    context.fillRect(posX, posY, doorWith, doorHeight);
-    context.stroke();
-    context.fillStyle = doorColor;
-    context.fillRect(posX+1, posY+1, doorWith-2, doorHeight-2);
-    context.stroke();
-  }
+  context.fillStyle = '#000000'; 
+  context.fillRect(posX, posY, doorWidth, doorHeight);
+  context.stroke();
+  context.fillStyle = doorColor;
+  context.fillRect(posX+1, posY+1, doorWidth-2, doorHeight-2);
+  context.stroke();
 }

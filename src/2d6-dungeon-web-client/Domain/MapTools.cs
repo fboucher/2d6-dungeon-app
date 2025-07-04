@@ -33,19 +33,19 @@ public static class MapTools
             {
                 case Direction.North:
                     x = currentRoom.CoordX + door.Value.PositionOnWall;
-                    y = currentRoom.CoordY;
+                    y = currentRoom.CoordY - 1; // Position outside the room (above)
                     break;
                 case Direction.East:
-                    x = currentRoom.CoordX + currentRoom.Width;
+                    x = currentRoom.CoordX + currentRoom.Width; // Position outside the room (to the right)
                     y = currentRoom.CoordY + door.Value.PositionOnWall;
                     break;
                 case Direction.South:
                     x = currentRoom.CoordX + door.Value.PositionOnWall;
-                    y = currentRoom.CoordY + currentRoom.Height;
+                    y = currentRoom.CoordY + currentRoom.Height; // Position outside the room (below)
                     isMain = currentRoom.IsLobby;
                     break;
                 case Direction.West:
-                    x = currentRoom.CoordX;
+                    x = currentRoom.CoordX - 1; // Position outside the room (to the left)
                     y = currentRoom.CoordY + door.Value.PositionOnWall;
                     break;
             }
