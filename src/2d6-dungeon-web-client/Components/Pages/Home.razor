@@ -29,12 +29,12 @@
     {
         try{
             savedGames = await D6Service.GetSaveGameCount();
-            if(savedGames == 0){
-                savedGamesTips = "It look like you don't have any game saved. You should start by creating a new game.";
+            if(savedGames >= 1){
+                savedGamesTips = "It look like you already have some game(s) saved. What should you like to do?";
             }
             else{
-                savedGamesTips = "It look like you already have some game(s) saved. What should you like to do?";
-            }    
+                savedGamesTips = "It look like you don't have any game saved. You should start by creating a new game.";
+            }   
         }
         catch(Exception ex){
             Console.WriteLine("Oops! --> " + ex.Message);
