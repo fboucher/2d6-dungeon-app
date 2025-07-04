@@ -69,7 +69,7 @@
         entryRoom!.CoordX = 14;
         entryRoom.CoordY = 20;
 
-        entryRoom.YouAreHere = true;
+        entryRoom.State = MappedRoomState.Current;
 
         betaAdventure.Dungeon.AddRoom(entryRoom);
 
@@ -93,7 +93,7 @@
 
         entryRoom = Dungeon.StartDungeonLevel(ref dResult);
         entryRoom.IsLobby = true;
-        entryRoom.YouAreHere = true;
+        entryRoom.State = MappedRoomState.Current;
 
         //TODO: hardcoded temporary
         entryRoom.CoordX = 1;

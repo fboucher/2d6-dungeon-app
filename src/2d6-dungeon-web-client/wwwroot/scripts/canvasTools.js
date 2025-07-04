@@ -1,8 +1,44 @@
-
 var canvas;
 var context;
 var vw,vh;
 let cubeSize = 30;
+
+
+const ROOM_COLORS = {
+  regular: {
+    border: '#000000',
+    background: '#a5a7ae'
+  },
+  draft: {
+    border: '#b1b2b3',
+    background: '#f0f0f0'
+  },
+  current: {
+    border: '#FF6B35',
+    background: '#F7EDD5'
+  }
+};
+
+const EXIT_COLORS = {
+  regular: {
+    border: '#000000',
+    background: '#DEC5C0'
+  },
+  main: {
+    border: '#000000',
+    background: '#B3D2D3'
+  },
+  current_to: {
+    border: '#000000',
+    background: '#0000FF'
+  },
+  current_from: {
+    border: '#000000',
+    background: '#FF0000'
+  }
+};
+
+
 
 // resize the canvas to fill the browser window
 window.addEventListener('resize', onResize, false);
@@ -54,22 +90,23 @@ function drawDots() {
   }
 }
 
-function DrawRoom(posX, posY, width, height, youAreHere=false){
+function DrawRoom(posX, posY, width, height, state = 'regular'){
 
-  let roomColor = '#ffffff';
-  if(youAreHere == true){
-    roomColor = '#F7EDD5'; 
-  }
+  // Get colors based on state, default to regular if invalid state
+  const colors = ROOM_COLORS[state] || ROOM_COLORS.regular;
 
   posX = posX * cubeSize;
   posY = posY * cubeSize;
   width = width * cubeSize;
   height = height * cubeSize;
 
-  context.fillStyle = '#000000'; 
+  // Draw border
+  context.fillStyle = colors.border; 
   context.fillRect(posX, posY, width, height);
   context.stroke();
-  context.fillStyle = roomColor;
+  
+  // Draw background
+  context.fillStyle = colors.background;
   context.fillRect(posX+1, posY+1, width-2, height-2);
   context.stroke();
 }
@@ -90,6 +127,9 @@ function DrawDoor(posX, posY, orientation, isMain=false){
 
   if(orientation == 'V') {
     posY = posY - cubeSize;
+  }
+  else{
+    posX = posX - cubeSize;
   }
 
   context.fillStyle = '#000000'; 

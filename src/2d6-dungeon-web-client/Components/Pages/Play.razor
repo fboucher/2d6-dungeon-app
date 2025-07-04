@@ -56,12 +56,12 @@
                         
                         <div style="width: 100px;">
                             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(draftRoom == null)" />
+                                <FluentButton @onclick="@( () => MoveDraftRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(draftRoom == null)" />
                                 <FluentStack Orientation="Orientation.Vertical">
-                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(draftRoom == null)" />
-                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(draftRoom == null)" />
+                                    <FluentButton @onclick="@( () => MoveDraftRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(draftRoom == null)" />
+                                    <FluentButton @onclick="@( () => MoveDraftRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(draftRoom == null)" />
                                 </FluentStack>
-                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(draftRoom == null)" />
+                                <FluentButton @onclick="@( () => MoveDraftRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(draftRoom == null)" />
                             </FluentStack> 
                         </div>
                         <FluentLabel Color="@Color.Disabled">Once you have a new room, position it using the arrows above, then pin it to the map with the button below.</FluentLabel>
@@ -136,7 +136,7 @@
             {
                 currentAdventure = await d6Service.GetAdventure(adventureId);
                 currentAdventure.CombatState = new CombatState(currentAdventure.Adventurer);
-                currentRoom = currentAdventure.Dungeon.GetRooms().Where<MappedRoom>(room => room.YouAreHere == true).First<MappedRoom>();
+                currentRoom = currentAdventure.Dungeon.GetRooms().Where<MappedRoom>(room => room.State == MappedRoomState.Current).First<MappedRoom>();
                 if (currentRoom.IsLobby)
                 {
                     gameTurnInstructions = "You are in the lobby, you can go anywhere!";
@@ -253,7 +253,7 @@
         if (!result.Cancelled)
         {
             draftRoom = result.Data as MappedRoom;
-//ID should be there!!!
+            //ID should be there!!!
             //Just temporary
             draftRoom!.CoordX = 20;
             draftRoom.CoordY = 10;
@@ -283,7 +283,7 @@
         await FillCanvas();
     }
 
-    private async Task MoveRoom(string direction)
+    private async Task MoveDraftRoom(string direction)
     {
         if (draftRoom == null) return;
         

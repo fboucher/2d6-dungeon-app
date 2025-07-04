@@ -5,8 +5,8 @@ namespace c5m._2d6Dungeon.web.Domain;
 public static class MapTools
 {
 
-    public static async Task RefreshCanvas(IJSRuntime js) 
-    { 
+    public static async Task RefreshCanvas(IJSRuntime js)
+    {
         await js.InvokeVoidAsync("onResize");
     }
 
@@ -15,7 +15,9 @@ public static class MapTools
         int gidX = (currentRoom.CoordX);
         int gidY = (currentRoom.CoordY);
 
-        await js.InvokeVoidAsync("DrawRoom", gidX, gidY, currentRoom.Width, currentRoom.Height, currentRoom.YouAreHere);
+        string txtState = currentRoom.State.ToString().ToLower();
+
+        await js.InvokeVoidAsync("DrawRoom", gidX, gidY, currentRoom.Width, currentRoom.Height, txtState);
 
         await DrawDoors(js, currentRoom);
     }

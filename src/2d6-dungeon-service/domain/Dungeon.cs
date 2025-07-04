@@ -35,7 +35,8 @@ public class Dungeon
     {
         var room = new MappedRoom();
         room.Id = MappedRooms.Count + 1;
-        room.IsLobby = false; 
+        room.IsLobby = false;
+        room.State = MappedRoomState.Draft;
         return room;
     }
 
@@ -93,8 +94,8 @@ public class Dungeon
 
     public void ChangeRoom(MappedRoom roomFrom, MappedRoom roomTo)
     {
-        MappedRooms.First(r => r.Id == roomFrom.Id).YouAreHere = false;
-        MappedRooms.First(r => r.Id == roomTo.Id).YouAreHere = true;
+        MappedRooms.First(r => r.Id == roomFrom.Id).State = MappedRoomState.Regular;
+        MappedRooms.First(r => r.Id == roomTo.Id).State = MappedRoomState.Current;
     }
 
 }
