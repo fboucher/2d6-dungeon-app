@@ -51,17 +51,17 @@
                 <div id="maps-menu" style="position: sticky; top: 20px; align-self: flex-start;">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
 
-                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent">Refresh Canvas</FluentButton>
+                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom == null)">Refresh Canvas</FluentButton>
 
                         
                         <div style="width: 100px;">
                             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" />
+                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(nextRoom == null)" />
                                 <FluentStack Orientation="Orientation.Vertical">
-                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" />
-                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" />
+                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(nextRoom == null)" />
+                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(nextRoom == null)" />
                                 </FluentStack>
-                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" />
+                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(nextRoom == null)" />
                             </FluentStack> 
                         </div>
                         <FluentLabel Color="@Color.Disabled">Once you have a new room, position it using the arrows above, then pin it to the map with the button below.</FluentLabel>
@@ -107,7 +107,7 @@
     public int adventureId { get; set; }
     private Adventure? currentAdventure;
     MappedRoom? currentRoom = new MappedRoom();
-    MappedRoom? nextRoom = new MappedRoom();
+    MappedRoom? nextRoom = null;
     DiceResult diceResult = new DiceResult();
 
     bool isRollDiceDisable = false;
@@ -261,6 +261,9 @@
             await MapTools.DrawRoom(JSRuntime, nextRoom);
             return roomIdTest;
         }
+        else{
+            nextRoom = null;
+        }
         return null;
     }
 
@@ -276,36 +279,40 @@
 
     private async Task MoveRoom(string direction)
     {
+        if (nextRoom == null) return;
+        
         switch (direction)
         {
             case "UP":
-                nextRoom!.CoordY -= 1;
+                nextRoom.CoordY -= 1;
                 break;
             case "DOWN":
-                nextRoom!.CoordY += 1;
+                nextRoom.CoordY += 1;
                 break;
             case "LEFT":
-                nextRoom!.CoordX -= 1;
+                nextRoom.CoordX -= 1;
                 break;
             case "RIGHT":
-                nextRoom!.CoordX += 1;
+                nextRoom.CoordX += 1;
                 break;
         }
 
         await RefreshCanvas();
-        await MapTools.DrawRoom(JSRuntime, nextRoom!);
+        await MapTools.DrawRoom(JSRuntime, nextRoom);
     }
 
 
     private async Task AddRoomToDungeon()
     {
-        currentAdventure!.Dungeon.AddRoom(nextRoom!);
-        currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom!);
+        if (nextRoom == null) return;
+        
+        currentAdventure!.Dungeon.AddRoom(nextRoom);
+        currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom);
         currentRoom = nextRoom;
 
         await SaveAventure();
 
-        nextRoom = new MappedRoom();
+        nextRoom = null;
         await RefreshCanvas();
     }
 
