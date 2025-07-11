@@ -88,9 +88,9 @@ function DrawDoor(posX, posY, orientation, isMain=false){
   posX = posX * cubeSize;
   posY = posY * cubeSize;
 
-  if(orientation == 'V') {
-    posY = posY - cubeSize;
-  }
+  // if(orientation == 'V') {
+  //   posY = posY - cubeSize;
+  // }
 
   context.fillStyle = '#000000'; 
   context.fillRect(posX, posY, doorWidth, doorHeight);
