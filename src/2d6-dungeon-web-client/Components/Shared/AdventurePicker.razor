@@ -21,7 +21,8 @@
             <PropertyColumn Property="@(a => a.level)" Title="Level" Sortable="true"/>
             <PropertyColumn Property="@(a => a.last_saved_datetime)" Title="Saved Date" Sortable="true"/>
             <TemplateColumn Width="60px">  
-                <FluentButton OnClick="@(async () => await AdventureDelete(context!.id))" IconEnd="@(new Icons.Regular.Size16.Delete())" />
+                <FluentButton @onclick="@(async () => await AdventureDelete(context!.id))" 
+                             IconEnd="@(new Icons.Regular.Size16.Delete())" stopPropagation="true"/>
             </TemplateColumn>
         </ChildContent>
         <EmptyContent>
