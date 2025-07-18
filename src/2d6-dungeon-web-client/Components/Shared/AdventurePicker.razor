@@ -45,12 +45,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try{
-            var result  = await D6Service.GetAdventurePreviews();    
-            if(result != null)
+        await LoadAdventurePreviewsAsync();
+        StateHasChanged();
+    }
+    
+    private async Task LoadAdventurePreviewsAsync()
+    {
+        try
+        {
+            var result = await D6Service.GetAdventurePreviews();
+            if (result != null)
                 AdventurePreviews = result.value.AsQueryable();
         }
-        catch(Exception ex){
+        catch (Exception ex)
+        {
             Console.WriteLine("Oops! --> " + ex.Message);
         }
     }
@@ -72,7 +80,8 @@
         if (result)
         {
             AdventurePreviews = null;
-            await OnInitializedAsync();
+            await LoadAdventurePreviewsAsync();
+            StateHasChanged();
         }
     }
 
