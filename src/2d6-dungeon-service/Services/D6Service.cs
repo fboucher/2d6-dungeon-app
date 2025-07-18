@@ -28,8 +28,8 @@ public class D6Service
 
     public async Task<int> GetSaveGameCount()
     {
-        //todo: implement a save game in the database. 
-        return await Task.FromResult<int>(1);
+        var games = await GetAdventurePreviews();
+        return games?.value?.Count() ?? 0;
     }
 
     public async Task<AdventurePreviewList?> GetAdventurePreviews()
@@ -81,6 +81,16 @@ public class D6Service
             Console.WriteLine($"Problem while saving: code {status.StatusCode}");
         
         return game;
+    }
+    
+    public async Task<bool> AdventureDelete(int id)
+    {
+        var response = await httpClient.DeleteAsync($"api/adventure/id/{id.ToString()}");
+        var status = response.EnsureSuccessStatusCode();
+
+        if (status.IsSuccessStatusCode)
+            return true;
+        return false;
     }
 
     #endregion

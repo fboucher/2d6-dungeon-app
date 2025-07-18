@@ -10,6 +10,7 @@ public interface ID6Service
     Task<AdventurePreviewList?> GetAdventurePreviews();
     Task<Adventure> GetAdventure(int id);
     Task<Adventure> AdventureSave(Adventure game);
+    Task<bool> AdventureDelete(int id);
 
     // Adventurer
     Task<AdventurerPreviewList?> GetAdventurerPreviews();

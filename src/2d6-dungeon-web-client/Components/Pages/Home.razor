@@ -29,7 +29,7 @@
     {
         try{
             savedGames = await D6Service.GetSaveGameCount();
-            if(savedGames == 0){
+                if(savedGames == 0){
                 savedGamesTips = "It look like you don't have any game saved. You should start by creating a new game.";
             }
             else{
