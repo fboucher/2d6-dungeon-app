@@ -28,8 +28,8 @@ public class D6Service
 
     public async Task<int> GetSaveGameCount()
     {
-        //todo: implement a save game in the database. 
-        return await Task.FromResult<int>(1);
+        var games = await GetAdventurePreviews();
+        return games?.value?.Count() ?? 0;
     }
 
     public async Task<AdventurePreviewList?> GetAdventurePreviews()
