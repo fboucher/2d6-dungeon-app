@@ -13,13 +13,16 @@ else
 {
     <FluentStack Orientation="Orientation.Vertical">
 
+        <FluentLabel Typo="Typography.Body" Color="@Color.Warning">@errorMessage</FluentLabel>
+
         <FluentDataGrid Items="@adventurersQueryable" ShowHover="true" TGridItem="AdventurerPreview" OnRowClick="@((args) => SelectPlayer(args.Item!.id))">
-            @* <TemplateColumn Title="">
-                <FluentButton @onclick="@(() => SelectPlayer(context.id))" Appearance="Appearance.Lightweight">Select</FluentButton>
-            </TemplateColumn> *@
-            <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true" />
+            <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true"/>
             <PropertyColumn Title="XP" Property="@(c => c.xp.ToString())" Sortable="true"/>
-            <PropertyColumn Title="Level" Property="@(c => c.level.ToString())" Sortable="true" />
+            <PropertyColumn Title="Level" Property="@(c => c.level.ToString())" Sortable="true"/>
+            <TemplateColumn Width="60px">  
+                <FluentButton @onclick="@(async () => await AdventurerDelete(context!.id))" 
+                             IconEnd="@(new Icons.Regular.Size16.Delete())" stopPropagation="true"/>
+            </TemplateColumn>
         </FluentDataGrid>
     
 
@@ -37,6 +40,7 @@ else
 
     [Parameter] public EventCallback<Game.Adventurer> ParentPlayerChanged { get; set; }
 
+    private string errorMessage = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         try{
@@ -60,6 +64,28 @@ else
             await ParentPlayerChanged.InvokeAsync(ParentPlayer);
         }
         catch(Exception ex){
+            Console.WriteLine("Oops! --> " + ex.Message);
+        }
+    }
+
+    private async Task AdventurerDelete(int adventurerId)
+    {
+        errorMessage = string.Empty;
+        try
+        {
+            var isAdventurerDeleted = await D6Service.AdventurerDelete(adventurerId);
+            
+            if(isAdventurerDeleted == false)
+            {
+                errorMessage = "Could not delete adventurer, maybe it is used in a party.";
+                return;
+            }
+            adventurers = await D6Service.GetAdventurerPreviews();
+            adventurersQueryable = adventurers!.value.AsQueryable();
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
             Console.WriteLine("Oops! --> " + ex.Message);
         }
     }

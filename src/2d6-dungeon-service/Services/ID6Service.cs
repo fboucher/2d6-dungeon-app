@@ -17,6 +17,7 @@ public interface ID6Service
     Task<Adventurer> GetAdventurer(int id);
     Task<bool> SaveAdventurer(Adventurer player);
     Task<bool> AdventurerCreate(Adventurer player);
+    Task<bool> AdventurerDelete(int id);
     
     // Creature
     Task<IQueryable<Creature>> GetCreatures();

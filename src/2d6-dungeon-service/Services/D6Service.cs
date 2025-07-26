@@ -134,10 +134,52 @@ public class D6Service
             return true;
         return false;
     }
+    
+    public async Task<bool> AdventurerDelete(int id)
+    {
+        // First, get the adventurer to validate it exists and get its name
+        var adventurer = await GetAdventurer(id);
+        if (adventurer == null)
+        {
+            logger.LogWarning($"Adventurer with ID {id} not found");
+            return false;
+        }
+
+        // Check if this adventurer is used in any adventures
+        var adventures = await GetAdventurePreviews();
+        if (adventures?.value != null)
+        {
+            // Check by adventurer name in adventures
+            var adventuresUsingThisAdventurer = adventures.value
+                .Where(a => a.adventurer_name.Equals(adventurer.Name, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (adventuresUsingThisAdventurer.Any())
+            {
+                logger.LogWarning($"Cannot delete adventurer '{adventurer.Name}' (ID: {id}) - it is used in {adventuresUsingThisAdventurer.Count} adventure(s)");
+                return false;
+            }
+        }
+
+        // If no adventures reference this adventurer, proceed with deletion
+        var response = await httpClient.DeleteAsync($"api/adventurer/id/{id.ToString()}");
+        var status = response.EnsureSuccessStatusCode();
+
+        if (status.IsSuccessStatusCode)
+        {
+            logger.LogInformation($"Adventurer '{adventurer.Name}' (ID: {id}) has been successfully deleted");
+            return true;
+        }
+        
+        logger.LogError($"Failed to delete adventurer '{adventurer.Name}' (ID: {id}) - HTTP status: {status.StatusCode}");
+        return false;
+    }
+    
+    
 
     #endregion
 
-    
+
 
     #region == Adventurer Options =====
 
@@ -145,12 +187,13 @@ public class D6Service
 
 
     #endregion
-    
-    
+
+
 
     #region == Creature Options =====
 
-    public async Task<IQueryable<Creature>> GetCreatures(){
+    public async Task<IQueryable<Creature>> GetCreatures()
+    {
 
         var result = await httpClient.GetFromJsonAsync<CreatureList>("api/creature", options);
         return result!.value.AsQueryable();
