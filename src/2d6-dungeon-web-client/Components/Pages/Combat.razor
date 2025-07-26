@@ -11,6 +11,7 @@
 }
 else{
     <FluentStack Orientation="Orientation.Vertical"  Width="100%" >
+        <FluentButton @onclick="StartNewFight" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" Title="Reset combat and start a new fight">Start a new fight</FluentButton>
 
         <h3>Turn @CombatState.TurnCounter</h3>
         <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="2" >
@@ -143,6 +144,12 @@ else{
     private void CreatureUpdated(Creature selectedCreature)
     {
         CombatState.Creature = selectedCreature;
+        CombatStateChanged.InvokeAsync(CombatState);
+    }
+
+    private void StartNewFight()
+    {
+        CombatState.Creature = null;
         CombatStateChanged.InvokeAsync(CombatState);
     }
 
