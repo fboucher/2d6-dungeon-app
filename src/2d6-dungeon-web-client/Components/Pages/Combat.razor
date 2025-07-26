@@ -12,7 +12,11 @@
 else{
     <FluentStack Orientation="Orientation.Vertical"  Width="100%" >
 
-        <h3>Turn @CombatState.TurnCounter</h3>
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Width="100%">
+            <h3>Turn @CombatState.TurnCounter</h3>
+            <FluentButton Appearance="Appearance.Accent" @onclick=StartNewFight IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
+                          Title="Start a new fight - resets the combat screen">Start a new fight</FluentButton>
+        </FluentStack>
         <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="2" >
             <ShiftButtons   rolledValue="@primaryDice"
                             shiftedValue="@primaryShiftedDice"  
@@ -144,6 +148,28 @@ else{
     {
         CombatState.Creature = selectedCreature;
         CombatStateChanged.InvokeAsync(CombatState);
+    }
+
+    private void StartNewFight()
+    {
+        // Reset combat state
+        CombatState.Creature = null;
+        CombatState.TurnCounter = 0;
+        CombatState.CombatActions.Clear();
+        
+        // Reset dice state
+        primaryDice = primaryShiftedDice = 0;
+        secondaryDice = secondaryShiftedDice = 0;
+        originalDice = null;
+        
+        // Reset adjustments
+        adjustmentShift = 0;
+        adjustedShift = CombatState.Player.Shift;
+        shiftLeft = 0;
+        
+        CombatState.CombatActions.Add("Combat reset - ready for a new fight");
+        CombatStateChanged.InvokeAsync(CombatState);
+        StateHasChanged();
     }
 
 
