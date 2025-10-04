@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS db2d6.adventures (
   level int DEFAULT 0,
   last_saved_datetime varchar(50) DEFAULT NULL,
   serialiazedObj longtext DEFAULT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (adventurer_id)
-        REFERENCES adventurers(id)
+  PRIMARY KEY (id)
 );
 
 
