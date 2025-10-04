@@ -34,7 +34,7 @@ public class D6Service
 
     public async Task<AdventurePreviewList?> GetAdventurePreviews()
     {
-        return await httpClient.GetFromJsonAsync<AdventurePreviewList?>("api/adventure?$select=id,adventurer_name,level,last_saved_datetime");
+        return await httpClient.GetFromJsonAsync<AdventurePreviewList?>("api/adventure?$select=id,name,adventurer_id,level,last_saved_datetime");
     }
 
     public async Task<Adventure> GetAdventure(int id)
@@ -52,7 +52,8 @@ public class D6Service
     private async Task<int> AdventureCreate(Adventure game)
     {
         AdventurePreview draftSavedGame = new AdventurePreview();
-        draftSavedGame.adventurer_name = game.Adventurer.Name;
+        draftSavedGame.name = game.Name;
+        draftSavedGame.adventurer_id = game.Adventurer.Id;
         draftSavedGame.last_saved_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
         var response = await httpClient.PostAsJsonAsync<AdventurePreview>($"api/adventure", draftSavedGame);
@@ -149,9 +150,9 @@ public class D6Service
         var adventures = await GetAdventurePreviews();
         if (adventures?.value != null)
         {
-            // Check by adventurer name in adventures
+            // Check by adventurer id in adventures
             var adventuresUsingThisAdventurer = adventures.value
-                .Where(a => a.adventurer_name.Equals(adventurer.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(a => a.adventurer_id == id)
                 .ToList();
 
             if (adventuresUsingThisAdventurer.Any())

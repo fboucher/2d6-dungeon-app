@@ -5,6 +5,7 @@ using System.Text.Json;
 public class Adventure
 {
     public int Id { get; set; } = 0;
+    public string Name { get; set; } = string.Empty;
     public Adventurer Adventurer { get; set; }
     public Dungeon Dungeon { get; set; }
     public CombatState? CombatState { get; set; }
@@ -16,12 +17,14 @@ public class Adventure
     {
         Adventurer = new Adventurer(CreationTools.GetAdventurerName());
         Dungeon = new Dungeon();
+        Name = $"{Adventurer.Name} adventure";
     }
 
     public Adventure(AdventurePreview preview){
 
-        Adventurer = new Adventurer(preview.adventurer_name);
+        Adventurer = new Adventurer();
         Dungeon = new Dungeon();
+        Name = preview.name;
 
         if(string.IsNullOrEmpty(preview.serialiazedObj)){
             // todo: what should happens
@@ -29,6 +32,7 @@ public class Adventure
         else{
             Adventure aComplete = DatabaseDecode(preview.serialiazedObj);
             Id = aComplete.Id;
+            Name = aComplete.Name;
             Adventurer = aComplete.Adventurer;
             Dungeon = aComplete.Dungeon;
             GameTurn = aComplete.GameTurn;

@@ -8,7 +8,8 @@ public class AdventurePreview
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int id { get; set; } = 0;
-    public string adventurer_name { get; set; } = string.Empty;
+    public string name { get; set; } = string.Empty;
+    public int adventurer_id { get; set; } = 0;
     public int level { get; set; } = 0;
     public string last_saved_datetime { get; set; } = string.Empty;
     public string serialiazedObj { get; set; } = string.Empty;
@@ -18,7 +19,8 @@ public class AdventurePreview
     public AdventurePreview(Adventure a)
     {
         id = 0;
-        adventurer_name = a.Adventurer.Name;
+        name = a.Name;
+        adventurer_id = a.Adventurer.Id;
         level = a.Dungeon.FloorLevel;
         serialiazedObj = DatabaseEncode(a);
     }

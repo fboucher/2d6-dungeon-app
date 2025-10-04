@@ -22,11 +22,14 @@ CREATE TABLE IF NOT EXISTS db2d6.adventurers (
 
 CREATE TABLE IF NOT EXISTS db2d6.adventures (
   id int NOT NULL AUTO_INCREMENT,
-  adventurer_name varchar(255) DEFAULT NULL,
+  name varchar(255) DEFAULT NULL,
+  adventurer_id int DEFAULT NULL,
   level int DEFAULT 0,
   last_saved_datetime varchar(50) DEFAULT NULL,
   serialiazedObj longtext DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (adventurer_id)
+        REFERENCES adventurers(id)
 );
 
 
