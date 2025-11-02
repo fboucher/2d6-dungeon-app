@@ -68,7 +68,7 @@
         set
         {
             _selectedCustomTheme = value;
-            CustomColor = value?.Color == "" ? null : value?.Color;
+            CustomColor = string.IsNullOrEmpty(value?.Color) ? null : value?.Color;
             // Clear OfficeColor when using custom theme
             if (!string.IsNullOrEmpty(CustomColor))
             {
@@ -79,7 +79,22 @@
 
     protected override void OnInitialized()
     {
+        // Initialize to 'None' theme, but allow FluentDesignTheme to restore from storage
         _selectedCustomTheme = CustomThemes[0];
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(CustomColor))
+        {
+            // Sync the dropdown with the restored CustomColor from storage
+            var matchingTheme = CustomThemes.FirstOrDefault(t => t.Color == CustomColor);
+            if (matchingTheme != null)
+            {
+                _selectedCustomTheme = matchingTheme;
+                StateHasChanged();
+            }
+        }
     }
 
     void OnLoaded(LoadedEventArgs e)
