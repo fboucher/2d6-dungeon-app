@@ -10,6 +10,7 @@
 
 <FluentDesignTheme @bind-Mode="@Mode"
 				   @bind-OfficeColor="@OfficeColor"
+				   @bind-CustomColor="@CustomColor"
 				   StorageName="theme" />
 
 <h3>Settings</h3>
@@ -30,6 +31,19 @@
 				</FluentStack>
 			</OptionTemplate>
 		</FluentSelect>
+		<FluentSelect   Label="Custom Theme"
+						Items="@CustomThemes"
+						@bind-SelectedOption="@SelectedCustomTheme"
+						Width="250px"
+						OptionText="@(i => i?.Name ?? string.Empty)">
+			<OptionTemplate>
+				<FluentStack>
+					<FluentIcon Value="@(new Icons.Filled.Size20.RectangleLandscape())" Color="Color.Custom"
+						CustomColor="@(context?.Color ?? string.Empty)" />
+					<FluentLabel>@(context?.Name ?? string.Empty)</FluentLabel>
+				</FluentStack>
+			</OptionTemplate>
+		</FluentSelect>
 	</FluentStack>
 </div>
 
@@ -37,8 +51,36 @@
 @code {
     public DesignThemeModes Mode { get; set; }
     public OfficeColor? OfficeColor { get; set; }
+    public string? CustomColor { get; set; }
 
+    public record CustomThemeOption(string Name, string Color);
 
+    public List<CustomThemeOption> CustomThemes { get; set; } = new()
+    {
+        new CustomThemeOption("None", ""),
+        new CustomThemeOption("Dungeon", "#4A3728")
+    };
+
+    private CustomThemeOption? _selectedCustomTheme;
+    public CustomThemeOption? SelectedCustomTheme
+    {
+        get => _selectedCustomTheme;
+        set
+        {
+            _selectedCustomTheme = value;
+            CustomColor = value?.Color == "" ? null : value?.Color;
+            // Clear OfficeColor when using custom theme
+            if (!string.IsNullOrEmpty(CustomColor))
+            {
+                OfficeColor = null;
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _selectedCustomTheme = CustomThemes[0];
+    }
 
     void OnLoaded(LoadedEventArgs e)
     {
