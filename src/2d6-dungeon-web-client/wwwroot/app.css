@@ -128,6 +128,36 @@ code {
     color: #c02d76;
 }
 
+/* Dungeon Theme - Medieval D&D aesthetic */
+body.dungeon-theme {
+    --fill-color: #4A3728;
+    --neutral-layer-1: #3a2a1e;
+    --neutral-layer-2: #4A3728;
+    --neutral-layer-3: #5a4738;
+    --neutral-layer-4: #2a1a0e;
+    --neutral-foreground-rest: #f5e6d3;
+    --neutral-foreground-hover: #ffffff;
+    --accent-fill-rest: #8b6f47;
+    --accent-fill-hover: #a0845a;
+    --accent-fill-active: #6f5837;
+    --accent-foreground-rest: #f5e6d3;
+    --neutral-stroke-rest: #8b6f47;
+    --neutral-stroke-hover: #a0845a;
+    --neutral-fill-rest: rgba(139, 111, 71, 0.1);
+    --neutral-fill-hover: rgba(139, 111, 71, 0.2);
+    --neutral-fill-active: rgba(139, 111, 71, 0.3);
+    background: linear-gradient(135deg, #4A3728 0%, #3a2a1e 100%);
+}
+
+body.dungeon-theme fluent-design-system-provider,
+body.dungeon-theme fluent-card,
+body.dungeon-theme fluent-text-field,
+body.dungeon-theme fluent-select,
+body.dungeon-theme fluent-button {
+    --neutral-layer-1: #3a2a1e;
+    --neutral-foreground-rest: #f5e6d3;
+}
+
 @media (max-width: 600px) {
     .header-gutters {
         margin: 0.5rem 3rem 0.5rem 1.5rem !important;

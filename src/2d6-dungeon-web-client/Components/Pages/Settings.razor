@@ -1,8 +1,9 @@
 @page "/settings"
 
 @using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@using Microsoft.JSInterop
 @inject ILogger<Settings> Logger
-
+@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 
 
@@ -74,6 +75,8 @@
             {
                 OfficeColor = null;
             }
+            // Apply CSS class for Dungeon theme
+            ApplyThemeClass();
         }
     }
 
@@ -83,17 +86,43 @@
         _selectedCustomTheme = CustomThemes[0];
     }
     
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !string.IsNullOrEmpty(CustomColor))
+        if (firstRender)
         {
-            // Sync the dropdown with the restored CustomColor from storage
-            var matchingTheme = CustomThemes.FirstOrDefault(t => t.Color == CustomColor);
-            if (matchingTheme != null)
+            if (!string.IsNullOrEmpty(CustomColor))
             {
-                _selectedCustomTheme = matchingTheme;
-                StateHasChanged();
+                // Sync the dropdown with the restored CustomColor from storage
+                var matchingTheme = CustomThemes.FirstOrDefault(t => t.Color == CustomColor);
+                if (matchingTheme != null)
+                {
+                    _selectedCustomTheme = matchingTheme;
+                    StateHasChanged();
+                }
             }
+            // Apply theme class on first render
+            await ApplyThemeClassAsync();
+        }
+    }
+
+    private async void ApplyThemeClass()
+    {
+        await ApplyThemeClassAsync();
+    }
+
+    private async Task ApplyThemeClassAsync()
+    {
+        try
+        {
+            var isDungeon = _selectedCustomTheme?.Name == "Dungeon";
+            await JSRuntime.InvokeVoidAsync("eval", 
+                isDungeon 
+                    ? "document.body.classList.add('dungeon-theme')" 
+                    : "document.body.classList.remove('dungeon-theme')");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply theme class");
         }
     }
 
