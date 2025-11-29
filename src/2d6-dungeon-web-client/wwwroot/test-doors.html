@@ -26,18 +26,42 @@
             background-color: #fff;
             border-radius: 5px;
         }
+        .legend {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #333;
+        }
+        .unlocked { background-color: #33CC33; }
+        .locked { background-color: #CC3333; }
     </style>
 </head>
 <body>
     <h1>Door Types Test</h1>
     <div class="info">
         <p>This page demonstrates all available door types in both horizontal and vertical orientations.</p>
-        <p>Click the button below to draw all door types for validation:</p>
+        <p>Doors can be locked or unlocked - colors are configurable for different themes.</p>
+    </div>
+    <div class="legend">
+        <span class="legend-item"><span class="color-box unlocked"></span> Unlocked</span>
+        <span class="legend-item"><span class="color-box locked"></span> Locked</span>
     </div>
     <button onclick="TestDrawAllDoorTypes()">Draw All Door Types</button>
     <button onclick="onResize()">Reset Canvas</button>
     <br><br>
-    <canvas id="dotCanvas" style="width: 800px; height: 400px;"></canvas>
+    <canvas id="dotCanvas" style="width: 800px; height: 500px;"></canvas>
     
     <script src="scripts/canvasTools.js"></script>
     <script>

@@ -4,6 +4,13 @@ var context;
 var vw,vh;
 let cubeSize = 30;
 
+// Door lock state colors - configurable for different themes
+const DoorColors = {
+  LOCKED: '#CC3333',    // Red for locked doors
+  UNLOCKED: '#33CC33',  // Green for unlocked doors
+  SYMBOL: '#000000'     // Black for door symbols
+};
+
 // resize the canvas to fill the browser window
 window.addEventListener('resize', onResize, false);
 function onResize() {
@@ -74,12 +81,10 @@ function DrawRoom(posX, posY, width, height, youAreHere=false){
   context.stroke();
 }
 
-function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway'){
+function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false){
 
-  let doorColor = '#B3D2D3'
-  if(isMain == false){
-    doorColor = '#DEC5C0'
-  }
+  // Use lock state colors - unlocked (green) by default, locked (red) when locked
+  let doorColor = isLocked ? DoorColors.LOCKED : DoorColors.UNLOCKED;
 
   // Always draw a full square (30x30)
   let doorWidth = cubeSize; // one square
@@ -116,8 +121,8 @@ function DrawDoorType(posX, posY, width, height, orientation, doorType) {
   const centerX = posX + width / 2;
   const centerY = posY + height / 2;
   
-  context.strokeStyle = '#000000';
-  context.fillStyle = '#000000';
+  context.strokeStyle = DoorColors.SYMBOL;
+  context.fillStyle = DoorColors.SYMBOL;
   context.lineWidth = 2;
   
   switch (doorType.toLowerCase()) {
@@ -150,24 +155,51 @@ function DrawDoorType(posX, posY, width, height, orientation, doorType) {
   context.lineWidth = 1;
 }
 
-// Archway: T-shaped perpendicular lines
+// Archway: Open doorway pattern -|  |- (showing the door is open)
 function DrawArchway(centerX, centerY, width, height, orientation) {
   context.beginPath();
   
   if (orientation === 'H') {
-    // Horizontal door - draw vertical line with horizontal cap
-    context.moveTo(centerX, centerY - height * 0.35);
-    context.lineTo(centerX, centerY + height * 0.35);
-    // Cap at top
-    context.moveTo(centerX - width * 0.15, centerY - height * 0.35);
-    context.lineTo(centerX + width * 0.15, centerY - height * 0.35);
+    // Horizontal door - draw -|  |- pattern horizontally
+    // Left side: horizontal line with vertical cap
+    const leftX = centerX - width * 0.3;
+    const rightX = centerX + width * 0.3;
+    const lineLength = width * 0.15;
+    const capHeight = height * 0.25;
+    
+    // Left horizontal line
+    context.moveTo(leftX - lineLength, centerY);
+    context.lineTo(leftX, centerY);
+    // Left vertical cap
+    context.moveTo(leftX, centerY - capHeight);
+    context.lineTo(leftX, centerY + capHeight);
+    
+    // Right horizontal line
+    context.moveTo(rightX, centerY);
+    context.lineTo(rightX + lineLength, centerY);
+    // Right vertical cap
+    context.moveTo(rightX, centerY - capHeight);
+    context.lineTo(rightX, centerY + capHeight);
   } else {
-    // Vertical door - draw horizontal line with vertical cap
-    context.moveTo(centerX - width * 0.35, centerY);
-    context.lineTo(centerX + width * 0.35, centerY);
-    // Cap at left
-    context.moveTo(centerX - width * 0.35, centerY - height * 0.15);
-    context.lineTo(centerX - width * 0.35, centerY + height * 0.15);
+    // Vertical door - draw pattern vertically
+    const topY = centerY - height * 0.3;
+    const bottomY = centerY + height * 0.3;
+    const lineLength = height * 0.15;
+    const capWidth = width * 0.25;
+    
+    // Top vertical line with horizontal cap
+    context.moveTo(centerX, topY - lineLength);
+    context.lineTo(centerX, topY);
+    // Top horizontal cap
+    context.moveTo(centerX - capWidth, topY);
+    context.lineTo(centerX + capWidth, topY);
+    
+    // Bottom vertical line with horizontal cap
+    context.moveTo(centerX, bottomY);
+    context.lineTo(centerX, bottomY + lineLength);
+    // Bottom horizontal cap
+    context.moveTo(centerX - capWidth, bottomY);
+    context.lineTo(centerX + capWidth, bottomY);
   }
   
   context.stroke();
@@ -327,7 +359,7 @@ function TestDrawAllDoorTypes() {
   // Clear canvas and draw dots
   drawDots();
   
-  // Draw horizontal doors at row 3
+  // Draw horizontal unlocked doors at row 3
   let xPos = 2;
   const horizontalY = 3;
   
@@ -335,25 +367,37 @@ function TestDrawAllDoorTypes() {
   context.font = '12px Arial';
   
   for (let i = 0; i < doorTypes.length; i++) {
-    DrawDoor(xPos, horizontalY, 'H', false, doorTypes[i]);
+    DrawDoor(xPos, horizontalY, 'H', false, doorTypes[i], false); // unlocked
     // Draw label below
     context.fillText(labels[i], xPos * cubeSize - 10, (horizontalY + 2) * cubeSize);
     xPos += 3;
   }
   
-  // Draw vertical doors at row 8
+  // Draw vertical unlocked doors at row 7
   xPos = 2;
   const verticalY = 7;
   
   for (let i = 0; i < doorTypes.length; i++) {
-    DrawDoor(xPos, verticalY, 'V', false, doorTypes[i]);
+    DrawDoor(xPos, verticalY, 'V', false, doorTypes[i], false); // unlocked
     // Draw label below
     context.fillText(labels[i], xPos * cubeSize - 10, (verticalY + 2) * cubeSize);
     xPos += 3;
   }
   
+  // Draw locked doors at row 11 (horizontal)
+  xPos = 2;
+  const lockedY = 11;
+  
+  for (let i = 0; i < doorTypes.length; i++) {
+    DrawDoor(xPos, lockedY, 'H', false, doorTypes[i], true); // locked
+    // Draw label below
+    context.fillText(labels[i], xPos * cubeSize - 10, (lockedY + 2) * cubeSize);
+    xPos += 3;
+  }
+  
   // Add section labels
   context.font = 'bold 14px Arial';
-  context.fillText('Horizontal Doors:', 10, (horizontalY - 1) * cubeSize);
-  context.fillText('Vertical Doors:', 10, (verticalY - 1) * cubeSize);
+  context.fillText('Horizontal Doors (Unlocked):', 10, (horizontalY - 1) * cubeSize);
+  context.fillText('Vertical Doors (Unlocked):', 10, (verticalY - 1) * cubeSize);
+  context.fillText('Horizontal Doors (Locked):', 10, (lockedY - 1) * cubeSize);
 }
