@@ -8,7 +8,8 @@ let cubeSize = 30;
 const DoorColors = {
   LOCKED: '#CC3333',    // Red for locked doors
   UNLOCKED: '#33CC33',  // Green for unlocked doors
-  SYMBOL: '#000000'     // Black for door symbols
+  SYMBOL: '#000000',    // Black for door symbols
+  WALL: '#000000'       // Black for wall sections around doors
 };
 
 // resize the canvas to fill the browser window
@@ -92,6 +93,24 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   
   posX = posX * cubeSize;
   posY = posY * cubeSize;
+
+  // Draw wall sections on each side of the door (1 cube long each)
+  // This makes doors look connected to walls instead of floating
+  context.fillStyle = DoorColors.WALL;
+  
+  if (orientation === 'H') {
+    // Horizontal door - add vertical wall sections on left and right
+    // Left wall section (1 cube wide, full height of the door cell)
+    context.fillRect(posX - cubeSize, posY, cubeSize, doorHeight);
+    // Right wall section (1 cube wide, full height of the door cell)
+    context.fillRect(posX + doorWidth, posY, cubeSize, doorHeight);
+  } else {
+    // Vertical door - add horizontal wall sections on top and bottom
+    // Top wall section (full width of door cell, 1 cube tall)
+    context.fillRect(posX, posY - cubeSize, doorWidth, cubeSize);
+    // Bottom wall section (full width of door cell, 1 cube tall)
+    context.fillRect(posX, posY + doorHeight, doorWidth, cubeSize);
+  }
 
   // Draw the door type symbol with the appropriate color (no background square)
   DrawDoorType(posX, posY, doorWidth, doorHeight, orientation, doorType, doorColor);
