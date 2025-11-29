@@ -93,16 +93,8 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   posX = posX * cubeSize;
   posY = posY * cubeSize;
 
-  // Draw the background square first
-  context.fillStyle = '#000000'; 
-  context.fillRect(posX, posY, doorWidth, doorHeight);
-  context.stroke();
-  context.fillStyle = doorColor;
-  context.fillRect(posX+1, posY+1, doorWidth-2, doorHeight-2);
-  context.stroke();
-
-  // Draw the door type symbol on top
-  DrawDoorType(posX, posY, doorWidth, doorHeight, orientation, doorType);
+  // Draw the door type symbol with the appropriate color (no background square)
+  DrawDoorType(posX, posY, doorWidth, doorHeight, orientation, doorType, doorColor);
 }
 
 // Door type constants
@@ -117,12 +109,13 @@ const DoorTypes = {
 };
 
 // Main function to draw door type symbol
-function DrawDoorType(posX, posY, width, height, orientation, doorType) {
+function DrawDoorType(posX, posY, width, height, orientation, doorType, doorColor) {
   const centerX = posX + width / 2;
   const centerY = posY + height / 2;
   
-  context.strokeStyle = DoorColors.SYMBOL;
-  context.fillStyle = DoorColors.SYMBOL;
+  // Use the door color for the symbol (green for unlocked, red for locked)
+  context.strokeStyle = doorColor;
+  context.fillStyle = doorColor;
   context.lineWidth = 2;
   
   switch (doorType.toLowerCase()) {
@@ -359,45 +352,62 @@ function TestDrawAllDoorTypes() {
   // Clear canvas and draw dots
   drawDots();
   
-  // Draw horizontal unlocked doors at row 3
-  let xPos = 2;
-  const horizontalY = 3;
+  // Draw a large room to demonstrate doors on walls
+  const roomX = 2;
+  const roomY = 2;
+  const roomWidth = 22;
+  const roomHeight = 12;
   
-  context.fillStyle = '#000000';
-  context.font = '12px Arial';
+  DrawRoom(roomX, roomY, roomWidth, roomHeight, false);
   
+  // Draw unlocked doors on the top wall (North - horizontal orientation)
+  let xPos = roomX + 1;
   for (let i = 0; i < doorTypes.length; i++) {
-    DrawDoor(xPos, horizontalY, 'H', false, doorTypes[i], false); // unlocked
-    // Draw label below
-    context.fillText(labels[i], xPos * cubeSize - 10, (horizontalY + 2) * cubeSize);
+    DrawDoor(xPos, roomY - 1, 'H', false, doorTypes[i], false); // unlocked on top wall
     xPos += 3;
   }
   
-  // Draw vertical unlocked doors at row 7
-  xPos = 2;
-  const verticalY = 7;
-  
+  // Draw locked doors on the bottom wall (South - horizontal orientation)
+  xPos = roomX + 1;
   for (let i = 0; i < doorTypes.length; i++) {
-    DrawDoor(xPos, verticalY, 'V', false, doorTypes[i], false); // unlocked
-    // Draw label below
-    context.fillText(labels[i], xPos * cubeSize - 10, (verticalY + 2) * cubeSize);
+    DrawDoor(xPos, roomY + roomHeight, 'H', false, doorTypes[i], true); // locked on bottom wall
     xPos += 3;
   }
   
-  // Draw locked doors at row 11 (horizontal)
-  xPos = 2;
-  const lockedY = 11;
+  // Draw unlocked doors on the left wall (West - vertical orientation)
+  let yPos = roomY + 2;
+  DrawDoor(roomX - 1, yPos, 'V', false, DoorTypes.ARCHWAY, false);
+  DrawDoor(roomX - 1, yPos + 3, 'V', false, DoorTypes.WOODEN, false);
+  DrawDoor(roomX - 1, yPos + 6, 'V', false, DoorTypes.METAL, false);
   
+  // Draw locked doors on the right wall (East - vertical orientation)
+  yPos = roomY + 2;
+  DrawDoor(roomX + roomWidth, yPos, 'V', false, DoorTypes.REINFORCED, true);
+  DrawDoor(roomX + roomWidth, yPos + 3, 'V', false, DoorTypes.CURTAIN, true);
+  DrawDoor(roomX + roomWidth, yPos + 6, 'V', false, DoorTypes.PORTCULLIS, true);
+  
+  // Add labels
+  context.fillStyle = '#FFFFFF';
+  context.font = 'bold 12px Arial';
+  
+  // Top wall labels
+  xPos = roomX + 1;
   for (let i = 0; i < doorTypes.length; i++) {
-    DrawDoor(xPos, lockedY, 'H', false, doorTypes[i], true); // locked
-    // Draw label below
-    context.fillText(labels[i], xPos * cubeSize - 10, (lockedY + 2) * cubeSize);
+    context.fillText(labels[i], xPos * cubeSize - 5, (roomY - 2) * cubeSize + 10);
     xPos += 3;
   }
   
-  // Add section labels
+  // Bottom wall labels
+  xPos = roomX + 1;
+  for (let i = 0; i < doorTypes.length; i++) {
+    context.fillText(labels[i], xPos * cubeSize - 5, (roomY + roomHeight + 2) * cubeSize + 10);
+    xPos += 3;
+  }
+  
+  // Section labels
   context.font = 'bold 14px Arial';
-  context.fillText('Horizontal Doors (Unlocked):', 10, (horizontalY - 1) * cubeSize);
-  context.fillText('Vertical Doors (Unlocked):', 10, (verticalY - 1) * cubeSize);
-  context.fillText('Horizontal Doors (Locked):', 10, (lockedY - 1) * cubeSize);
+  context.fillText('Top Wall: Unlocked Doors (Green)', roomX * cubeSize, (roomY - 3) * cubeSize + 15);
+  context.fillText('Bottom Wall: Locked Doors (Red)', roomX * cubeSize, (roomY + roomHeight + 3) * cubeSize + 15);
+  context.fillText('Left: Unlocked', 10, (roomY + 5) * cubeSize);
+  context.fillText('Right: Locked', (roomX + roomWidth + 1) * cubeSize + 5, (roomY + 5) * cubeSize);
 }

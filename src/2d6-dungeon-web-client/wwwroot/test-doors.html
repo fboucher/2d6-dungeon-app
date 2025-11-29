@@ -51,17 +51,17 @@
 <body>
     <h1>Door Types Test</h1>
     <div class="info">
-        <p>This page demonstrates all available door types in both horizontal and vertical orientations.</p>
-        <p>Doors can be locked or unlocked - colors are configurable for different themes.</p>
+        <p>This page demonstrates all available door types placed on room walls.</p>
+        <p>Doors are drawn on walls with colored lines - green for unlocked, red for locked.</p>
     </div>
     <div class="legend">
-        <span class="legend-item"><span class="color-box unlocked"></span> Unlocked</span>
-        <span class="legend-item"><span class="color-box locked"></span> Locked</span>
+        <span class="legend-item"><span class="color-box unlocked"></span> Unlocked (Green lines)</span>
+        <span class="legend-item"><span class="color-box locked"></span> Locked (Red lines)</span>
     </div>
-    <button onclick="TestDrawAllDoorTypes()">Draw All Door Types</button>
+    <button onclick="TestDrawAllDoorTypes()">Draw Room with Doors</button>
     <button onclick="onResize()">Reset Canvas</button>
     <br><br>
-    <canvas id="dotCanvas" style="width: 800px; height: 500px;"></canvas>
+    <canvas id="dotCanvas" style="width: 900px; height: 600px;"></canvas>
     
     <script src="scripts/canvasTools.js"></script>
     <script>
