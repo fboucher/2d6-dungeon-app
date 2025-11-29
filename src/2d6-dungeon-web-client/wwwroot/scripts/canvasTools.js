@@ -101,21 +101,21 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   context.beginPath();
   
   if (orientation === 'H') {
-    // Horizontal door - add vertical wall lines on left and right
-    // Left wall line (1 cube long, vertical)
-    context.moveTo(posX - cubeSize, posY + doorHeight / 2);
-    context.lineTo(posX, posY + doorHeight / 2);
-    // Right wall line (1 cube long, vertical)
-    context.moveTo(posX + doorWidth, posY + doorHeight / 2);
-    context.lineTo(posX + doorWidth + cubeSize, posY + doorHeight / 2);
+    // Horizontal door (on top/bottom wall) - add vertical wall lines on left and right
+    // Left wall line (vertical, 1 cube tall)
+    context.moveTo(posX, posY);
+    context.lineTo(posX, posY + doorHeight);
+    // Right wall line (vertical, 1 cube tall)
+    context.moveTo(posX + doorWidth, posY);
+    context.lineTo(posX + doorWidth, posY + doorHeight);
   } else {
-    // Vertical door - add horizontal wall lines on top and bottom
-    // Top wall line (1 cube long, horizontal)
-    context.moveTo(posX + doorWidth / 2, posY - cubeSize);
-    context.lineTo(posX + doorWidth / 2, posY);
-    // Bottom wall line (1 cube long, horizontal)
-    context.moveTo(posX + doorWidth / 2, posY + doorHeight);
-    context.lineTo(posX + doorWidth / 2, posY + doorHeight + cubeSize);
+    // Vertical door (on left/right wall) - add horizontal wall lines on top and bottom
+    // Top wall line (horizontal, 1 cube wide)
+    context.moveTo(posX, posY);
+    context.lineTo(posX + doorWidth, posY);
+    // Bottom wall line (horizontal, 1 cube wide)
+    context.moveTo(posX, posY + doorHeight);
+    context.lineTo(posX + doorWidth, posY + doorHeight);
   }
   
   context.stroke();
