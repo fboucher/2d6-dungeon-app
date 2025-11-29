@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Door Types Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        #dotCanvas {
+            border: 1px solid #333;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .info {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Door Types Test</h1>
+    <div class="info">
+        <p>This page demonstrates all available door types in both horizontal and vertical orientations.</p>
+        <p>Click the button below to draw all door types for validation:</p>
+    </div>
+    <button onclick="TestDrawAllDoorTypes()">Draw All Door Types</button>
+    <button onclick="onResize()">Reset Canvas</button>
+    <br><br>
+    <canvas id="dotCanvas" style="width: 800px; height: 400px;"></canvas>
+    
+    <script src="scripts/canvasTools.js"></script>
+    <script>
+        // Initialize canvas on load
+        window.onload = function() {
+            onResize();
+        };
+    </script>
+</body>
+</html>
