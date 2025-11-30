@@ -17,10 +17,10 @@ public static class MapTools
 
         await js.InvokeVoidAsync("DrawRoom", gidX, gidY, currentRoom.Width, currentRoom.Height, currentRoom.YouAreHere);
 
-        await DrawDoors(js, currentRoom);
+        await DrawDoors(js, currentRoom, currentRoom.YouAreHere);
     }
 
-    public static async Task DrawDoors(IJSRuntime js, MappedRoom currentRoom)
+    public static async Task DrawDoors(IJSRuntime js, MappedRoom currentRoom, bool youAreHere)
     {
         foreach (var door in currentRoom.Exits!)
         {
@@ -50,7 +50,7 @@ public static class MapTools
                     break;
             }
 
-            await js.InvokeVoidAsync("DrawDoor", x, y, orientation, isMain);
+            await js.InvokeVoidAsync("DrawDoor", x, y, orientation, isMain, null, null, youAreHere);
         }
 
 

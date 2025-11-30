@@ -367,10 +367,18 @@
         var rooms = currentAdventure!.Dungeon.GetRooms();
         int roomCount = rooms.Count;
 
-        Console.WriteLine($"There are {roomCount} rooms in the dungeon");
-
         foreach (var room in rooms)
         {
+            // Here to help debugging a intermittent issue with drawing rooms
+            Console.WriteLine($"Drawing Room Id: {room.Id} at X:{room.CoordX} Y:{room.CoordY} Height:{room.Height}" +
+                              $" Width:{room.Width} YouAreHere:{room.YouAreHere}");
+            if(currentRoom?.ExitsCount>0)
+            {
+                foreach (var exit in currentRoom!.Exits!.Values)
+                {
+                    Console.WriteLine($"Direction-Position: {exit.Direction.ToString()} - {exit.PositionOnWall}");
+                }
+            }                  
             await MapTools.DrawRoom(JSRuntime, room);
         }
     }

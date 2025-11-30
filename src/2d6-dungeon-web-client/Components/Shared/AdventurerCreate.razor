@@ -34,7 +34,7 @@
                             Required
                             OptionText="@(w => w.Name)"
                             OptionValue="@(w => w.Id.ToString())"
-                            SelectedOptionChanged = "@( (Weapon w) => WeaponSelected(w.Id))"
+                            SelectedOptionChanged = "@( (Weapon w) => WeaponSelected(w))"
                             Disabled="@isSwitchWeaponPossible"
                             Placeholder="Select a Weapon"
                             />
@@ -42,7 +42,7 @@
     </FluentCard>
 
 
-     <FluentCard Height="200px">
+    <FluentCard Height="200px">
         <FluentHeader Height="18">Manoeuvres</FluentHeader>
         @if (manoeuvresQueryable != null)
         {
@@ -96,7 +96,7 @@
                             Open=false
                             OptionText="@(s => s.ScrollType + " | " + s.Description)"
                             OptionValue="@(s => s.Id.ToString())"
-                            SelectedOptionChanged = "@( (MagicScroll s) => SelectMagicScroll(s.Id))"
+                            SelectedOptionChanged = "@( (MagicScroll s) => SelectMagicScroll(s))"
                             />
     </FluentCard>
 
@@ -146,10 +146,13 @@
     }
 
 
-    private async Task WeaponSelected(int weaponId)
+    private async Task WeaponSelected(Weapon weapon)
     {
+        if(weapon is null){
+            return;
+        }
         try{
-            selectedWeaponId = weaponId;
+            selectedWeaponId = weapon.Id;
             if(selectedWeaponId > 0){
                 weaponName = weapons?.value?.Where(w => w!.Id == selectedWeaponId).Select(w => w.Name).FirstOrDefault()! ;
                 var manoeuvres = await D6Service.GetWeaponManoeuvreList(selectedWeaponId, 1);
@@ -196,9 +199,11 @@
         selectedArmourId = armourPieceId.ToString();
     }
 
-    private void SelectMagicScroll(int magicScollId)
+    private void SelectMagicScroll(MagicScroll magicScroll)
     {
-        selectedMagicScrollId = magicScollId;
+        if(magicScroll is not null){
+           selectedMagicScrollId = magicScroll.Id;
+        }
     }
     private async Task CreateAndSaveAdventurer()
     {
