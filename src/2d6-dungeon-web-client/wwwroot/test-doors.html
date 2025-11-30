@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Door Types Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        #dotCanvas {
+            border: 1px solid #333;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .info {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .legend {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #333;
+        }
+        .unlocked { background-color: #33CC33; }
+        .locked { background-color: #CC3333; }
+    </style>
+</head>
+<body>
+    <h1>Door Types Test</h1>
+    <div class="info">
+        <p>This page demonstrates all available door types placed on room walls.</p>
+        <p>Doors are drawn on walls with colored lines - green for unlocked, red for locked.</p>
+    </div>
+    <div class="legend">
+        <span class="legend-item"><span class="color-box unlocked"></span> Unlocked (Green lines)</span>
+        <span class="legend-item"><span class="color-box locked"></span> Locked (Red lines)</span>
+    </div>
+    <button onclick="TestDrawAllDoorTypes()">Draw Room with Doors</button>
+    <button onclick="onResize()">Reset Canvas</button>
+    <br><br>
+    <canvas id="dotCanvas" style="width: 900px; height: 600px;"></canvas>
+    
+    <script src="scripts/canvasTools.js"></script>
+    <script>
+        // Initialize canvas on load
+        window.onload = function() {
+            onResize();
+        };
+    </script>
+</body>
+</html>
