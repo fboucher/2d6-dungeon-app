@@ -173,7 +173,7 @@
     {
         Direction? directionTo = await OpenSelectDoorDialogDialogAsync();
         if(directionTo is not null){
-            var exit = currentRoom!.Exits[directionTo.Value];
+            var exit = currentRoom!.Exits![directionTo.Value];
 
             if (exit.TargetRoomId > 0)
             {
@@ -259,7 +259,7 @@
             nextRoom.CoordY = 10;
 
             @* Char entranceWall = directionFrom.ToString()[0]; *@
-            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom.Id);
+            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
             GameTurn.AssignExits(nextRoom!, directionFrom);
             
             var roomIdTest = nextRoom!.Id;
@@ -391,7 +391,7 @@
 
     private async Task SaveAventure()
     {
-        await d6Service.AdventureSave(currentAdventure);
+        await d6Service.AdventureSave(currentAdventure!);
         ToastService.ShowToast(ToastIntent.Success, "Adventure saved!");
     }
 }

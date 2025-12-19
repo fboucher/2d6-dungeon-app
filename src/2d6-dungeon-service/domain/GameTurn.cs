@@ -55,7 +55,7 @@ public class GameTurn
             LastDiceResult.SecondaryDice = 2; 
         }
         DraftCurrentRoom(LastDiceResult);
-        CurrentRoom.ExitsCount = 3;
+        CurrentRoom!.ExitsCount = 3;
         NextAction = ActionType.DungeonStarted;
         Message = "You are in the dungeon entrance";
     }
@@ -142,7 +142,7 @@ public class GameTurn
     }
 
     private void DraftCurrentRoom(DiceResult dResult){
-        CurrentRoom.Width = dResult.PrimaryDice;
+        CurrentRoom!.Width = dResult.PrimaryDice;
         CurrentRoom.Height = dResult.SecondaryDice;
         CurrentRoom.IsCorridor = dResult.IsOneDiceOne;
     }

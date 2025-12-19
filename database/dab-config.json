@@ -1,11 +1,15 @@
 {
-  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v0.8.51/dab.draft.schema.json",
+  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v1.6.84/dab.draft.schema.json",
   "data-source": {
     "database-type": "mysql",
     "connection-string": "@env('ConnectionStrings__db2d6')",
     "options": {}
   },
+  
   "runtime": {
+    "health": {
+      "max-query-parallelism": 8
+    },
     "rest": {
       "enabled": true,
       "path": "/api"

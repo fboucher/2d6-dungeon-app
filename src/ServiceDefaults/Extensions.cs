@@ -32,6 +32,28 @@ public static class Extensions
             http.AddServiceDiscovery();
         });
 
+        // // Configure HTTP client to accept development certificates
+        // if (builder.Environment.IsDevelopment())
+        // {
+        //     builder.Services.ConfigureHttpClientDefaults(http =>
+        //     {
+        //         http.ConfigureHttpClient(client =>
+        //         {
+        //             // Allow untrusted certificates in development
+        //             // This is necessary for Data API Builder and other services using HTTPS
+        //         });
+                
+        //         http.ConfigurePrimaryHttpMessageHandler(() =>
+        //         {
+        //             return new HttpClientHandler
+        //             {
+        //                 ServerCertificateCustomValidationCallback = 
+        //                     HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        //             };
+        //         });
+        //     });
+        // }
+
         // Uncomment the following to restrict the allowed schemes for service discovery.
         // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
         // {
