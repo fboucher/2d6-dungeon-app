@@ -6,7 +6,6 @@ var mysql = builder.AddMySql("sqlsvr2d6")
 
 var db2d6 = mysql.AddDatabase("db2d6");
 
-//mysql.WithInitBindMount(source: "../../database/scripts", isReadOnly: false);
 mysql.WithInitFiles("../../database/scripts");
 
 var dab = builder.AddDataAPIBuilder("dab", ["../../database/dab-config.json"])
