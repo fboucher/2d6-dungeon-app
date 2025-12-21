@@ -22,7 +22,7 @@ properties:
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
     secrets:
       - name: connectionstrings--db2d6
-        value: Server=sqlsvr2d6;Port=3306;User ID=root;Password={{ securedParameter "sqlsvr2d6_password" }};Database=db2d6
+        value: Server=sqlsvr2d6;User ID=root;Password={{ securedParameter "sqlsvr2d6_password" }};Database=db2d6
   template:
     volumes:
       - name: dab-bm0
