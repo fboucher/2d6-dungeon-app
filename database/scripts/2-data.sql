@@ -172,11 +172,6 @@ VALUES (12,	1, 'LIBRARY', 'large', 'Lined with bookshelves, this huge library is
 
 
 
--- demo adventurers
-INSERT INTO db2d6.adventurers(name, level, xp) VALUES('Toby the Creator', 1, 100);
-INSERT INTO db2d6.adventurers(name, level, xp) VALUES('Frank', 0, 0);
-
-
 -- weapons
 INSERT INTO db2d6.weapons(id, name) VALUES(1, 'LONGSWORD');
 INSERT INTO db2d6.weapons(id, name) VALUES(2, 'GREATAXE');
