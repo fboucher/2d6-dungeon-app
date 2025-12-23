@@ -14,7 +14,7 @@
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 @if(Editable)
                 {
-                    <span><b>HP:</b> <FluentNumberField @bind-Value=creature.health_points style="width: 70px;"/></span>
+                    <span><b>HP:</b> <FluentNumberField @bind-Value="creature.health_points" @bind-Value:after="CheckHealth" style="width: 70px;"/></span>
                 }
                 else 
                 {
@@ -63,11 +63,26 @@
     public EventCallback<Creature> creatureChanged { get; set; }
 
     [Parameter]
+    public EventCallback OnHealthDepleted { get; set; }
+
+    [Parameter]
     public bool Editable { get; set; } = false;
 
+    private bool healthDepletionHandled = false;
 
+    private async Task CheckHealth()
+    {
+        if (creature.health_points <= 0 && !healthDepletionHandled)
+        {
+            healthDepletionHandled = true;
+            await OnHealthDepleted.InvokeAsync();
+        }
+    }
 
-
+    public void ResetHealthDepletion()
+    {
+        healthDepletionHandled = false;
+    }
 }
 
 
