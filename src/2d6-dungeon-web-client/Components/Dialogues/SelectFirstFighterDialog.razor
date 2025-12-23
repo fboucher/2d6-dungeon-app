@@ -1,0 +1,40 @@
+﻿@using c5m._2d6Dungeon;
+
+@implements IDialogContentComponent<FighterType>
+
+@rendermode InteractiveServer
+
+@if (Dialog != null)
+{
+    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalGap="20">
+        <span style="font-size: 1.2em; font-weight: 500;">Who attacks first?</span>
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20">
+            <FluentButton 
+                Appearance="Appearance.Accent"
+                OnClick="@(() => SelectFighter(FighterType.Adventurer))" 
+                IconStart="@(new Icons.Regular.Size20.Person())">
+                Adventurer
+            </FluentButton>
+            <FluentButton 
+                Appearance="Appearance.Accent"
+                OnClick="@(() => SelectFighter(FighterType.Creature))" 
+                IconStart="@(new Icons.Regular.Size20.AnimalDog())">
+                Creature
+            </FluentButton>
+        </FluentStack>
+    </FluentStack>
+}
+
+@code {
+    [Parameter]
+    public FighterType Content { get; set; } = FighterType.Adventurer;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    private void SelectFighter(FighterType fighter)
+    {
+        Dialog.TogglePrimaryActionButton(true);
+        Dialog.CloseAsync(fighter);
+    }
+}
