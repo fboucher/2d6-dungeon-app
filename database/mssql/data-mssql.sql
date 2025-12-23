@@ -51,10 +51,6 @@ INSERT INTO dbo.rooms(roll, level, room_type, size, description, exits, is_uniqu
 VALUES (4,1,'Church', 'large','This room is lined with pews and chairs. Behind am allar...', 'Wooden doors',1);
 
 
--- demo adventurers
-INSERT INTO dbo.adventurers(name, level, xp) VALUES('Toby the Creator', 1, 100);
-INSERT INTO dbo.adventurers(name, level, xp) VALUES('Frank', 0, 0);
-
 
 -- weapons
 INSERT INTO dbo.weapons(id, name) VALUES(1, 'LONGSWORD');
