@@ -24,6 +24,7 @@ else{
             <ShiftButtons   rolledValue="@primaryDice"
                             shiftedValue="@primaryShiftedDice"  
                             ShiftLeft="@shiftLeft" 
+                            Disabled="combatEnded"
                             DiceShifted="PrimaryDiceShifted"></ShiftButtons>
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" HorizontalGap="0" Width="145">
                 <span>
@@ -32,17 +33,18 @@ else{
                 </span>
                 @shiftLeft shift left
                 <span>
-                    <FluentButton   Appearance="Appearance.Accent" @onclick=Roll2Dice IconStart="@(new Icons.Regular.Size16.Cube())">Roll</FluentButton>
-                    <FluentButton   Appearance="Appearance.Accent" @onclick=ResetDice IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
+                    <FluentButton   Appearance="Appearance.Accent" @onclick=Roll2Dice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.Cube())">Roll</FluentButton>
+                    <FluentButton   Appearance="Appearance.Accent" @onclick=ResetDice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
                                     Title="Resets the Dice before any shift adjustment" >Reset</FluentButton>
                 </span>
             </FluentStack>
             <ShiftButtons   rolledValue="@secondaryDice" 
                             shiftedValue="@secondaryShiftedDice" 
                             ShiftLeft="@shiftLeft" 
+                            Disabled="combatEnded"
                             DiceShifted="SecondaryDiceShifted"></ShiftButtons>
             <FluentSpacer Width="200"></FluentSpacer>
-            <FluentButton Appearance="Appearance.Accent" @onclick=NextTurn IconStart="@(new Icons.Regular.Size16.ArrowNext())">End Turn</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" @onclick=NextTurn Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowNext())">End Turn</FluentButton>
         </FluentStack>
 
 
@@ -52,7 +54,7 @@ else{
                 {
                     <FluentBadge Appearance="Appearance.Accent" Icon="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;">Current turn</FluentBadge>
                 }
-                <AdventurerCard Player="CombatState.Player" Extented=true Editable=true></AdventurerCard>
+                <AdventurerCard @ref="adventurerCardRef" Player="CombatState.Player" Extented=true Editable=true OnHealthDepleted="OnAdventurerDefeated"></AdventurerCard>
             </FluentCard>
             <FluentCard Width="400px">
                 <QuickReferenceCombatCard   TurnCounter="@CombatState.TurnCounter" 
@@ -64,7 +66,7 @@ else{
                 {
                     <FluentBadge Appearance="Appearance.Accent" Icon="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;">Current turn</FluentBadge>
                 }
-                <CreatureCard creature="CombatState.Creature" Editable=true></CreatureCard> 
+                <CreatureCard @ref="creatureCardRef" creature="CombatState.Creature" Editable=true OnHealthDepleted="OnCreatureDefeated"></CreatureCard> 
             </FluentCard>
         </FluentStack>
         <CombatJournal actions="CombatState.CombatActions" ></CombatJournal>
@@ -90,6 +92,10 @@ else{
 
     private FighterType? currentFighter;
     private FighterType? firstFighter;
+    private bool combatEnded = false;
+
+    private AdventurerCard? adventurerCardRef;
+    private CreatureCard? creatureCardRef;
 
     private bool IsCurrentFighter(FighterType fighter) => currentFighter == fighter;
 
@@ -212,6 +218,35 @@ else{
         await ShowSelectFirstFighterDialog();
     }
 
+    private async Task OnAdventurerDefeated()
+    {
+        combatEnded = true;
+        CombatState.CombatActions.Add($"💀 {CombatState.Player.Name} has fallen in battle!");
+        
+        await DialogService.ShowErrorAsync(
+            message: $"Your adventurer has fallen in battle. Game Over!",
+            title: "Defeat"
+        );
+        
+        StateHasChanged();
+    }
+
+    private async Task OnCreatureDefeated()
+    {
+        combatEnded = true;
+      
+        CombatState.CombatActions.Add($"🎉 {CombatState.Creature?.name} has been defeated!");
+        
+        await CombatStateChanged.InvokeAsync(CombatState);
+        
+        await DialogService.ShowSuccessAsync(
+            message: $"Victory! You've defeated the {CombatState.Creature?.name}!\n\nIt's time to check for loot and XP rewards.",
+            title: "Victory!"
+        );
+        
+        StateHasChanged();
+    }
+
     private async Task StartNewFight()
     {
         // Reset combat state
@@ -228,6 +263,11 @@ else{
         adjustmentShift = 0;
         adjustedShift = CombatState.Player.Shift;
         shiftLeft = 0;
+        combatEnded = false;
+
+        // Reset health depletion flags
+        adventurerCardRef?.ResetHealthDepletion();
+        creatureCardRef?.ResetHealthDepletion();
         
         CombatState.CombatActions.Add("Combat reset - ready for a new fight");
         CombatStateChanged.InvokeAsync(CombatState);

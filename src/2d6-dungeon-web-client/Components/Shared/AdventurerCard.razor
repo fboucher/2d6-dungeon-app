@@ -22,7 +22,7 @@
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%">
                 @if(Editable)
                 {
-                    <span class="sheetTitle">HP</span> <FluentNumberField @bind-Value="@Player.HealthPoints" style="width: 80px;" />
+                    <span class="sheetTitle">HP</span> <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" style="width: 80px;" />
                 }
                 else 
                 {
@@ -54,13 +54,32 @@
     public EventCallback<Game.Adventurer> PlayerChanged { get; set; }
 
     [Parameter]
+    public EventCallback OnHealthDepleted { get; set; }
+
+    [Parameter]
     public bool Extented { get; set; } = false;
 
     [Parameter]
     public bool Editable { get; set; } = false;
 
+    private bool healthDepletionHandled = false;
+
+    private async Task CheckHealth()
+    {
+        if (Player.HealthPoints <= 0 && !healthDepletionHandled)
+        {
+            healthDepletionHandled = true;
+            await OnHealthDepleted.InvokeAsync();
+        }
+    }
+
     private void ToggleExtended()
     {
         Extented = !Extented;
+    }
+
+    public void ResetHealthDepletion()
+    {
+        healthDepletionHandled = false;
     }
 }
