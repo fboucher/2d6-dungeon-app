@@ -43,7 +43,32 @@ else{
                             ShiftLeft="@shiftLeft" 
                             Disabled="combatEnded"
                             DiceShifted="SecondaryDiceShifted"></ShiftButtons>
-            <FluentSpacer Width="200"></FluentSpacer>
+
+            <FluentSpacer Width="50"></FluentSpacer>
+
+            <FluentCard Width="400px" Height="139px">
+                
+                <FluentLabel><FluentIcon Value="@(new Icons.Regular.Size24.TargetArrow())" Title="Damage" Color="Color.Error" /> Damage</FluentLabel>
+                
+
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom">
+                    <div>
+                        <FluentButton OnClick="@(() => RollDamageDice(1))" Appearance="Appearance.Accent">Roll 1D6</FluentButton>
+                        <FluentButton OnClick="@(() => RollDamageDice(2))" Appearance="Appearance.Accent">Roll 2D6</FluentButton>
+                    </div>
+
+                    <div style="padding-left:20px;">
+                        @if (damageDiceResult != null)
+                        {
+                            <Dice face="@damageDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red"></Dice>
+                            <Dice face="@damageDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple"></Dice>
+                        }
+                    </div>
+                </FluentStack>
+            </FluentCard>
+
+            <FluentSpacer Width="50"></FluentSpacer>
+
             <FluentButton Appearance="Appearance.Accent" @onclick=NextTurn Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowNext())">End Turn</FluentButton>
         </FluentStack>
 
@@ -89,6 +114,8 @@ else{
     private int primaryShiftedDice = 0;
     private int secondaryDice = 0;
     private int secondaryShiftedDice = 0;
+
+    private DiceResult? damageDiceResult = null;
 
     private FighterType? currentFighter;
     private FighterType? firstFighter;
@@ -205,6 +232,7 @@ else{
 
         primaryDice = primaryShiftedDice = 0;
         secondaryDice = secondaryShiftedDice = 0;
+        damageDiceResult = null;
 
         CombatState.CombatActions.Add($"Start Turn {CombatState.TurnCounter}");
 
@@ -336,4 +364,16 @@ else{
         StateHasChanged();
     }
 
+
+    private void RollDamageDice(int numberOfDice)
+    {
+        if (numberOfDice == 1)
+        {
+            damageDiceResult = DiceResult.Roll1Dice();
+        }
+        else
+        {
+            damageDiceResult = DiceResult.Roll2Dice();
+        }
+    }
 }
