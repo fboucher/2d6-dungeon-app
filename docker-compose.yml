@@ -1,0 +1,46 @@
+name: 2d6-dungeon
+
+services:
+  database:
+    image: ${DOCKERHUB_NAMESPACE}/2d6-dungeon-database:${IMAGE_TAG:-latest}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-db2d6}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  dab:
+    image: ${DOCKERHUB_NAMESPACE}/2d6-dungeon-dab:${IMAGE_TAG:-latest}
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__db2d6: Server=database;User ID=root;Password=${MYSQL_ROOT_PASSWORD};Database=${MYSQL_DATABASE:-db2d6}
+    ports:
+      - "${DAB_PORT:-5000}:5000"
+    restart: unless-stopped
+
+  webapp:
+    image: ${DOCKERHUB_NAMESPACE}/2d6-dungeon-app:${IMAGE_TAG:-latest}
+    depends_on:
+      - dab
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__dab: http://dab:5000
+      services__dab__http__0: http://dab:5000
+    ports:
+      - "${WEBAPP_PORT:-8080}:8080"
+    restart: unless-stopped
+
+volumes:
+  db_data:
