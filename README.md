@@ -32,13 +32,45 @@ While I prototype functionalities, and make progress I create content (blog post
 - 📺 [How to Create a DEV Environment with Multiple Dev Containers](https://www.youtube.com/watch?v=sf3Ai4271nA)
  
 
-### How to Run it Locally
+### Run it Locally
 
-The solution uses .NET Aspire to manage all the services and website. 
+#### For Players (No coding experience needed!)
 
-- You will need Docker [Docker](https://docs.docker.com/desktop/) or [Podman](https://podman.io/), and [.NET 9](https://dotnet.microsoft.com/en-us/download) installed.
+**Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) must be installed and running on your computer.
+
+Want to play 2D6 Dungeon? Follow these simple steps:
+
+1. **Create a game folder**
+   - Create a new folder on your computer (name it anything you like, e.g., "2d6-game")
+   - Open a terminal/command prompt and navigate to that folder
+
+2. **Download the configuration**
+   - Run this command to download the game configuration:
+     ```
+     curl -o docker-compose.yml https://raw.githubusercontent.com/FBoucher/2d6-dungeon-app/main/docker-compose.yml
+     ```
+
+3. **Start the game**
+   - Run this command:
+     ```
+     docker-compose up -d --build
+     ```
+   - Wait a minute for everything to download and start
+
+4. **Play!**
+   - Open your web browser and go to: `http://localhost:8080`
+   - Start your adventure!
+
+**To stop playing:** Run `docker-compose down` in your game folder.
+
+
+#### For Developers
+
+The solution uses .NET Aspire to manage all the services and website.
+
+- You will need [Docker](https://docs.docker.com/desktop/) or [Podman](https://podman.io/), and [.NET 10](https://dotnet.microsoft.com/en-us/download) installed.
 - Clone the repository locally.
-- To start 2d6-dungeon-client, from Open the solution in VSCode or Visual Studio and press F5. If asked for the starting point of the solution select the orchestrator `AppHost`. Once the solution starts it will:
+- Open the solution in VSCode or Visual Studio and press F5. If asked for the starting point of the solution select the orchestrator `AppHost`. Once the solution starts it will:
   - Open the .NET Aspire Dashboard in a web browser.
   - Create a MySQL container, create the database using the SQL script included.
   - Create a data API, in a second container.
