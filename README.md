@@ -44,20 +44,26 @@ Want to play 2D6 Dungeon? Follow these simple steps:
    - Create a new folder on your computer (name it anything you like, e.g., "2d6-game")
    - Open a terminal/command prompt and navigate to that folder
 
-2. **Download the configuration**
-   - Run this command to download the game configuration:
+2. **Download the configuration files**
+   - Run these commands to download the game configuration:
      ```
      curl -o docker-compose.yml https://raw.githubusercontent.com/FBoucher/2d6-dungeon-app/main/docker-compose.yml
+     curl -o .env https://raw.githubusercontent.com/FBoucher/2d6-dungeon-app/main/.env.example
      ```
 
-3. **Start the game**
+3. **Customize the settings**
+   - Open the `.env` file with a text editor
+   - Change `MYSQL_ROOT_PASSWORD=changeme` to a password you choose (something simple is fine)
+   - You can leave the other settings as they are
+
+4. **Start the game**
    - Run this command:
      ```
      docker-compose up -d --build
      ```
    - Wait a minute for everything to download and start
 
-4. **Play!**
+5. **Play!**
    - Open your web browser and go to: `http://localhost:8080`
    - Start your adventure!
 
