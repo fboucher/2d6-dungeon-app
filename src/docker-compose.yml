@@ -1,0 +1,63 @@
+
+name: 2d6-dungeon-app
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: sqlsvr2d6
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/scripts:/docker-entrypoint-initdb.d:ro,Z
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dungeon-network
+
+  dab:
+    image: mcr.microsoft.com/azure-databases/data-api-builder:latest
+    container_name: dab
+    environment:
+      - ConnectionStrings__db2d6=Server=mysql;User ID=root;Password=${MYSQL_ROOT_PASSWORD};Database=${MYSQL_DATABASE}
+    volumes:
+      - ../database/dab-config.json:/App/dab-config.json:ro,Z
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - dungeon-network
+    command: ["--ConfigFileName", "/App/dab-config.json"]
+
+  webapp:
+    build:
+      context: .
+      dockerfile: 2d6-dungeon-web-client/Dockerfile
+    container_name: webapp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__dab=http://dab:5000
+      - services__dab__http__0=http://dab:5000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dab
+    networks:
+      - dungeon-network
+
+volumes:
+  mysql_data:
+
+networks:
+  dungeon-network:
+    driver: bridge
