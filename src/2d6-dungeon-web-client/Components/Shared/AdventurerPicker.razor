@@ -15,7 +15,12 @@ else
 
         <FluentLabel Typo="Typography.Body" Color="@Color.Warning">@errorMessage</FluentLabel>
 
-        <FluentDataGrid Items="@adventurersQueryable" ShowHover="true" TGridItem="AdventurerPreview" OnRowClick="@((args) => SelectPlayer(args.Item!.id))">
+        <FluentDataGrid 
+                        Items="@adventurersQueryable" 
+                        ShowHover="true" 
+                        TGridItem="AdventurerPreview" 
+                        OnRowClick="@((args) => SelectPlayer(args.Item!.id))"
+                        RowSize="DataGridRowSize.Medium">
             <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true"/>
             <PropertyColumn Title="XP" Property="@(c => c.xp.ToString())" Sortable="true"/>
             <PropertyColumn Title="Level" Property="@(c => c.level.ToString())" Sortable="true"/>
@@ -40,12 +45,20 @@ else
 
     [Parameter] public EventCallback<Game.Adventurer> ParentPlayerChanged { get; set; }
 
+    [Parameter] public int? AutoSelectAdventurerId { get; set; }
+
     private string errorMessage = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         try{
             adventurers = await D6Service.GetAdventurerPreviews();  
-            adventurersQueryable = adventurers!.value.AsQueryable();  
+            adventurersQueryable = adventurers!.value.AsQueryable();
+            
+            // Auto-select adventurer if ID is provided (from navigation state)
+            if (AutoSelectAdventurerId.HasValue && AutoSelectAdventurerId.Value > 0)
+            {
+                await SelectPlayer(AutoSelectAdventurerId.Value);
+            }
         }
         catch(Exception ex){
             Console.WriteLine("Oops! --> " + ex.Message);
