@@ -15,7 +15,12 @@ else
 
         <FluentLabel Typo="Typography.Body" Color="@Color.Warning">@errorMessage</FluentLabel>
 
-        <FluentDataGrid Items="@adventurersQueryable" ShowHover="true" TGridItem="AdventurerPreview" OnRowClick="@((args) => SelectPlayer(args.Item!.id))">
+        <FluentDataGrid 
+                        Items="@adventurersQueryable" 
+                        ShowHover="true" 
+                        TGridItem="AdventurerPreview" 
+                        OnRowClick="@((args) => SelectPlayer(args.Item!.id))"
+                        RowSize="DataGridRowSize.Medium">
             <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true"/>
             <PropertyColumn Title="XP" Property="@(c => c.xp.ToString())" Sortable="true"/>
             <PropertyColumn Title="Level" Property="@(c => c.level.ToString())" Sortable="true"/>
