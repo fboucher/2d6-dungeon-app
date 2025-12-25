@@ -211,10 +211,10 @@
 
         ParentAdventurer!.MagicPotions!.Add(InitialPotion);
 
-        var result = await D6Service.AdventurerCreate(ParentAdventurer);
+        var createdAdventurerId = await D6Service.AdventurerCreate(ParentAdventurer);
 
-        if (result){
-            Navigation.NavigateTo("theadventure/new");
+        if (createdAdventurerId > 0){
+            Navigation.NavigateTo($"theadventure/new/{createdAdventurerId}");
         }
 
     }

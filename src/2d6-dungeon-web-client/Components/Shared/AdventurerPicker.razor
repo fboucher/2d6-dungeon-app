@@ -45,12 +45,20 @@ else
 
     [Parameter] public EventCallback<Game.Adventurer> ParentPlayerChanged { get; set; }
 
+    [Parameter] public int? AutoSelectAdventurerId { get; set; }
+
     private string errorMessage = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         try{
             adventurers = await D6Service.GetAdventurerPreviews();  
-            adventurersQueryable = adventurers!.value.AsQueryable();  
+            adventurersQueryable = adventurers!.value.AsQueryable();
+            
+            // Auto-select adventurer if ID is provided (from navigation state)
+            if (AutoSelectAdventurerId.HasValue && AutoSelectAdventurerId.Value > 0)
+            {
+                await SelectPlayer(AutoSelectAdventurerId.Value);
+            }
         }
         catch(Exception ex){
             Console.WriteLine("Oops! --> " + ex.Message);

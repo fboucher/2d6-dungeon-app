@@ -124,16 +124,18 @@ public class D6Service
         return false;
     }
 
-    public async Task<bool> AdventurerCreate(Adventurer player)
+    public async Task<int> AdventurerCreate(Adventurer player)
     {
         var dbPlayer = new AdventurerPreview(player);
 
         var response = await httpClient.PostAsJsonAsync<AdventurerPreview>($"api/adventurer", dbPlayer);
         var status = response.EnsureSuccessStatusCode();
 
-        if (status.IsSuccessStatusCode)
-            return true;
-        return false;
+        if (!status.IsSuccessStatusCode)
+            return 0;
+        
+        var returnedList = await response.Content.ReadFromJsonAsync<AdventurerPreviewList>();
+        return returnedList!.value.First<AdventurerPreview>().id;
     }
     
     public async Task<bool> AdventurerDelete(int id)
