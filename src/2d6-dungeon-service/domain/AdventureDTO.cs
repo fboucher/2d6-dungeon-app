@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace c5m._2d6Dungeon;
 
 //lowercase to match the database
-public class AdventurePreview
+public class AdventureDTO
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int id { get; set; } = 0;
@@ -14,9 +14,9 @@ public class AdventurePreview
     public string last_saved_datetime { get; set; } = string.Empty;
     public string serialiazedObj { get; set; } = string.Empty;
 
-    public AdventurePreview(){}
+    public AdventureDTO(){}
 
-    public AdventurePreview(Adventure a)
+    public AdventureDTO(Adventure a)
     {
         id = 0;
         name = a.Name;

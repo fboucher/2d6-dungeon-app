@@ -20,7 +20,7 @@ public class Adventure
         Name = $"{Adventurer.Name} adventure";
     }
 
-    public Adventure(AdventurePreview preview){
+    public Adventure(AdventureDTO preview){
 
         Adventurer = new Adventurer();
         Dungeon = new Dungeon();

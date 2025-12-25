@@ -12,7 +12,7 @@
     <FluentDataGrid Items="@AdventurePreviews" 
                     ShowHover="true"  
                     ResizableColumns=true 
-                    TGridItem="AdventurePreview" 
+                    TGridItem="AdventureDTO" 
                     OnRowClick="@(async (args) => { if (args.Item?.id != null) SelectAdventure(args.Item.id); })"
                     style="height: 600px;"
                     RowSize="DataGridRowSize.Medium">
@@ -37,7 +37,7 @@
 
 @code {
 
-    private IQueryable<AdventurePreview>? AdventurePreviews;
+    private IQueryable<AdventureDTO>? AdventurePreviews;
 
     [Parameter] public Adventure? ParentAdventure {get; set;}
 

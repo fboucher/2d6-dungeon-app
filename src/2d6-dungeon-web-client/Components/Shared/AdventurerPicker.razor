@@ -16,10 +16,10 @@ else
         <FluentLabel Typo="Typography.Body" Color="@Color.Warning">@errorMessage</FluentLabel>
 
         <FluentDataGrid 
-                        Items="@adventurersQueryable" 
-                        ShowHover="true" 
-                        TGridItem="AdventurerPreview" 
-                        OnRowClick="@((args) => SelectPlayer(args.Item!.id))"
+                Items="@adventurersQueryable" 
+                ShowHover="true" 
+                TGridItem="AdventurerDTO" 
+                OnRowClick="@((args) => SelectPlayer(args.Item!.id))"
                         RowSize="DataGridRowSize.Medium">
             <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true"/>
             <PropertyColumn Title="XP" Property="@(c => c.xp.ToString())" Sortable="true"/>
@@ -38,8 +38,8 @@ else
 
 @code {
 
-    private AdventurerPreviewList? adventurers;
-    IQueryable<AdventurerPreview>? adventurersQueryable;
+    private AdventurerDTOList? adventurers;
+    IQueryable<AdventurerDTO>? adventurersQueryable;
 
     [Parameter] public Game.Adventurer? ParentPlayer {get; set;}
 

@@ -5,7 +5,7 @@ using c5m._2d6Dungeon.Game;
 namespace c5m._2d6Dungeon;
 
 //lowercase to match the database
-public class AdventurerPreview
+public class AdventurerDTO
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int id { get; set; } = 0;
@@ -14,9 +14,9 @@ public class AdventurerPreview
     public int xp { get; set; }
     public string serialiazedObj { get; set; } = string.Empty;
 
-    public AdventurerPreview(){}
+    public AdventurerDTO(){}
 
-    public AdventurerPreview(Adventurer a)
+    public AdventurerDTO(Adventurer a)
     {
         id = 0;
         name = a.Name;
