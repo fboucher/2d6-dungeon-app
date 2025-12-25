@@ -82,7 +82,7 @@ public class Adventurer
         Rations = 3;
     }
 
-    public Adventurer(AdventurerPreview preview){
+    public Adventurer(AdventurerDTO preview){
         if(string.IsNullOrEmpty(preview.serialiazedObj)){
             
             Id = preview.id;

@@ -15,7 +15,7 @@
         <FluentHeader>Select or Create an Adventurer</FluentHeader>
         @if (selectedAdventurer == null)
         {
-            <AdventurerPicker @bind-ParentPlayer="selectedAdventurer"></AdventurerPicker>
+            <AdventurerPicker @bind-ParentPlayer="selectedAdventurer" AutoSelectAdventurerId="@autoSelectAdventurerId"></AdventurerPicker>
         }
         else
         {
@@ -52,6 +52,8 @@
 
     [Parameter] public EventCallback<Adventure> ParentAdventureChanged { get; set; }
 
+    [Parameter] public int? AutoSelectAdventurerId { get; set; }
+
     private Adventure? betaAdventure;
     public Game.Adventurer? selectedAdventurer;
     private bool isStartDisable = true;
@@ -59,6 +61,12 @@
     private DiceResult? dResult = null;
     private string actionLabel = "Roll 2D6 to determine the Entrance of the dungeon";
     private MappedRoom? entryRoom;
+    private int? autoSelectAdventurerId;
+
+    protected override void OnInitialized()
+    {
+        autoSelectAdventurerId = AutoSelectAdventurerId;
+    }
 
     private async Task StarGame()
     {

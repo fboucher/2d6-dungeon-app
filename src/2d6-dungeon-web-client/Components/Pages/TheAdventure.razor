@@ -1,6 +1,5 @@
-﻿@page "/theadventure/{state}"
+﻿@page "/theadventure/{state}/{adventurerId?}"
 @using c5m._2d6Dungeon;
-@inject D6Service D6Service;
 
 @rendermode InteractiveServer
 
@@ -8,7 +7,7 @@
 
 @if (State == "new")
 {
-    <AdventureInit @bind-ParentAdventure="theAdventure"></AdventureInit>
+    <AdventureInit @bind-ParentAdventure="theAdventure" AutoSelectAdventurerId="@autoSelectAdventurerId"></AdventureInit>
 }
 else
 {
@@ -18,5 +17,13 @@ else
 @code{
     [Parameter]
     public required string State { get; set; }
+    [Parameter]
+    public string? AdventurerId { get; set; }
     public Adventure? theAdventure;
+    private int? autoSelectAdventurerId;
+
+    protected override void OnInitialized()
+    {
+        autoSelectAdventurerId = AdventurerId is not null ? int.Parse(AdventurerId) : null;
+    }
 }

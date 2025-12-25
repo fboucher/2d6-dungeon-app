@@ -7,16 +7,16 @@ public interface ID6Service
 {
     // Adventure
     Task<int> GetSaveGameCount();
-    Task<AdventurePreviewList?> GetAdventurePreviews();
+    Task<AdventureDTOList?> GetAdventurePreviews();
     Task<Adventure> GetAdventure(int id);
     Task<Adventure> AdventureSave(Adventure game);
     Task<bool> AdventureDelete(int id);
 
     // Adventurer
-    Task<AdventurerPreviewList?> GetAdventurerPreviews();
+    Task<AdventurerDTOList?> GetAdventurerPreviews();
     Task<Adventurer> GetAdventurer(int id);
     Task<bool> SaveAdventurer(Adventurer player);
-    Task<bool> AdventurerCreate(Adventurer player);
+    Task<int> AdventurerCreate(Adventurer player);
     Task<bool> AdventurerDelete(int id);
     
     // Creature
