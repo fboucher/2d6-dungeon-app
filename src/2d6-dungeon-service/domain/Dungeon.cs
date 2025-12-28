@@ -12,6 +12,9 @@ public class Dungeon
     [JsonInclude]
     private List<MappedRoom> _mappedRooms;
 
+    [JsonInclude]
+    private Dictionary<int, HashSet<int>> _usedUniqueRoomsByLevel;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Dungeon"/> class.
@@ -19,6 +22,7 @@ public class Dungeon
     public Dungeon()
     {
         _mappedRooms = new List<MappedRoom>();
+        _usedUniqueRoomsByLevel = new Dictionary<int, HashSet<int>>();
     }
 
 
@@ -95,6 +99,31 @@ public class Dungeon
     {
         MappedRooms.First(r => r.Id == roomFrom.Id).YouAreHere = false;
         MappedRooms.First(r => r.Id == roomTo.Id).YouAreHere = true;
+    }
+
+    /// <summary>
+    /// Checks if a unique room has already been used on the specified floor level.
+    /// </summary>
+    /// <param name="roomId">The Room ID from the database.</param>
+    /// <param name="floorLevel">The dungeon floor level.</param>
+    /// <returns>True if the unique room has been used on this level; false otherwise.</returns>
+    public bool HasUsedUnique(int roomId, int floorLevel)
+    {
+        if (!_usedUniqueRoomsByLevel.ContainsKey(floorLevel))
+            return false;
+        return _usedUniqueRoomsByLevel[floorLevel].Contains(roomId);
+    }
+
+    /// <summary>
+    /// Marks a unique room as used on the specified floor level.
+    /// </summary>
+    /// <param name="roomId">The Room ID from the database.</param>
+    /// <param name="floorLevel">The dungeon floor level.</param>
+    public void MarkUniqueUsed(int roomId, int floorLevel)
+    {
+        if (!_usedUniqueRoomsByLevel.ContainsKey(floorLevel))
+            _usedUniqueRoomsByLevel[floorLevel] = new HashSet<int>();
+        _usedUniqueRoomsByLevel[floorLevel].Add(roomId);
     }
 
 }

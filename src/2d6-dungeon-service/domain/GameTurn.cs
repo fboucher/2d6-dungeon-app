@@ -14,15 +14,7 @@ public class GameTurn
 
     public D6Service? d6Service;
 
-    // public GameTurn(D6Service service){
-    //     this.d6Service = service;
-    // }
-
-    public GameTurn(){
-
-    }
-
-    public async Task<GameTurn> ContinueTurn(DiceResult dResult)
+    public async Task<GameTurn> ContinueTurn(DiceResult dResult, Dungeon dungeon)
     {
         switch(NextAction){
             case(ActionType.StartDungeonLevel): StartDungeonLevel(dResult);
@@ -35,7 +27,7 @@ public class GameTurn
                 break;
             case(ActionType.RollRoomDefinition): 
                 int area = CurrentRoom!.Width * CurrentRoom.Height;
-                await RollRoomDefinition(area, dResult);
+                await RollRoomDefinition(area, dResult, dungeon);
                 break;
         };
         return this;
@@ -147,28 +139,18 @@ public class GameTurn
         CurrentRoom.IsCorridor = dResult.IsOneDiceOne;
     }
 
-    private async Task RollRoomDefinition(int area, DiceResult dResult){
+    private async Task RollRoomDefinition(int area, DiceResult dResult, Dungeon dungeon){
         LastDiceResult = dResult;
-        int roll = 0;
         string roomSize;
-        Room room; 
+        Room room;
 
-        switch(area){
-            case(<6): 
-                roll = LastDiceResult.PrimaryDice + LastDiceResult.SecondaryDice;
-                roomSize = "small";
-                break;
-            case >32 : 
-                roll = LastDiceResult.PrimaryDice + LastDiceResult.SecondaryDice;
-                roomSize = "large";
-                break;
-            default: 
-                roll = int.Parse(string.Concat(LastDiceResult.PrimaryDice.ToString(),  LastDiceResult.SecondaryDice.ToString()));
-                roomSize = "regular";
-                break;
-        }
+        (int roll, string size) = ComputeRollAndSize(area, LastDiceResult);
+        roomSize = size;
         room = await d6Service!.RollRoom(roll, roomSize);
-        // //TODO: Is Room Unique?
+        
+        // Check for unique room conflicts and re-roll if necessary
+        room = await TryResolveUniqueRoomConflict(room, roomSize, area, dungeon);
+
         CurrentRoom!.Description = room.description;
         //NextAction = ActionType.RollForExits;
         Message = $"Go to the sumary to see all the details of the room.";
@@ -228,6 +210,63 @@ public class GameTurn
             Direction.East => Direction.West,
             Direction.West => Direction.East
         };
+    }
+
+    /// <summary>
+    /// Attempts to resolve unique room conflicts by re-rolling if needed.
+    /// If a unique room has already been used on the current floor level,
+    /// re-rolls the dice up to 5 attempts. If all attempts yield used-unique rooms,
+    /// returns the last rolled room with a warning message.
+    /// </summary>
+    private async Task<Room> TryResolveUniqueRoomConflict(Room room, string roomSize, int area, Dungeon dungeon)
+    {
+        const int maxAttempts = 5;
+        int attempts = 0;
+
+        while (attempts < maxAttempts && room.is_unique && dungeon.HasUsedUnique(room.id, dungeon.FloorLevel))
+        {
+            attempts++;
+            Message = $"This unique room is already on this floor. Re-rolling (attempt {attempts}/{maxAttempts})...";
+            
+            // Re-roll dice
+            DiceResult newRoll = DiceResult.Roll2Dice();
+            (int newRollValue, _) = ComputeRollAndSize(area, newRoll);
+            
+            // Fetch new room with re-rolled value
+            room = await d6Service!.RollRoom(newRollValue, roomSize);
+        }
+
+        // Mark unique room as used if successfully resolved
+        if (room.is_unique)
+        {
+            dungeon.MarkUniqueUsed(room.id, dungeon.FloorLevel);
+            Message = $"Unique room '{room.description}' claimed for this floor.";
+        }
+        else if (attempts >= maxAttempts && room.is_unique)
+        {
+            Message = $"Unable to find an unused unique room after {maxAttempts} re-rolls. Using '{room.description}' anyway.";
+            dungeon.MarkUniqueUsed(room.id, dungeon.FloorLevel);
+        }
+
+        return room;
+    }
+
+    /// <summary>
+    /// Computes the roll value and room size category based on the room area.
+    /// </summary>
+    /// <param name="area">The room area (width * height).</param>
+    /// <param name="diceResult">The dice result to use for computation.</param>
+    /// <returns>A tuple of (roll value, room size category).</returns>
+    private (int roll, string size) ComputeRollAndSize(int area, DiceResult diceResult)
+    {
+        switch(area){
+            case < 6:
+                return (diceResult.PrimaryDice + diceResult.SecondaryDice, "small");
+            case > 32:
+                return (diceResult.PrimaryDice + diceResult.SecondaryDice, "large");
+            default:
+                return (int.Parse(string.Concat(diceResult.PrimaryDice.ToString(), diceResult.SecondaryDice.ToString())), "regular");
+        }
     }
 
 }

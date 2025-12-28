@@ -1,4 +1,4 @@
-﻿@implements IDialogContentComponent<MappedRoom>
+﻿@implements IDialogContentComponent<NewRoomDialogData>
 @inject IJSRuntime JSRuntime 
 @inject D6Service d6Service;
 
@@ -85,7 +85,7 @@
 @code {
 
     [Parameter]
-    public required MappedRoom Content { get; set; } = default!;
+    public required NewRoomDialogData Content { get; set; } = default!;
 
     [CascadingParameter]
     public FluentDialog? Dialog { get; set; } = default!;
@@ -105,7 +105,7 @@
     {
         gameTurn.d6Service = d6Service;
         gameTurn.Message = "Roll 2D6 to determine the dimension of the room";
-        gameTurn.CurrentRoom = Content;
+        gameTurn.CurrentRoom = Content.Room;
         
         //await MapTools.RefreshCanvas(JSRuntime);
     }
@@ -131,7 +131,7 @@
 
     private async Task OnFinishedAsync()
     {
-        Content = gameTurn.CurrentRoom!;
+        Content.Room = gameTurn.CurrentRoom!;
         await Dialog!.CloseAsync(Content);
     }
 
@@ -139,7 +139,7 @@
     {
         sizeDiceResult = DiceResult.Roll2Dice();
         
-        await gameTurn.ContinueTurn(sizeDiceResult);
+        await gameTurn.ContinueTurn(sizeDiceResult, Content.Dungeon);
         if(gameTurn.NextAction != ActionType.DoubleSizedRoom)
         {
             isSizeSet = true;
@@ -156,7 +156,7 @@
     {
         exitsDiceResult = DiceResult.Roll1Dice();
         gameTurn.NextAction = ActionType.RollForExits;
-        await gameTurn.ContinueTurn(exitsDiceResult);
+        await gameTurn.ContinueTurn(exitsDiceResult, Content.Dungeon);
         isExitsSet = true;
     }
 
@@ -164,7 +164,7 @@
     {
         DescriptionDiceResult = DiceResult.Roll2Dice();
         gameTurn.NextAction = ActionType.RollRoomDefinition;
-        await gameTurn.ContinueTurn(DescriptionDiceResult);
+        await gameTurn.ContinueTurn(DescriptionDiceResult, Content.Dungeon);
         isDescriptionSet = true;
     }
 

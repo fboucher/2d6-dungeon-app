@@ -252,13 +252,19 @@
 
         nextRoom = currentAdventure!.Dungeon.GetNewRoom();
 
+        var dialogData = new NewRoomDialogData 
+        { 
+            Room = nextRoom, 
+            Dungeon = currentAdventure!.Dungeon 
+        };
 
-        IDialogReference dialog = await DialogService.ShowDialogAsync<NewRoomDialog>(nextRoom, parameters);
+        IDialogReference dialog = await DialogService.ShowDialogAsync<NewRoomDialog>(dialogData, parameters);
         DialogResult? result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            nextRoom = result.Data as MappedRoom;
+            var resultData = result.Data as NewRoomDialogData;
+            nextRoom = resultData?.Room;
 
             if (nextRoom is null)
             {
