@@ -68,7 +68,8 @@
                         <FluentButton   @onclick=AddRoomToDungeon 
                                         Appearance="Appearance.Accent" 
                                         IconStart="@(new Icons.Regular.Size16.LocationAdd())" 
-                                        disabled="@(nextRoom == null)" /> 
+                                        Style="@AddRoomToMapStyle"
+                                        disabled="@(nextRoom == null)" >Add Room to Map</FluentButton> 
                         <FluentButton   @onclick=EditRoom 
                                         Appearance="Appearance.Accent" 
                                         IconStart="@(new Icons.Regular.Size16.TargetEdit())" 
@@ -122,6 +123,10 @@
 
     private string gameTurnInstructions = String.Empty;
     private GameTurn? gameTurn;
+
+    private string? AddRoomToMapStyle => nextRoom != null
+        ? "border:3px solid var(--accent-fill-rest); box-shadow:0 0 8px var(--accent-fill-rest);"
+        : null;
 
 
     protected override async Task OnInitializedAsync()
@@ -192,7 +197,8 @@
             }
 
             Direction directionFrom = GameTurn.GetOppositeDirection(directionTo.Value);
-            var newRoomId = await OpenNewRoomDialog(directionFrom);
+            var (doorX, doorY) = MapTools.GetDoorGridPosition(currentRoom!, directionTo.Value);
+            var newRoomId = await OpenNewRoomDialog(directionFrom, doorX, doorY);
             if (newRoomId is not null && newRoomId > 0)
             {
                 exit.TargetRoomId = newRoomId;
@@ -231,7 +237,7 @@
             return null;            
     }
 
-    private async Task<int?> OpenNewRoomDialog(Direction directionFrom)
+    private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
     {
         DialogParameters parameters = new()
             {
@@ -253,14 +259,22 @@
         if (!result.Cancelled)
         {
             nextRoom = result.Data as MappedRoom;
-//ID should be there!!!
-            //Just temporary
-            nextRoom!.CoordX = 20;
-            nextRoom.CoordY = 10;
+
+            if (nextRoom is null)
+            {
+                return null;
+            }
+
+            // Define the entrance door, then place the room so its entrance door
+            // is drawn on top of the selected exit door from the current room.
 
             @* Char entranceWall = directionFrom.ToString()[0]; *@
             GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
             GameTurn.AssignExits(nextRoom!, directionFrom);
+
+            var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(nextRoom!, directionFrom, entranceDoorX, entranceDoorY);
+            nextRoom.CoordX = originX;
+            nextRoom.CoordY = originY;
             
             var roomIdTest = nextRoom!.Id;
 
