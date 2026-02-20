@@ -1,4 +1,4 @@
-﻿@page "/adventurer/{state}"
+﻿@page "/adventurer/{State}"
 @using c5m._2d6Dungeon;
 @inject D6Service D6Service;
 
@@ -6,7 +6,7 @@
 
 <PageTitle>Adventurer</PageTitle>
 
-@if (state == "new")
+@if (State == "new")
 {
     <p>NEW</p>
     <AdventurerCreate @bind-ParentAdventurer="adventurer"></AdventurerCreate>
@@ -18,7 +18,9 @@ else
 }
 
 @code{
+    private string _state = default!;
+
     [Parameter]
-    public required string state { get; set; }
+    public required string State { get => _state; set => _state = value; }
     public Game.Adventurer? adventurer;
 }
