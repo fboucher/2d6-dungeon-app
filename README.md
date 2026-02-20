@@ -1,6 +1,7 @@
 # 2d6 Dungeon App
 
-![.NET](https://img.shields.io/badge/10.0-512BD4?logo=dotnet&logoColor=fff)   [![.NET](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml)  [![Publish Docker images](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml/badge.svg)](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml)
+![.NET](https://img.shields.io/badge/10.0-512BD4?logo=dotnet&logoColor=fff)   [![.NET](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml)  [![Publish Docker images](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml/badge.svg)](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml)  ![Docker Image Version](https://img.shields.io/docker/v/fboucher/2d6-dungeon-app?style=flat&labelColor=brown&color=beige&link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Ffboucher%2F2d6-dungeon-app%2F)
+
 
 [2D6 Dungeon](https://drgames.co.uk/2d6-dungeon-a-classic-dungeon-crawler-solo-player-game/) is a classic style dungeon crawler, print and play, roll and write game designed for solo play. You explore randomly generated dungeon rooms, fight monsters and collect treasure as you gain experience and strive to become a legendary adventurer. Every adventure and dungeon is unique. I was created by DR Games and it's a paper and dice game.
 
