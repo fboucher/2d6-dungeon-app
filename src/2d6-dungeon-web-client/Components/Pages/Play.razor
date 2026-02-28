@@ -1,4 +1,4 @@
-@page "/play/{adventureId:int}"
+@page "/play/{AdventureId:int}"
 @using c5m._2d6Dungeon.web.Domain;
 @inject D6Service d6Service;
 @inject IJSRuntime JSRuntime;
@@ -110,8 +110,10 @@
 
 @code {
 
+    private int _adventureId;
+
     [Parameter]
-    public int adventureId { get; set; }
+    public int AdventureId { get => _adventureId; set => _adventureId = value; }
     private Adventure? currentAdventure;
     MappedRoom? currentRoom = new MappedRoom();
     MappedRoom? nextRoom = null;
@@ -137,9 +139,9 @@
             gameTurn = new GameTurn();
             gameTurn.d6Service = d6Service;
 
-            if(adventureId > 0)
+            if(AdventureId > 0)
             {
-                currentAdventure = await d6Service.GetAdventure(adventureId);
+                currentAdventure = await d6Service.GetAdventure(AdventureId);
                 currentAdventure.CombatState = new CombatState(currentAdventure.Adventurer);
                 currentRoom = currentAdventure.Dungeon.GetRooms().Where<MappedRoom>(room => room.YouAreHere == true).First<MappedRoom>();
                 if (currentRoom.IsLobby)
