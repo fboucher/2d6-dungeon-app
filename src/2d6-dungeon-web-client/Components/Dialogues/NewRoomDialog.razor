@@ -23,11 +23,12 @@
                 <FluentButton @onclick=RollDiceForRoomDimensions Appearance="Appearance.Accent" disabled="@(isSizeSet)">Roll 2D6 </FluentButton>
 
                 <div style="padding:20px;">
-                    @if(sizeDiceResult != null)
-                    {
-                        <Dice  face="@sizeDiceResult.PrimaryDice" size="Dice .DiceSize.regular" color="Dice .DiceColor.red"></Dice>
-                        <Dice  face="@sizeDiceResult.SecondaryDice" size="Dice .DiceSize.regular" color="Dice .DiceColor.purple"></Dice>
-                    }
+                    <span style="@(sizeDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                        <Dice @ref="sizeDiceA" face="@sizeDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                    </span>
+                    <span style="@(sizeDiceResult.SecondaryDice == 0 ? "display:none" : "")">
+                        <Dice @ref="sizeDiceB" face="@sizeDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
+                    </span>
                 </div>
             </FluentStack>
         </FluentWizardStep>
@@ -39,10 +40,9 @@
                 <FluentButton @onclick=RollDiceForExits Appearance="Appearance.Accent" disabled="@(isExitsSet)">Roll 1D6</FluentButton>
 
                 <div style="padding:20px;">
-                    @if(exitsDiceResult != null)
-                    {
-                        <Dice  face="@exitsDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red"></Dice>
-                    }
+                    <span style="@(exitsDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                        <Dice  face="@exitsDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                    </span>
                 </div>
             </FluentStack>
         </FluentWizardStep>
@@ -59,11 +59,12 @@
                 <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
 
                 <div style="padding:20px;">
-                    @if(DescriptionDiceResult != null)
-                    {
-                        <Dice face="@DescriptionDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red"></Dice>
-                        <Dice face="@DescriptionDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple"></Dice>
-                    }
+                    <span style="@(DescriptionDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                        <Dice @ref="descDiceA" face="@DescriptionDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                    </span>
+                    <span style="@(DescriptionDiceResult.SecondaryDice == 0 ? "display:none" : "")">
+                        <Dice @ref="descDiceB" face="@DescriptionDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
+                    </span>
                 </div>
             </FluentStack>
         </FluentWizardStep>
@@ -93,13 +94,19 @@
     private GameTurn gameTurn = new GameTurn();
 
     private ActionType currentAction = ActionType.RollForARoom;
-    private DiceResult? sizeDiceResult = null;
-    private DiceResult? exitsDiceResult = null;
-    private DiceResult? DescriptionDiceResult = null;
+    private DiceResult sizeDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
+    private DiceResult exitsDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
+    private DiceResult DescriptionDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private bool isSizeSet = false;
     private bool isExitsSet = false;
     private bool isDescriptionSet = false;
     private bool isCorridor = false;
+    
+    // Dice refs for doubles celebration
+    private Dice? sizeDiceA;
+    private Dice? sizeDiceB;
+    private Dice? descDiceA;
+    private Dice? descDiceB;
 
     protected override void OnInitialized()
     {
@@ -150,6 +157,13 @@
                 isCorridor = true;
             }
         }
+        
+        // Celebrate doubles
+        if (sizeDiceResult.PrimaryDice == sizeDiceResult.SecondaryDice && sizeDiceA != null && sizeDiceB != null)
+        {
+            await Task.Delay(650);
+            await sizeDiceA.CelebrateDoublesWith(sizeDiceB.DiceId);
+        }
     }
 
     private async Task RollDiceForExits()
@@ -166,6 +180,13 @@
         gameTurn.NextAction = ActionType.RollRoomDefinition;
         await gameTurn.ContinueTurn(DescriptionDiceResult, Content.Dungeon);
         isDescriptionSet = true;
+        
+        // Celebrate doubles
+        if (DescriptionDiceResult.PrimaryDice == DescriptionDiceResult.SecondaryDice && descDiceA != null && descDiceB != null)
+        {
+            await Task.Delay(650);
+            await descDiceA.CelebrateDoublesWith(descDiceB.DiceId);
+        }
     }
 
     private async Task SaveAsync()

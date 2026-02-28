@@ -1,12 +1,21 @@
-﻿
-<img    style="height: @((int)size)em;width: @((int)size)em;"  
-        src="dice/@(color.ToString())-dice@(faceA).png" 
-        alt="@faceA"/>
+@inject IJSRuntime JSRuntime
+
+<span class="dice-container">
+    <img    id="@DiceId"
+            class="dice-image"
+            style="height: @((int)size)em;width: @((int)size)em;"  
+            src="dice/@(color.ToString())-dice@(displayFaceA).png" 
+            alt="@displayFaceA"/>
+</span>
 @if(diceset != string.Empty)
 {
-    <img    style="height: @((int)size)em;width: @((int)size)em;"  
-            src="dice/@(color.ToString())-dice@(faceB).png" 
-            alt="@faceB"/>
+    <span class="dice-container">
+        <img    id="@diceIdB"
+                class="dice-image"
+                style="height: @((int)size)em;width: @((int)size)em;"  
+                src="dice/@(color.ToString())-dice@(displayFaceB).png" 
+                alt="@displayFaceB"/>
+    </span>
 }
 
 
@@ -23,8 +32,25 @@
     [Parameter]
     public DiceSize size {get; set;}
 
+    [Parameter]
+    public bool Animate {get; set;} = false;
+
+    [Parameter]
+    public AnimationType AnimateType {get; set;} = AnimationType.Roll;
+
+    [Parameter]
+    public string? DoublesCelebrationPartnerId {get; set;} = null;
+
     private int faceA = 1;
     private int faceB = 1;
+    private int displayFaceA = 1;
+    private int displayFaceB = 1;
+    private int previousFaceA = 0;
+    private int previousFaceB = 0;
+
+    // Expose the dice ID for doubles celebration coordination
+    public string DiceId { get; } = $"dice-{Guid.NewGuid():N}";
+    private string diceIdB = $"dice-{Guid.NewGuid():N}";
 
     public enum DiceColor
     {
@@ -39,6 +65,12 @@
         tiny = 1
     }
 
+    public enum AnimationType
+    {
+        Roll,  // Full tumbling animation with random faces
+        Flip   // Single rotation for shift buttons
+    }
+
     private void Parse()
     {
         string[] parts = diceset.Split("-");
@@ -49,13 +81,116 @@
     protected override void OnInitialized()
     {
         SetDiceFaces();
+        displayFaceA = faceA;
+        displayFaceB = faceB;
+        previousFaceA = faceA;
+        previousFaceB = faceB;
     }
 
-
-
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         SetDiceFaces();
+        
+        // Animate when face value changes (indicates a new roll or shift)
+        bool faceAChanged = faceA != previousFaceA;
+        bool faceBChanged = faceB != previousFaceB;
+        bool shouldAnimate = Animate && (faceAChanged || faceBChanged) && faceA > 0;
+        
+        if (shouldAnimate)
+        {
+            if (AnimateType == AnimationType.Flip)
+            {
+                await TriggerFlipAnimation(faceAChanged, faceBChanged);
+            }
+            else
+            {
+                await TriggerRollAnimation();
+            }
+        }
+        else
+        {
+            displayFaceA = faceA;
+            displayFaceB = faceB;
+        }
+        
+        previousFaceA = faceA;
+        previousFaceB = faceB;
+    }
+
+    private async Task TriggerRollAnimation()
+    {
+        try
+        {
+            // Run animations for both dice (or just the first one)
+            await JSRuntime.InvokeVoidAsync("diceAnimation.rollDice", DiceId, faceA, color.ToString(), 600);
+            
+            if (diceset != string.Empty)
+            {
+                await JSRuntime.InvokeVoidAsync("diceAnimation.rollDice", diceIdB, faceB, color.ToString(), 600);
+            }
+            
+            displayFaceA = faceA;
+            displayFaceB = faceB;
+
+            // Check for doubles and celebrate!
+            if (diceset != string.Empty && faceA == faceB && faceA > 0)
+            {
+                // Doubles with diceset (two dice in one component)
+                await JSRuntime.InvokeVoidAsync("diceAnimation.celebrateDoubles", DiceId, diceIdB);
+            }
+            else if (!string.IsNullOrEmpty(DoublesCelebrationPartnerId))
+            {
+                // Doubles with partner dice (separate components) - only trigger from one side
+                await JSRuntime.InvokeVoidAsync("diceAnimation.celebrateDoubles", DiceId, DoublesCelebrationPartnerId);
+            }
+        }
+        catch
+        {
+            // Fallback if JS fails - just show the final value
+            displayFaceA = faceA;
+            displayFaceB = faceB;
+        }
+    }
+
+    private async Task TriggerFlipAnimation(bool faceAChanged, bool faceBChanged)
+    {
+        try
+        {
+            // Flip only the dice that changed
+            if (faceAChanged)
+            {
+                string direction = faceA > previousFaceA ? "up" : "down";
+                await JSRuntime.InvokeVoidAsync("diceAnimation.flipDice", DiceId, previousFaceA, faceA, color.ToString(), direction);
+            }
+            
+            if (faceBChanged && diceset != string.Empty)
+            {
+                string direction = faceB > previousFaceB ? "up" : "down";
+                await JSRuntime.InvokeVoidAsync("diceAnimation.flipDice", diceIdB, previousFaceB, faceB, color.ToString(), direction);
+            }
+            
+            displayFaceA = faceA;
+            displayFaceB = faceB;
+        }
+        catch
+        {
+            // Fallback if JS fails - just show the final value
+            displayFaceA = faceA;
+            displayFaceB = faceB;
+        }
+    }
+
+    // Public method for parent components to trigger doubles celebration
+    public async Task CelebrateDoublesWith(string partnerDiceId)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("diceAnimation.celebrateDoubles", DiceId, partnerDiceId);
+        }
+        catch
+        {
+            // Ignore JS errors
+        }
     }
 
     private void SetDiceFaces()
