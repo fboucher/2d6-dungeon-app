@@ -7,6 +7,7 @@
     { "persistent_name": "Dallas", "role": "Frontend Dev", "universe": "Alien", "created_at": "2026-02-20T15:28:29Z", "legacy_named": false, "status": "active" },
     { "persistent_name": "Hudson", "role": "Backend Dev", "universe": "Alien", "created_at": "2026-02-20T15:28:29Z", "legacy_named": false, "status": "active" },
     { "persistent_name": "Vasquez", "role": "Tester", "universe": "Alien", "created_at": "2026-02-20T15:28:29Z", "legacy_named": false, "status": "active" },
+    { "persistent_name": "Lambert", "role": "Designer", "universe": "Alien", "created_at": "2026-02-28T19:41:15Z", "legacy_named": false, "status": "active" },
     { "persistent_name": "Scribe", "role": "Scribe", "universe": null, "created_at": "2026-02-20T15:28:29Z", "legacy_named": false, "status": "active" },
     { "persistent_name": "Ralph", "role": "Work Monitor", "universe": null, "created_at": "2026-02-20T15:28:29Z", "legacy_named": false, "status": "active" }
   ]

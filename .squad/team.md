@@ -15,5 +15,6 @@
 | Dallas  | Frontend Dev | auto  | ⚛️ Frontend |
 | Hudson  | Backend Dev  | auto  | 🔧 Backend  |
 | Vasquez | Tester       | auto  | 🧪 Tester   |
+| Lambert | Designer     | claude-opus-4.5 | 🎨 Designer |
 | Scribe  | Scribe       | claude-haiku-4.5 | 📋 Scribe |
 | Ralph   | Work Monitor | —     | 🔄 Monitor  |
