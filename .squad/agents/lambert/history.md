@@ -66,3 +66,38 @@
 - **Correct Pattern**: Initialize DiceResult with `PrimaryDice = 0`, render dice with `style="display:none"` when 0, dice appears with animation when value changes
 - **Working Example**: Combat.razor (lines 31-32) - dice always rendered with initial face=0
 - **Fixed**: NewRoomDialog.razor - changed from conditional `@if` to always-render with CSS visibility
+
+### Map Viewport Panning (2025-2026)
+- **Purpose**: Allow panning to view large dungeon maps (e.g., 80x80) when viewport shows limited area (e.g., 20x20)
+- **Implementation**: Pure Canvas 2D with JS offset variables—no external libraries
+- **Architecture**:
+  - `viewportOffsetX` / `viewportOffsetY` globals in canvasTools.js track pan position (in grid squares)
+  - `PAN_STEP = 2` moves approximately 2 squares per pan action
+  - `DrawRoom()` and `DrawDoor()` subtract viewport offset from grid coordinates before converting to pixels
+- **Controls**:
+  - **UI Buttons**: Chevron arrows (neutral appearance) for left/right/up/down panning
+  - **Keyboard**: Arrow keys pan the map (prevents default scroll, ignores input fields)
+  - **Center Button**: Centers viewport on current room
+  - **Reset Button**: Returns viewport to origin (0,0)
+- **C# Interop**: `MapTools.PanViewport()`, `MapTools.CenterViewportOn()`, `MapTools.ResetViewport()` in MapTools.cs
+- **JS Functions**: `panViewport(direction)`, `centerViewportOn(gridX, gridY)`, `resetViewport()`, `getViewportOffset()`, `getViewportGridSize()`
+- **UX Notes**:
+  - Pan controls use neutral button style to distinguish from room-positioning controls (accent style)
+  - Clear labeling separates "Pan Map View" from "Position New Room" controls
+  - Helper classes `ViewportOffset` and `ViewportSize` added for JS interop return values
+- **Agent 5 Completion (2026-02-28)**: Full implementation with keyboard + UI button controls tested and working
+
+### Dice Roll Animation Enhancements (2026-02-28)
+- **Agent 2**: Initial implementation of Roll and Flip animation types with doubles celebration
+  - Roll: 600ms tumbling with random face cycling
+  - Flip: 300ms direction-aware rotation for shift button adjustments
+  - Doubles: Golden glow + radial sparkle/star burst effects
+  - New CSS keyframes: diceFlipUp, diceFlipDown, doublesGlow, sparkle-burst, star-burst
+  - Component API: DiceId property, CelebrateDoublesWith() method, DoublesCelebrationPartnerId parameter
+- **Agent 3**: Fixed critical animation trigger pattern
+  - Root cause: Conditional @if rendering prevents change detection in OnParametersSetAsync
+  - Solution: Always render Dice components, use CSS `display:none` when face=0
+  - Pattern documented for team knowledge
+- **Agent 4**: Fixed NewRoomDialog animation triggering
+  - Refactored from conditional to always-render pattern
+  - Aligns with established pattern in Combat.razor

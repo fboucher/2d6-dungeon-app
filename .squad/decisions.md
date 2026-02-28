@@ -39,3 +39,21 @@
 - No scene graph for complex interactivity
 
 **Files Changed:** src/2d6-dungeon-web-client/wwwroot/scripts/canvasTools.js
+
+## Map Viewport Panning Implementation
+**Author:** Lambert (Designer)  
+**Date:** 2026-02-28
+
+**What:** Added viewport panning controls to the dungeon map, allowing users to navigate around large maps (e.g., 80x80 grid) when the visible viewport is smaller (e.g., ~26x26 grid at 800x800px canvas).
+
+**Implementation:**
+- Pure Canvas 2D (no external libraries per team decision)
+- Pan Step: 2 grid squares per pan action
+- Controls: Arrow buttons (chevron icons, neutral style), keyboard arrow keys (with input field exclusion), center on room button, reset to origin button
+
+**UX Decision:** Pan controls use neutral button appearance to visually distinguish from the existing room-positioning controls (which use accent style). This creates clear visual grouping between "navigating the viewport" and "positioning a new room."
+
+**Files Changed:**
+- src/2d6-dungeon-web-client/wwwroot/scripts/canvasTools.js
+- src/2d6-dungeon-web-client/Domain/MapTools.cs
+- src/2d6-dungeon-web-client/Components/Pages/Play.razor
