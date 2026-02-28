@@ -6,10 +6,26 @@ let cubeSize = 30;
 
 // Door lock state colors - configurable for different themes
 const DoorColors = {
-  LOCKED: '#CC3333',    // Red for locked doors
-  UNLOCKED: '#33CC33',  // Green for unlocked doors
-  SYMBOL: '#000000',    // Black for door symbols
-  WALL: '#000000'       // Black for wall sections around doors
+  LOCKED: '#8B2500',    // Dark rust red for locked doors
+  UNLOCKED: '#2E5A2E',  // Forest green for unlocked doors
+  SYMBOL: '#1a1a1a',    // Near-black for door symbols
+  WALL: '#1a1a1a'       // Near-black for wall sections around doors
+};
+
+// Map visual theme colors
+const MapTheme = {
+  PARCHMENT_LIGHT: '#E8DCC4',
+  PARCHMENT_DARK: '#C4B59A',
+  PARCHMENT_SHADOW: '#A89878',
+  STONE_LIGHT: '#D4C8B8',
+  STONE_MID: '#B8A898',
+  STONE_DARK: '#8A7A6A',
+  WALL_OUTER: '#2A2420',
+  WALL_INNER: '#4A4038',
+  WALL_HIGHLIGHT: '#6A5A4A',
+  GRID_DOT: '#8B7355',
+  CURRENT_ROOM_GLOW: 'rgba(255, 200, 100, 0.15)',
+  TORCH_GLOW: 'rgba(255, 180, 80, 0.08)'
 };
 
 // resize the canvas to fill the browser window
@@ -40,101 +56,288 @@ function resizeCanvas() {
   canvas.style.width = `${rect.width}px`;
   canvas.style.height = `${rect.height}px`;
 
-  drawDots();
+  drawParchmentBackground();
 }
 
-// dots
-function drawDots() {
+// Parchment-style background with subtle texture
+function drawParchmentBackground() {
+  const rect = canvas.getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
 
-  var r = 1,
-      cw = cubeSize,
-      ch = cubeSize;
-
-  //Paper color
-  context.fillStyle = '#3B3428';
-  context.fillRect(0, 0, vw, vh); 
+  // Base parchment gradient
+  const gradient = context.createRadialGradient(
+    width / 2, height / 2, 0,
+    width / 2, height / 2, Math.max(width, height) * 0.7
+  );
+  gradient.addColorStop(0, MapTheme.PARCHMENT_LIGHT);
+  gradient.addColorStop(0.7, MapTheme.PARCHMENT_DARK);
+  gradient.addColorStop(1, MapTheme.PARCHMENT_SHADOW);
   
-  for (var x = 0; x < vw; x+=cw) {
-    for (var y = 0; y < vh; y+=ch) {
-        context.fillStyle = '#777777';   
-        context.fillRect(x-r/2,y-r/2,r,r);
-      }
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, width, height);
+
+  // Add subtle noise texture
+  drawParchmentNoise(width, height);
+  
+  // Draw refined grid dots
+  drawGridDots(width, height);
+}
+
+// Procedural parchment texture
+function drawParchmentNoise(width, height) {
+  // Use a seeded random for consistency
+  const seed = 12345;
+  let rng = seed;
+  const seededRandom = () => {
+    rng = (rng * 1103515245 + 12345) & 0x7fffffff;
+    return rng / 0x7fffffff;
+  };
+
+  // Subtle speckles
+  for (let i = 0; i < 800; i++) {
+    const x = seededRandom() * width;
+    const y = seededRandom() * height;
+    const alpha = seededRandom() * 0.08;
+    const size = seededRandom() * 2 + 0.5;
+    
+    context.fillStyle = `rgba(100, 80, 60, ${alpha})`;
+    context.beginPath();
+    context.arc(x, y, size, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  // Age marks / slight stains
+  for (let i = 0; i < 15; i++) {
+    const x = seededRandom() * width;
+    const y = seededRandom() * height;
+    const radius = seededRandom() * 40 + 20;
+    
+    const stainGradient = context.createRadialGradient(x, y, 0, x, y, radius);
+    stainGradient.addColorStop(0, `rgba(120, 100, 80, ${seededRandom() * 0.04})`);
+    stainGradient.addColorStop(1, 'rgba(120, 100, 80, 0)');
+    
+    context.fillStyle = stainGradient;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fill();
+  }
+}
+
+// Enhanced grid dots
+function drawGridDots(width, height) {
+  const cw = cubeSize;
+  const ch = cubeSize;
+
+  for (let x = 0; x < width; x += cw) {
+    for (let y = 0; y < height; y += ch) {
+      // Subtle cross-hair style dots
+      context.fillStyle = MapTheme.GRID_DOT;
+      context.globalAlpha = 0.4;
+      
+      // Center dot
+      context.beginPath();
+      context.arc(x, y, 1.5, 0, Math.PI * 2);
+      context.fill();
+      
+      context.globalAlpha = 1;
+    }
   }
 }
 
 GetFloorColor = function(youAreHere){
-  console.log("youAreHere in GetFloorColor:", youAreHere);
-  let floorColor = '#ffffff';
   if(youAreHere == true){
-    floorColor = '#F7EDD5'; 
+    return MapTheme.STONE_LIGHT;
   }
-  return floorColor;
+  return MapTheme.STONE_MID;
 }
 
 function DrawRoom(posX, posY, width, height, youAreHere=false){
+  const pixelX = posX * cubeSize;
+  const pixelY = posY * cubeSize;
+  const pixelWidth = width * cubeSize;
+  const pixelHeight = height * cubeSize;
 
-  console.log("youAreHere in DrawRoom:", youAreHere);
-  let roomColor = GetFloorColor(youAreHere);
+  // Wall thickness for 3D effect
+  const wallThickness = 4;
+  const shadowOffset = 3;
 
-  posX = posX * cubeSize;
-  posY = posY * cubeSize;
-  width = width * cubeSize;
-  height = height * cubeSize;
+  // Draw outer shadow (gives depth)
+  context.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  context.fillRect(
+    pixelX + shadowOffset, 
+    pixelY + shadowOffset, 
+    pixelWidth, 
+    pixelHeight
+  );
 
-  context.fillStyle = '#000000'; 
-  context.fillRect(posX, posY, width, height);
-  context.stroke();
-  context.fillStyle = roomColor;
-  context.fillRect(posX+1, posY+1, width-2, height-2);
-  context.stroke();
+  // Draw wall base (dark outer wall)
+  context.fillStyle = MapTheme.WALL_OUTER;
+  context.fillRect(pixelX, pixelY, pixelWidth, pixelHeight);
+
+  // Draw wall highlight (top and left edges for beveled effect)
+  context.fillStyle = MapTheme.WALL_HIGHLIGHT;
+  context.fillRect(pixelX, pixelY, pixelWidth, wallThickness - 1);
+  context.fillRect(pixelX, pixelY, wallThickness - 1, pixelHeight);
+
+  // Draw wall inner edge
+  context.fillStyle = MapTheme.WALL_INNER;
+  context.fillRect(
+    pixelX + wallThickness - 2, 
+    pixelY + wallThickness - 2, 
+    pixelWidth - (wallThickness - 2), 
+    2
+  );
+  context.fillRect(
+    pixelX + wallThickness - 2, 
+    pixelY + wallThickness - 2, 
+    2, 
+    pixelHeight - (wallThickness - 2)
+  );
+
+  // Draw floor
+  const floorX = pixelX + wallThickness;
+  const floorY = pixelY + wallThickness;
+  const floorWidth = pixelWidth - (wallThickness * 2);
+  const floorHeight = pixelHeight - (wallThickness * 2);
+
+  // Floor base color
+  context.fillStyle = GetFloorColor(youAreHere);
+  context.fillRect(floorX, floorY, floorWidth, floorHeight);
+
+  // Draw stone tile pattern
+  drawStoneTiles(floorX, floorY, floorWidth, floorHeight, youAreHere);
+
+  // Current room glow effect
+  if (youAreHere) {
+    drawRoomGlow(floorX, floorY, floorWidth, floorHeight);
+  }
+}
+
+// Draw stone tile pattern on floor
+function drawStoneTiles(x, y, width, height, youAreHere) {
+  const tileSize = cubeSize;
+  
+  context.strokeStyle = youAreHere ? MapTheme.STONE_MID : MapTheme.STONE_DARK;
+  context.lineWidth = 1;
+  context.globalAlpha = 0.4;
+
+  // Draw horizontal tile lines
+  for (let ty = y + tileSize; ty < y + height; ty += tileSize) {
+    context.beginPath();
+    context.moveTo(x, ty);
+    context.lineTo(x + width, ty);
+    context.stroke();
+  }
+
+  // Draw vertical tile lines with offset for brick pattern
+  for (let row = 0; row < Math.ceil(height / tileSize); row++) {
+    const rowY = y + (row * tileSize);
+    const offset = (row % 2) * (tileSize / 2);
+    
+    for (let tx = x + offset + tileSize; tx < x + width; tx += tileSize) {
+      const lineTop = rowY;
+      const lineBottom = Math.min(rowY + tileSize, y + height);
+      
+      context.beginPath();
+      context.moveTo(tx, lineTop);
+      context.lineTo(tx, lineBottom);
+      context.stroke();
+    }
+  }
+
+  // Add subtle stone texture variation
+  const seed = Math.floor(x * 100 + y);
+  let rng = seed;
+  const seededRandom = () => {
+    rng = (rng * 1103515245 + 12345) & 0x7fffffff;
+    return rng / 0x7fffffff;
+  };
+
+  context.globalAlpha = 0.15;
+  for (let i = 0; i < Math.floor(width * height / 400); i++) {
+    const sx = x + seededRandom() * width;
+    const sy = y + seededRandom() * height;
+    const sSize = seededRandom() * 3 + 1;
+    
+    context.fillStyle = seededRandom() > 0.5 ? MapTheme.STONE_DARK : MapTheme.STONE_LIGHT;
+    context.beginPath();
+    context.arc(sx, sy, sSize, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  context.globalAlpha = 1;
+  context.lineWidth = 1;
+}
+
+// Glow effect for current room
+function drawRoomGlow(x, y, width, height) {
+  const centerX = x + width / 2;
+  const centerY = y + height / 2;
+  const maxRadius = Math.max(width, height) * 0.8;
+
+  const glowGradient = context.createRadialGradient(
+    centerX, centerY, 0,
+    centerX, centerY, maxRadius
+  );
+  glowGradient.addColorStop(0, MapTheme.CURRENT_ROOM_GLOW);
+  glowGradient.addColorStop(0.5, MapTheme.TORCH_GLOW);
+  glowGradient.addColorStop(1, 'rgba(255, 180, 80, 0)');
+
+  context.fillStyle = glowGradient;
+  context.fillRect(x, y, width, height);
 }
 
 function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false, youAreHere= false) {
-
-  console.log("youAreHere in DrawDoor:", youAreHere);
-  // Use lock state colors - unlocked (green) by default, locked (red) when locked
+  // Use lock state colors
   let doorColor = isLocked ? DoorColors.LOCKED : DoorColors.UNLOCKED;
 
-  // Always draw a full square (30x30)
-  let doorWidth = cubeSize; // one square
-  let doorHeight = cubeSize; // one square
+  // Door dimensions
+  let doorWidth = cubeSize;
+  let doorHeight = cubeSize;
   
-  posX = posX * cubeSize;
-  posY = posY * cubeSize;
+  const pixelX = posX * cubeSize;
+  const pixelY = posY * cubeSize;
 
+  // Draw floor under door
   let floorColor = GetFloorColor(youAreHere);
   context.fillStyle = floorColor;
-  context.fillRect(posX + 1, posY + 1, doorWidth - 2, doorHeight - 2);
+  context.fillRect(pixelX + 2, pixelY + 2, doorWidth - 4, doorHeight - 4);
 
-  // Draw wall line sections on each side of the door (1 cube long each)
-  // This makes doors look connected to walls instead of floating
-  context.strokeStyle = DoorColors.WALL;
-  context.lineWidth = 1;
+  // Draw subtle door frame shadow
+  context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  if (orientation === 'H') {
+    context.fillRect(pixelX + 4, pixelY, doorWidth - 8, 2);
+    context.fillRect(pixelX + 4, pixelY + doorHeight - 2, doorWidth - 8, 2);
+  } else {
+    context.fillRect(pixelX, pixelY + 4, 2, doorHeight - 8);
+    context.fillRect(pixelX + doorWidth - 2, pixelY + 4, 2, doorHeight - 8);
+  }
+
+  // Draw wall continuation lines (thicker, more visible)
+  context.strokeStyle = MapTheme.WALL_OUTER;
+  context.lineWidth = 3;
   context.beginPath();
   
   if (orientation === 'H') {
-    // Horizontal door (on top/bottom wall) - add vertical wall lines on left and right
-    // Left wall line (vertical, 1 cube tall)
-    context.moveTo(posX, posY);
-    context.lineTo(posX, posY + doorHeight);
-    // Right wall line (vertical, 1 cube tall)
-    context.moveTo(posX + doorWidth, posY);
-    context.lineTo(posX + doorWidth, posY + doorHeight);
+    // Vertical wall lines on left and right
+    context.moveTo(pixelX + 1, pixelY);
+    context.lineTo(pixelX + 1, pixelY + doorHeight);
+    context.moveTo(pixelX + doorWidth - 1, pixelY);
+    context.lineTo(pixelX + doorWidth - 1, pixelY + doorHeight);
   } else {
-    // Vertical door (on left/right wall) - add horizontal wall lines on top and bottom
-    // Top wall line (horizontal, 1 cube wide)
-    context.moveTo(posX, posY);
-    context.lineTo(posX + doorWidth, posY);
-    // Bottom wall line (horizontal, 1 cube wide)
-    context.moveTo(posX, posY + doorHeight);
-    context.lineTo(posX + doorWidth, posY + doorHeight);
+    // Horizontal wall lines on top and bottom
+    context.moveTo(pixelX, pixelY + 1);
+    context.lineTo(pixelX + doorWidth, pixelY + 1);
+    context.moveTo(pixelX, pixelY + doorHeight - 1);
+    context.lineTo(pixelX + doorWidth, pixelY + doorHeight - 1);
   }
   
   context.stroke();
   context.lineWidth = 2;
 
-  // Draw the door type symbol with the appropriate color (no background square)
-  DrawDoorType(posX, posY, doorWidth, doorHeight, orientation, doorType, doorColor);
+  // Draw the door symbol
+  DrawDoorType(pixelX, pixelY, doorWidth, doorHeight, orientation, doorType, doorColor, isMain);
 }
 
 // Door type constants
@@ -149,14 +352,21 @@ const DoorTypes = {
 };
 
 // Main function to draw door type symbol
-function DrawDoorType(posX, posY, width, height, orientation, doorType, doorColor) {
+function DrawDoorType(posX, posY, width, height, orientation, doorType, doorColor, isMain=false) {
   const centerX = posX + width / 2;
   const centerY = posY + height / 2;
   
-  // Use the door color for the symbol (green for unlocked, red for locked)
+  // Use the door color for the symbol
   context.strokeStyle = doorColor;
   context.fillStyle = doorColor;
   context.lineWidth = 2;
+
+  // Main entrance gets special treatment
+  if (isMain) {
+    DrawMainEntrance(centerX, centerY, width, height, orientation);
+    context.lineWidth = 1;
+    return;
+  }
   
   switch (doorType) {
     case DoorTypes.ARCHWAY:
@@ -186,6 +396,46 @@ function DrawDoorType(posX, posY, width, height, orientation, doorType, doorColo
   }
   
   context.lineWidth = 1;
+}
+
+// Main entrance: special dungeon entrance marker
+function DrawMainEntrance(centerX, centerY, width, height, orientation) {
+  const size = Math.min(width, height) * 0.35;
+  
+  // Draw a decorative arch shape
+  context.strokeStyle = '#5A4A3A';
+  context.lineWidth = 3;
+  
+  context.beginPath();
+  if (orientation === 'H') {
+    // Arch shape for horizontal doorway
+    context.moveTo(centerX - size, centerY + size * 0.5);
+    context.lineTo(centerX - size, centerY - size * 0.3);
+    context.quadraticCurveTo(centerX, centerY - size, centerX + size, centerY - size * 0.3);
+    context.lineTo(centerX + size, centerY + size * 0.5);
+  } else {
+    // Rotated arch for vertical doorway
+    context.moveTo(centerX + size * 0.5, centerY - size);
+    context.lineTo(centerX - size * 0.3, centerY - size);
+    context.quadraticCurveTo(centerX - size, centerY, centerX - size * 0.3, centerY + size);
+    context.lineTo(centerX + size * 0.5, centerY + size);
+  }
+  context.stroke();
+
+  // Add a small "exit" indicator arrow
+  context.fillStyle = '#5A4A3A';
+  context.beginPath();
+  if (orientation === 'H') {
+    context.moveTo(centerX, centerY + size * 0.8);
+    context.lineTo(centerX - size * 0.3, centerY + size * 0.4);
+    context.lineTo(centerX + size * 0.3, centerY + size * 0.4);
+  } else {
+    context.moveTo(centerX + size * 0.8, centerY);
+    context.lineTo(centerX + size * 0.4, centerY - size * 0.3);
+    context.lineTo(centerX + size * 0.4, centerY + size * 0.3);
+  }
+  context.closePath();
+  context.fill();
 }
 
 // Archway: Open doorway pattern -|  |- (showing the door is open)
