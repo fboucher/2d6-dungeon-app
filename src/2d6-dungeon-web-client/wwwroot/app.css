@@ -22,7 +22,7 @@ body {
     align-self: stretch;
     height: calc(100dvh - 86px) !important;
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto !important;
 }
 
 .content {
