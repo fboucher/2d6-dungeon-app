@@ -53,7 +53,28 @@
 
                         <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom == null)">Refresh Canvas</FluentButton>
 
+                        <!-- Viewport Pan Controls -->
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Pan Map View</FluentLabel>
+                        <div style="width: 110px;">
+                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                                <FluentButton @onclick="@( () => PanMap("left"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="Pan left (←)" />
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    <FluentButton @onclick="@( () => PanMap("up"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronUp())" Title="Pan up (↑)" />
+                                    <FluentButton @onclick="@( () => PanMap("down"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronDown())" Title="Pan down (↓)" />
+                                </FluentStack>
+                                <FluentButton @onclick="@( () => PanMap("right"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="Pan right (→)" />
+                            </FluentStack> 
+                        </div>
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                            <FluentButton @onclick=CenterOnCurrentRoom Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Location())" Title="Center on current room">Center</FluentButton>
+                            <FluentButton @onclick=ResetPan Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" Title="Reset view to origin">Reset</FluentButton>
+                        </FluentStack>
+                        <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Use arrow keys or buttons to pan. Move ~2 squares at a time.</FluentLabel>
                         
+                        <FluentDivider Style="margin: 10px 0;" />
+
+                        <!-- Move Room Controls (existing) -->
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Position New Room</FluentLabel>
                         <div style="width: 100px;">
                             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                                 <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(nextRoom == null)" />
@@ -303,6 +324,43 @@
     private async Task RefreshCanvas()
     {
         await FillCanvas();
+    }
+
+    // Viewport panning methods
+    private async Task PanMap(string direction)
+    {
+        await MapTools.PanViewport(JSRuntime, direction);
+        await RefreshCanvas();
+        if (nextRoom != null)
+        {
+            await MapTools.DrawRoom(JSRuntime, nextRoom);
+        }
+    }
+
+    private async Task CenterOnCurrentRoom()
+    {
+        if (currentRoom != null)
+        {
+            // Center on the middle of the current room
+            int centerX = currentRoom.CoordX + (currentRoom.Width / 2);
+            int centerY = currentRoom.CoordY + (currentRoom.Height / 2);
+            await MapTools.CenterViewportOn(JSRuntime, centerX, centerY);
+            await RefreshCanvas();
+            if (nextRoom != null)
+            {
+                await MapTools.DrawRoom(JSRuntime, nextRoom);
+            }
+        }
+    }
+
+    private async Task ResetPan()
+    {
+        await MapTools.ResetViewport(JSRuntime);
+        await RefreshCanvas();
+        if (nextRoom != null)
+        {
+            await MapTools.DrawRoom(JSRuntime, nextRoom);
+        }
     }
 
     private async Task MoveRoom(string direction)
