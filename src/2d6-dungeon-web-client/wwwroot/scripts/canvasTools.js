@@ -4,6 +4,11 @@ var context;
 var vw,vh;
 let cubeSize = 30;
 
+// Viewport offset for panning - measured in grid squares
+let viewportOffsetX = 0;
+let viewportOffsetY = 0;
+const PAN_STEP = 2; // Move 2 squares at a time
+
 // Door lock state colors - configurable for different themes
 const DoorColors = {
   LOCKED: '#8B2500',    // Dark rust red for locked doors
@@ -153,8 +158,9 @@ GetFloorColor = function(youAreHere){
 }
 
 function DrawRoom(posX, posY, width, height, youAreHere=false){
-  const pixelX = posX * cubeSize;
-  const pixelY = posY * cubeSize;
+  // Apply viewport offset
+  const pixelX = (posX - viewportOffsetX) * cubeSize;
+  const pixelY = (posY - viewportOffsetY) * cubeSize;
   const pixelWidth = width * cubeSize;
   const pixelHeight = height * cubeSize;
 
@@ -296,8 +302,9 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   let doorWidth = cubeSize;
   let doorHeight = cubeSize;
   
-  const pixelX = posX * cubeSize;
-  const pixelY = posY * cubeSize;
+  // Apply viewport offset
+  const pixelX = (posX - viewportOffsetX) * cubeSize;
+  const pixelY = (posY - viewportOffsetY) * cubeSize;
 
   // Draw floor under door
   let floorColor = GetFloorColor(youAreHere);
@@ -615,6 +622,103 @@ function DrawStoneSlab(centerX, centerY, width, height, orientation) {
   
   // Inner filled rectangle
   context.fillRect(centerX - innerWidth / 2, centerY - innerHeight / 2, innerWidth, innerHeight);
+}
+
+// ============================================
+// VIEWPORT PANNING CONTROLS
+// ============================================
+
+// Pan the viewport by a number of grid squares
+function panViewport(direction) {
+  switch (direction) {
+    case 'left':
+      viewportOffsetX -= PAN_STEP;
+      break;
+    case 'right':
+      viewportOffsetX += PAN_STEP;
+      break;
+    case 'up':
+      viewportOffsetY -= PAN_STEP;
+      break;
+    case 'down':
+      viewportOffsetY += PAN_STEP;
+      break;
+  }
+}
+
+// Center the viewport on a specific grid position
+function centerViewportOn(gridX, gridY) {
+  const rect = canvas.getBoundingClientRect();
+  const viewportGridWidth = Math.floor(rect.width / cubeSize);
+  const viewportGridHeight = Math.floor(rect.height / cubeSize);
+  
+  // Center the given position in the viewport
+  viewportOffsetX = gridX - Math.floor(viewportGridWidth / 2);
+  viewportOffsetY = gridY - Math.floor(viewportGridHeight / 2);
+}
+
+// Get current viewport offset (for UI display)
+function getViewportOffset() {
+  return { x: viewportOffsetX, y: viewportOffsetY };
+}
+
+// Get viewport dimensions in grid squares
+function getViewportGridSize() {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    width: Math.floor(rect.width / cubeSize),
+    height: Math.floor(rect.height / cubeSize)
+  };
+}
+
+// Reset viewport to origin
+function resetViewport() {
+  viewportOffsetX = 0;
+  viewportOffsetY = 0;
+}
+
+// Keyboard event handler for panning
+function setupKeyboardPanning() {
+  document.addEventListener('keydown', function(e) {
+    // Only pan if canvas is visible/focused area and not in input field
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      return;
+    }
+    
+    let shouldPan = false;
+    
+    switch (e.key) {
+      case 'ArrowLeft':
+        panViewport('left');
+        shouldPan = true;
+        break;
+      case 'ArrowRight':
+        panViewport('right');
+        shouldPan = true;
+        break;
+      case 'ArrowUp':
+        panViewport('up');
+        shouldPan = true;
+        break;
+      case 'ArrowDown':
+        panViewport('down');
+        shouldPan = true;
+        break;
+    }
+    
+    if (shouldPan) {
+      e.preventDefault();
+      // Dispatch custom event for Blazor to handle redraw
+      window.dispatchEvent(new CustomEvent('viewportPanned'));
+    }
+  });
+}
+
+// Initialize keyboard panning when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupKeyboardPanning);
+} else {
+  setupKeyboardPanning();
 }
 
 
