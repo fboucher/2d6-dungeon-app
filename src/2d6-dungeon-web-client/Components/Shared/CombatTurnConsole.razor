@@ -8,8 +8,8 @@
                     DiceShifted="PrimaryDiceShifted"></ShiftButtons>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" HorizontalGap="0" Width="145">
         <span>
-            <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="primaryShiftedDice" />
-            <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="secondaryShiftedDice" />
+            <Dice @ref="primaryDiceRef" color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="primaryShiftedDice" Animate="true" AnimateType="diceAnimationType" />
+            <Dice @ref="secondaryDiceRef" color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="secondaryShiftedDice" Animate="true" AnimateType="diceAnimationType" />
         </span>
         @shiftLeft shift left
         <FluentButton Appearance="Appearance.Accent" @onclick=Roll2Dice IconStart="@(new Icons.Regular.Size16.Cube())">Roll</FluentButton>
@@ -51,6 +51,9 @@
     private int primaryShiftedDice = 0;
     private int secondaryDice = 0;
     private int secondaryShiftedDice = 0;
+    private Dice.AnimationType diceAnimationType = Dice.AnimationType.Roll;
+    private Dice? primaryDiceRef;
+    private Dice? secondaryDiceRef;
 
     private DiceResult? originalDice;
 
@@ -69,16 +72,24 @@
         }
     }
 
-    private void Roll2Dice()
+    private async Task Roll2Dice()
     {
+        diceAnimationType = Dice.AnimationType.Roll;
         var dice = originalDice = DiceResult.Roll2Dice();
         primaryDice = primaryShiftedDice = dice.PrimaryDice;
         secondaryDice = secondaryShiftedDice = dice.SecondaryDice;
 
         actions.Add($"Rolled {primaryDice} and {secondaryDice}");
-        ActionsChanged.InvokeAsync(actions);
+        await ActionsChanged.InvokeAsync(actions);
 
         StateHasChanged();
+
+        // Celebrate doubles after roll animation completes
+        if (primaryDice == secondaryDice && primaryDice > 0 && primaryDiceRef != null && secondaryDiceRef != null)
+        {
+            await Task.Delay(650);
+            await primaryDiceRef.CelebrateDoublesWith(secondaryDiceRef.DiceId);
+        }
     }
 
     private void NextTurn()
@@ -96,6 +107,7 @@
 
     private async Task PrimaryDiceShifted(ShiftButtons.ShiftDirection shift)
     {
+        diceAnimationType = Dice.AnimationType.Flip;
         int preValue = primaryShiftedDice;
         if (shift == ShiftButtons.ShiftDirection.Up)
         {
@@ -113,6 +125,7 @@
 
     private async Task SecondaryDiceShifted(ShiftButtons.ShiftDirection shift)
     {
+        diceAnimationType = Dice.AnimationType.Flip;
         int preValue = secondaryShiftedDice;
         if (shift == ShiftButtons.ShiftDirection.Up)
         {

@@ -158,6 +158,165 @@ body.dungeon-theme fluent-button {
     --neutral-foreground-rest: #f5e6d3;
 }
 
+/* Dice Rolling Animation */
+.dice-container {
+    display: inline-block;
+    perspective: 400px;
+}
+
+.dice-image {
+    transition: transform 0.15s ease-out;
+}
+
+.dice-rolling {
+    animation: diceRoll 0.6s ease-out;
+}
+
+.dice-settled {
+    animation: diceSettle 0.2s ease-out;
+}
+
+@keyframes diceRoll {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    10% {
+        transform: rotate(-15deg) scale(1.1) translateY(-5px);
+    }
+    20% {
+        transform: rotate(20deg) scale(1.05) translateY(-8px);
+    }
+    30% {
+        transform: rotate(-12deg) scale(1.08) translateY(-10px);
+    }
+    40% {
+        transform: rotate(15deg) scale(1.04) translateY(-8px);
+    }
+    50% {
+        transform: rotate(-8deg) scale(1.06) translateY(-6px);
+    }
+    60% {
+        transform: rotate(10deg) scale(1.03) translateY(-4px);
+    }
+    70% {
+        transform: rotate(-5deg) scale(1.02) translateY(-3px);
+    }
+    80% {
+        transform: rotate(3deg) scale(1.01) translateY(-1px);
+    }
+    90% {
+        transform: rotate(-2deg) scale(1) translateY(0);
+    }
+    100% {
+        transform: rotate(0deg) scale(1) translateY(0);
+    }
+}
+
+@keyframes diceSettle {
+    0% {
+        transform: scale(1.15);
+        filter: brightness(1.3);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* Dice Flip Animation - for shift buttons (single rotation) */
+.dice-flip-up {
+    animation: diceFlipUp 0.3s ease-in-out;
+}
+
+.dice-flip-down {
+    animation: diceFlipDown 0.3s ease-in-out;
+}
+
+@keyframes diceFlipUp {
+    0% {
+        transform: rotateX(0deg) scale(1);
+    }
+    50% {
+        transform: rotateX(-90deg) scale(0.9);
+    }
+    100% {
+        transform: rotateX(0deg) scale(1);
+    }
+}
+
+@keyframes diceFlipDown {
+    0% {
+        transform: rotateX(0deg) scale(1);
+    }
+    50% {
+        transform: rotateX(90deg) scale(0.9);
+    }
+    100% {
+        transform: rotateX(0deg) scale(1);
+    }
+}
+
+/* Doubles Celebration Animations */
+.dice-doubles-glow {
+    animation: doublesGlow 0.8s ease-out;
+    filter: drop-shadow(0 0 8px #FFD700) drop-shadow(0 0 15px #FFA500);
+}
+
+@keyframes doublesGlow {
+    0% {
+        filter: drop-shadow(0 0 0px #FFD700);
+        transform: scale(1);
+    }
+    30% {
+        filter: drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 25px #FFA500);
+        transform: scale(1.15);
+    }
+    60% {
+        filter: drop-shadow(0 0 10px #FFD700) drop-shadow(0 0 18px #FFA500);
+        transform: scale(1.05);
+    }
+    100% {
+        filter: drop-shadow(0 0 5px #FFD700) drop-shadow(0 0 10px #FFA500);
+        transform: scale(1);
+    }
+}
+
+@keyframes sparkle-burst {
+    0% {
+        transform: translate(calc(-50% + var(--start-x)), calc(-50% + var(--start-y))) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(calc(-50% + var(--end-x) * 0.6), calc(-50% + var(--end-y) * 0.6)) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y))) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes star-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    50% {
+        transform: translate(calc(-50% + var(--end-x) * 0.5), calc(-50% + var(--end-y) * 0.5)) scale(1.3) rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y))) scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
 @media (max-width: 600px) {
     .header-gutters {
         margin: 0.5rem 3rem 0.5rem 1.5rem !important;

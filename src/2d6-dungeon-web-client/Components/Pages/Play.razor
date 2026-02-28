@@ -35,12 +35,12 @@
             <div style="padding:20px;">
                 @if (diceResult.PrimaryDice != 0)
                 {
-                    <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@diceResult.PrimaryDice" />
+                    <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@diceResult.PrimaryDice" Animate="true" />
 
                 }
                 @if (diceResult.SecondaryDice != 0)
                 {
-                    <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@diceResult.SecondaryDice" />
+                    <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@diceResult.SecondaryDice" Animate="true" />
                 }
             </div>
 

@@ -13,6 +13,13 @@
 - **Play Page**: `src/2d6-dungeon-web-client/Components/Pages/Play.razor` contains the canvas element
 - **Grid Size**: 30px cube size for map tiles
 
+### Dice Component Architecture
+- **Display Component**: `src/2d6-dungeon-web-client/Components/Shared/Dice.razor`
+- **Dice Images**: `src/2d6-dungeon-web-client/wwwroot/dice/` (red, purple, white; faces 0-6)
+- **Animation JS**: `src/2d6-dungeon-web-client/wwwroot/scripts/diceAnimation.js`
+- **CSS Animations**: Defined in `wwwroot/app.css` (diceRoll, diceSettle keyframes)
+- **Pattern**: Component takes `Animate="true"` parameter to enable roll animation on value changes
+
 ### User Preferences (Frank)
 - Prefers NO external libraries for graphics unless absolutely necessary
 - Any library additions require explicit approval
@@ -25,3 +32,37 @@
 - Warm torch glow effect (radial gradient) for current room indication
 - Color palette defined in `MapTheme` constant object for easy theming
 - Door colors use forest green (unlocked) and rust red (locked)
+
+### Dice Roll Animation (2025)
+- Pure CSS/JS animation—no external libraries
+- Animation includes rotation, scale bounce, and "tumbling" effect
+- Cycles through random dice faces (8 frames over 600ms) before settling
+- Settle animation adds "pop" effect with scale and brightness
+- Animation triggered only when face value changes (detects new rolls)
+- Components with `Animate="true"`: Play.razor, Combat.razor, CombatTurnConsole.razor, NewRoomDialog.razor, TableViewer.razor, AdventureInit.razor
+
+### Dice Animation System Enhancements (2025)
+- **Animation Types**: Added `AnimateType` parameter to Dice component
+  - `Roll` (default): Full tumbling animation with random face cycling
+  - `Flip`: Single rotation for shift button adjustments
+- **Flip Animation**: 0.3s rotateX animation that shows dice spinning to new face
+  - Direction-aware (up/down based on value increase/decrease)
+  - Used when ShiftButtons modify dice values
+- **Doubles Celebration**: Sparkle/star burst effect when rolling doubles
+  - Golden glow on both dice with CSS drop-shadow
+  - 12 circular sparkles radiating outward
+  - 6 star characters (✦) spinning outward
+  - All CSS keyframe animations, no libraries
+- **Dice Component API**:
+  - `DiceId` property exposes element ID for external coordination
+  - `CelebrateDoublesWith(partnerId)` method for parent-triggered celebration
+  - `DoublesCelebrationPartnerId` parameter for automatic doubles detection
+- **CSS keyframes added**: `diceFlipUp`, `diceFlipDown`, `doublesGlow`, `sparkle-burst`, `star-burst`
+
+### Dice Animation Trigger Pattern (2025)
+- **Critical Pattern**: Animation is triggered in `OnParametersSetAsync` when `faceA != previousFaceA`
+- **Pitfall**: Conditional rendering (`@if(result != null)`) creates components with face already set; `OnInitialized` sets `previousFaceA = faceA`, so no change is detected
+- **Solution**: Always render Dice components, use CSS `display:none` to hide when face=0
+- **Correct Pattern**: Initialize DiceResult with `PrimaryDice = 0`, render dice with `style="display:none"` when 0, dice appears with animation when value changes
+- **Working Example**: Combat.razor (lines 31-32) - dice always rendered with initial face=0
+- **Fixed**: NewRoomDialog.razor - changed from conditional `@if` to always-render with CSS visibility
