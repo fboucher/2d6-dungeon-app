@@ -1,0 +1,38 @@
+name: Strip dev-only files from main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  strip-dev-files:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove dev-only directories
+        run: |
+          REMOVED=false
+          for dir in .squad .squad-templates .copilot; do
+            if [ -d "$dir" ]; then
+              git rm -r --cached "$dir" > /dev/null 2>&1 || true
+              rm -rf "$dir"
+              REMOVED=true
+              echo "Removed: $dir"
+            fi
+          done
+          echo "REMOVED=$REMOVED" >> $GITHUB_ENV
+
+      - name: Commit removal if needed
+        if: env.REMOVED == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: remove dev-only tooling from production branch [skip ci]"
+          git push
