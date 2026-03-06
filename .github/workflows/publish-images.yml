@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           file: database/dab/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-dab:${{ github.ref_name }}
