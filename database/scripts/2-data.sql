@@ -16,6 +16,34 @@ INSERT INTO db2d6.meta_table(code, name)
 VALUES('pt1', 'Pouch T1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('enp1', 'Encounter Prisoner T1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('enp2', 'Encounter Prisoner Table 2');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('ext1', 'Exit Type Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('ext2', 'Exit Type Table 2');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('iaut1', 'Interruptions and Unexpected Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1a', 'Level 1 Animals');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1ce', 'Level 1 Crate Encounters');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1d', 'Level 1 Dogs');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1f', 'Level 1 Fungal');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1g', 'Level 1 Guards');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1m', 'Level 1 Martial');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1r', 'Level 1 Religious Enemy');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1s', 'Level 1 Snakes');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1w', 'Level 1 Wardens');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1wo', 'Level 1 Workers');
 
 
 
@@ -71,79 +99,79 @@ INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_uni
 VALUES (12,	1, 'WALL BANNER', 'small', 'On the wall are two crossed spears and a shield. You take a closer look and see they are for display only and useless. There are some cord and metal strips though.', 'Archways', false);
 
 
--- regular
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(11, 1, 'EMPTY SPACE', 'regular', 'This room is bare and seems to have been cleared out or forgotten about.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(12, 1, 'ABANDONED GUARD POST', 'regular', 'There is a dusty table here upon which sits a dry tankard and an empty wooden bowl.', 'WOODEN DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(13, 1, 'GUARD POST', 'regular', 'A small burner provides warmth for two chairs around a low table. It is lit and casts shadows.', 'REINFORCED DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(14, 1, 'MASON''S WORKSHOP', 'regular', 'Large blocks of stone scatter the space, iron tools and an old hammer lay around.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(15, 1, 'STORAGE AREA', 'regular', 'Crates are piled high, creating hidden spaces. Sacks and baskets lean to one side.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(16, 1, 'MEETING ROOM', 'regular', 'Three simple chairs are tucked in around a makeshift wooden table.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(21, 1, 'BLACKSMITHS', 'regular', 'There is an anvil on a block, a glowing furnace and walls lined with worn tools.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(22, 1, 'SCUFFED UP SPACE', 'regular', 'There is a pile of rubbish here and the floor is covered in scuff marks.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(23, 1, 'HOLDING CELL', 'regular', 'An iron barred cell where prisoners are kept is in one comer a broken chain on the floor.', 'REINFORCED DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(24, 1, 'WASH ROOM', 'regular', 'There are basins set in worktops here and buckets of soapy water. It is damp here.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(25, 1, 'FIRE PIT ROOM', 'regular', 'A large fire pit in the centre of the room is full of glowing embers and ash.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(26, 1, 'KENNEL', 'regular', 'Kennels line one wall and the floor is littered with bones water bowls and straw.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(31, 1, 'SNAKE PIT', 'regular', 'A dusty bowl set into the floor is home to an angry rooking snake. It rises up towards you.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(32, 1, 'WEAPON DUMP', 'regular', 'Some crates and barrels hold a range of broken and busted weapons.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(33, 1, 'SHACKLE ROOM', 'regular', 'Shackles and chains hang from the stone walls and a cage stands in one corner.', 'REINFORCED DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(34, 1, 'PRAYER ROOM', 'regular', 'To one side is a wall mounted symbol above a small altar and cushion.', 'CURTAINS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(35, 1, 'EMPTY SPACE', 'regular', 'This room has been left empty, the floor swept clean and the walls washed.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(36, 1, 'INDOOR CAMP', 'regular', 'In a corner two chairs are placed at a burner. The room is warm. On a shelf is a ball of twine.', 'WOODEN DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(41, 1, 'SMALL SHRINE', 'regular', 'This room is bare apart from a small stone shrine set into the wall.', 'RANDOM', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(42, 1, 'ABANDONED GUARD POST', 'regular', 'There is a dusty table here upon which sits a dry pewter tankard and an empty bowl.', 'WOODEN DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(43, 1, 'POOL ROOM', 'regular', 'The only feature in this room is a large, tiled bathing pool set into the floor.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(44, 1, 'BARRACKS', 'regular', 'You see two rows of bunks and some hammocks. There are people here talking.', 'WOODEN DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(45, 1, 'STORAGE AREA', 'regular', 'Empty boxes and tea chests fill this space. There are also sacks and bags.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(46, 1, 'CANTEEN', 'regular', 'Three rough tables, a few chairs and stools stand next to a wooden bar.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(51, 1, 'MORGUE', 'regular', 'A stone chamber has been added here. The floor is bloody. Inside lays a corpse on a slab.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(52, 1, 'SLEEPING QUARTERS', 'regular', 'Behind two curtains one on each side, are neat wooden framed beds.', 'RANDOM', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(53, 1, 'HOLDING CELL', 'regular', 'Part of this room has been sectioned off with wooden bars to create a cell.', 'REINFORCED DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(54, 1, 'TRAINING ROOM', 'regular', 'There is a bashed up mannequin and a pole covered in cut marks here.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(55, 1, 'ABATTOIR', 'regular', 'Two large carcasses of unidentifiable animals hang from the ceiling to one side.', 'WOODEN DOORS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(56, 1, 'DUMP', 'regular', 'This space has been used to dump rubbish and stone, piles of which fill two corners.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(61, 1, 'APOTHECARY', 'regular', 'A table is covered in jars and bottles. Scrolls full of script are tacked to the walls.', 'RANDOM', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(62, 1, 'DAMP SPACE', 'regular', 'There is a leak dripping down from above so the space is abandoned and wet.', 'WOODEN DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(63, 1, 'JAIL', 'regular', 'There are some metal bars set into the stone floor forming two dirty prison cells.', 'REINFORCED DOORS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(64, 1, 'CHAPEL', 'regular', 'Set high on some shelves are burning candles above a large wooden statue.', 'CURTAINS', true);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(65, 1, 'EMPTY SPACE', 'regular', 'This cold stone space is bare and seems to have no function.', 'ARCHWAYS', false);
-INSERT INTO db2d6.rooms(roll, level, room_type, size, description, exits, is_unique)
-VALUES(66, 1, 'STOVE ROOM', 'regular', 'To one side is a hot stove, some chairs and a large, muddy, hemp rug and a clay tankard.', 'WOODEN DOORS', false);
+-- regular (aka ancestry)
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(11, 1, 'EMPTY SPACE', 'regular', 'This room is bare and seems to have been cleared out or forgotten about.', 'The room is quiet. You hear nothing.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(12, 1, 'ABANDONED GUARD POST', 'regular', 'There is a dusty table here upon which sits a dry tankard and an empty wooden bowl.', 'Beneath the table is a pile of rubbish. Roll on table RUP1 +1.', 'WOODEN DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(13, 1, 'GUARD POST', 'regular', 'A small burner provides warmth for two chairs around a low table. It is lit and casts shadows.', 'There is someone here. Roll on L1G. If you survive roll on table RUP1.', 'REINFORCED DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(14, 1, 'MASON''S WORKSHOP', 'regular', 'Large blocks of stone scatter the space, iron tools and an old hammer lay around.', 'Roll a D6. 1-4= An ARTISAN is here. You must fight them. If you survive roll on TCT1.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(15, 1, 'STORAGE AREA', 'regular', 'Crates are piled high, creating hidden spaces. Sacks and baskets lean to one side.', 'Roll a D6. 1-3= A random patrol comes by roll on L1G -1. If you survive roll on TCT1 -1.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(16, 1, 'MEETING ROOM', 'regular', 'Three simple chairs are tucked in around a makeshift wooden table.', 'Two people stand as you enter. Roll on L1M -1 and L1F -1. If you survive roll on CT1.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(21, 1, 'BLACKSMITHS', 'regular', 'There is an anvil on a block, a glowing furnace and walls lined with worn tools.', 'There is someone here. You must fight the BLACKSMITH. If you survive roll on MIT1.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(22, 1, 'SCUFFED UP SPACE', 'regular', 'There is a pile of rubbish here and the floor is covered in scuff marks.', 'You can check the rubbish pile. Roll on table RUP1 and then on IAUT1.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(23, 1, 'HOLDING CELL', 'regular', 'An iron barred cell where prisoners are kept is in one comer a broken chain on the floor.', 'Roll a D6. 1-4= the JAILOR is here. You must fight them. If you survive roll on ENP1.', 'REINFORCED DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(24, 1, 'WASH ROOM', 'regular', 'There are basins set in worktops here and buckets of soapy water. It is damp here.', 'Roll a D6. 1-3= A fungal creature emerges. Roll on L1F. If you survive roll on IAT1.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(25, 1, 'FIRE PIT ROOM', 'regular', 'A large fire pit in the centre of the room is full of glowing embers and ash.', 'There''s a MERCHANT sitting on a stool by the pit. They stand and attack. If you survive roll on CT1.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(26, 1, 'KENNEL', 'regular', 'Kennels line one wall and the floor is littered with bones water bowls and straw.', 'A GUARD handler stands and releases a dog. Roll on L1D and then face the GUARD after.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(31, 1, 'SNAKE PIT', 'regular', 'A dusty bowl set into the floor is home to an angry rooking snake. It rises up towards you.', 'To open the chest in the pit you must face a snake roll on L1S. If you survive roll on CT2 -2.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(32, 1, 'WEAPON DUMP', 'regular', 'Some crates and barrels hold a range of broken and busted weapons.', 'You begin to search the space. First roll on IAUT1 and then on MIT2.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(33, 1, 'SHACKLE ROOM', 'regular', 'Shackles and chains hang from the stone walls and a cage stands in one corner.', 'A form moves from the darkness. Roll on table L1WO. If you survive roll on ENP1.', 'REINFORCED DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(34, 1, 'PRAYER ROOM', 'regular', 'To one side is a wall mounted symbol above a small altar and cushion.', 'Roll a D6. 1-4= Roll on L1R. After you search the room and if you survive roll on RATT1.', 'CURTAINS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(35, 1, 'EMPTY SPACE', 'regular', 'This room has been left empty, the floor swept clean and the walls washed.', 'The space is silent. There is nobody here.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(36, 1, 'INDOOR CAMP', 'regular', 'In a corner two chairs are placed at a burner. The room is warm. On a shelf is a ball of twine.', 'Someone is sitting by the burner. They attack. Roll on L1W -1. If you survive roll on IAUT1.', 'WOODEN DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(41, 1, 'SMALL SHRINE', 'regular', 'This room is bare apart from a small stone shrine set into the wall.', 'Roll on GOT1 to identify the shrine''s god. When offerings are correctly applied gain 1 FP.', 'RANDOM', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(42, 1, 'ABANDONED GUARD POST', 'regular', 'There is a dusty table here upon which sits a dry pewter tankard and an empty bowl.', 'There is something on the rough table. Roll on table TAT1.', 'WOODEN DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(43, 1, 'POOL ROOM', 'regular', 'The only feature in this room is a large, tiled bathing pool set into the floor.', 'In the pool is a chest. If you jump in for it you acquire the soaked status. Roll on CT1.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(44, 1, 'BARRACKS', 'regular', 'You see two rows of bunks and some hammocks. There are people here talking.', 'Roll on L1M-1 twice. If you survive the fight roll on TCT1 as you find a tea chest in a corner.', 'WOODEN DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(45, 1, 'STORAGE AREA', 'regular', 'Empty boxes and tea chests fill this space. There are also sacks and bags.', 'Roll a D6. 1-4= A random patrol comes by roll on L1P-1. If you survive roll on BT1.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(46, 1, 'CANTEEN', 'regular', 'Three rough tables, a few chairs and stools stand next to a wooden bar.', 'The barman yells and attacks (use LABOURER stats). Also face a patron. Roll on L1W -1.', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(51, 1, 'MORGUE', 'regular', 'A stone chamber has been added here. The floor is bloody. Inside lays a corpse on a slab.', 'There is an ARTISAN here who you must fight. If you survive you find some herbs. Roll on HST1', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(52, 1, 'SLEEPING QUARTERS', 'regular', 'Behind two curtains one on each side, are neat wooden framed beds.', 'Someone jumps up. Roll on L1R. You see a religious carving atop a cupboard. Roll on RATT1.', 'RANDOM', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(53, 1, 'HOLDING CELL', 'regular', 'Part of this room has been sectioned off with wooden bars to create a cell.', 'Roll D6. 1-4= There is a prisoner here. Roll on ENP1. After roll on IAUT1.', 'REINFORCED DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(54, 1, 'TRAINING ROOM', 'regular', 'There is a bashed up mannequin and a pole covered in cut marks here.', 'A WARRIOR is practicing here, slashing at the pole. You must fight them. After roll on IAUT1.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(55, 1, 'ABATTOIR', 'regular', 'Two large carcasses of unidentifiable animals hang from the ceiling to one side.', 'A butcher works away at one, turns and attacks, cleaver raised (use ARTISAN stats).', 'WOODEN DOORS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(56, 1, 'DUMP', 'regular', 'This space has been used to dump rubbish and stone, piles of which fill two corners.', 'You can rummage through the rubbish. Roll on RUP1 and then on IAUT1.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(61, 1, 'APOTHECARY', 'regular', 'A table is covered in jars and bottles. Scrolls full of script are tacked to the walls.', 'You must face the APOTHECARY. If you survive search the table. Roll on POT1 and POT2.', 'RANDOM', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(62, 1, 'DAMP SPACE', 'regular', 'There is a leak dripping down from above so the space is abandoned and wet.', 'Fight a fungal creature living here. Roll a D6. 1-3= MUST BLOATER, 4-6= FUNGAL GEIST.', 'WOODEN DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(63, 1, 'JAIL', 'regular', 'There are some metal bars set into the stone floor forming two dirty prison cells.', 'A JAILOR jumps up. You must face them. If you survive roll on ENP1 -2.', 'REINFORCED DOORS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(64, 1, 'CHAPEL', 'regular', 'Set high on some shelves are burning candles above a large wooden statue.', 'A DARK CLERIC stands and attacks. After you can make an offering to Maduva for 1 FP.', 'CURTAINS', true);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(65, 1, 'EMPTY SPACE', 'regular', 'This cold stone space is bare and seems to have no function.', 'There is nobody here or anything of interest.', 'ARCHWAYS', false);
+INSERT INTO db2d6.rooms(roll, level, room_type, size, description, encounter, exits, is_unique)
+VALUES(66, 1, 'STOVE ROOM', 'regular', 'To one side is a hot stove, some chairs and a large, muddy, hemp rug and a clay tankard.', '2 seated people jump up and attack. Roll on L1G-1 and L1M-1. After roll on TCT1-2.', 'WOODEN DOORS', false);
 
 
 -- large
