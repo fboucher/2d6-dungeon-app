@@ -1,5 +1,9 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "dotnet build": true
+        "dotnet build": true,
+        "/^cd /home/frank/gh/2d6-dungeon-app/src && which dotnet && dotnet --info && echo '---RUNTIMES---' && dotnet --list-runtimes && echo '---SDKS---' && dotnet --list-sdks$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }

@@ -12,6 +12,7 @@ public class MappedRoom
     public int Height { get; set; }
     public bool IsLobby { get; set; } = false;
     public string? Description { get; set; }
+    public string? Encounter { get; set; }
     public bool YouAreHere { get; set; } = false;
 
 

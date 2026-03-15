@@ -152,6 +152,7 @@ public class GameTurn
         room = await TryResolveUniqueRoomConflict(room, roomSize, area, dungeon);
 
         CurrentRoom!.Description = room.description;
+        CurrentRoom!.Encounter = room.encounter;
         //NextAction = ActionType.RollForExits;
         Message = $"Go to the sumary to see all the details of the room.";
     }

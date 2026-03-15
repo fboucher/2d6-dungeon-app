@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "AppHost (mise .NET 10)",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/src/AppHost/AppHost.csproj",
+      "cwd": "${workspaceFolder}/src/AppHost",
+      "env": {
+        "DOTNET_ROOT": "/home/frank/.local/share/mise/installs/dotnet/10.0.103",
+        "DOTNET_ROOT_X64": "/home/frank/.local/share/mise/installs/dotnet/10.0.103",
+        "PATH": "/home/frank/.local/share/mise/installs/dotnet/10.0.103:${env:PATH}"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}

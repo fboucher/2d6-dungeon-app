@@ -10,7 +10,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
         "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21138",
-        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22047"
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22047",
+        "DOTNET_ROOT": "/home/frank/.local/share/mise/installs/dotnet/latest"
       }
     },
     "http": {
@@ -22,7 +23,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
         "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:19142",
-        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20144"
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20144",
+        "DOTNET_ROOT": "/home/frank/.local/share/mise/installs/dotnet/latest"
       }
     }
   }
