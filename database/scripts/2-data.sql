@@ -1,19 +1,15 @@
 
 -- 2d6 Tables
 INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1p', 'Level 1 Patrols');
+VALUES('art1', 'Armour Random Table 1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('bst1', 'Body Search 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('sct1', 'Scrolls T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('got1', 'God T1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('bt1', 'Loot Bag T1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('ct1', 'Chest T1');
 INSERT INTO db2d6.meta_table(code, name)
-VALUES('pt1', 'Pouch T1');
+VALUES('ect1', 'Empty Container Table 1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('enp1', 'Encounter Prisoner T1');
 INSERT INTO db2d6.meta_table(code, name)
@@ -22,6 +18,14 @@ INSERT INTO db2d6.meta_table(code, name)
 VALUES('ext1', 'Exit Type Table 1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('ext2', 'Exit Type Table 2');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('gmt1', 'Gem Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('got1', 'God T1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('haoit1', 'Half An Ornate Item Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('hst1', 'Herbs Table 1');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('iaut1', 'Interruptions and Unexpected Table 1');
 INSERT INTO db2d6.meta_table(code, name)
@@ -37,6 +41,8 @@ VALUES('l1g', 'Level 1 Guards');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('l1m', 'Level 1 Martial');
 INSERT INTO db2d6.meta_table(code, name)
+VALUES('l1p', 'Level 1 Patrols');
+INSERT INTO db2d6.meta_table(code, name)
 VALUES('l1r', 'Level 1 Religious Enemy');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('l1s', 'Level 1 Snakes');
@@ -44,6 +50,46 @@ INSERT INTO db2d6.meta_table(code, name)
 VALUES('l1w', 'Level 1 Wardens');
 INSERT INTO db2d6.meta_table(code, name)
 VALUES('l1wo', 'Level 1 Workers');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('ma1', 'Magical Amulet Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('mi1', 'Magical Item Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('mit1', 'Metal Item Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('mr1', 'Magical Ring Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('mw1', 'Magical Wand Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('pot1', 'Potions Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('pt1', 'Pouch T1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('ratt1', 'Religious Artifacts Treasure Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('rpt1', 'Religious Pouch Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('rupt1', 'Rubbish Pile Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('rune1', 'Rune Stone Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('sct1', 'Scrolls T1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('sect1', 'Secret Hatch Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('slt1', 'Sarcophagus Loot Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('sst1', 'Symbol Selection Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('tat1', 'Table Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('tct1', 'Tea Chest Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('url1', 'Urn Loot Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('wit1', 'Worship Items Table 1');
+INSERT INTO db2d6.meta_table(code, name)
+VALUES('wrt1', 'Wrecked Item Table 1');
 
 
 
