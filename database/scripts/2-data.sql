@@ -1,95 +1,52 @@
 
 -- 2d6 Tables
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('art1', 'Armour Random Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('bst1', 'Body Search 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('bt1', 'Loot Bag T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ct1', 'Chest T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ect1', 'Empty Container Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('enp1', 'Encounter Prisoner T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('enp2', 'Encounter Prisoner Table 2');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ext1', 'Exit Type Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ext2', 'Exit Type Table 2');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('gmt1', 'Gem Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('got1', 'God T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('haoit1', 'Half An Ornate Item Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('hst1', 'Herbs Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('iaut1', 'Interruptions and Unexpected Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1a', 'Level 1 Animals');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1ce', 'Level 1 Crate Encounters');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1d', 'Level 1 Dogs');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1f', 'Level 1 Fungal');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1g', 'Level 1 Guards');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1m', 'Level 1 Martial');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1p', 'Level 1 Patrols');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1r', 'Level 1 Religious Enemy');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1s', 'Level 1 Snakes');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1w', 'Level 1 Wardens');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('l1wo', 'Level 1 Workers');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ma1', 'Magical Amulet Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('mi1', 'Magical Item Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('mit1', 'Metal Item Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('mr1', 'Magical Ring Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('mw1', 'Magical Wand Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('pot1', 'Potions Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('pt1', 'Pouch T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('ratt1', 'Religious Artifacts Treasure Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('rpt1', 'Religious Pouch Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('rupt1', 'Rubbish Pile Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('rune1', 'Rune Stone Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('sct1', 'Scrolls T1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('sect1', 'Secret Hatch Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('slt1', 'Sarcophagus Loot Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('sst1', 'Symbol Selection Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('tat1', 'Table Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('tct1', 'Tea Chest Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('url1', 'Urn Loot Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('wit1', 'Worship Items Table 1');
-INSERT INTO db2d6.meta_table(code, name)
-VALUES('wrt1', 'Wrecked Item Table 1');
+INSERT INTO db2d6.meta_table(code, name, level)
+VALUES
+('art1', 'Armour Random Table 1', 1),
+('bst1', 'Body Search Table 1', 1),
+('bt1', 'Loot Bag Table 1', 1),
+('ct1', 'Chest Table 1', 1),
+('ect1', 'Empty Container Table 1', 1),
+('enp1', 'Encounter Prisoner Table 1', 1),
+('enp2', 'Encounter Prisoner Table 2', 2),
+('ext1', 'Exit Type Table 1', 1),
+('ext2', 'Exit Type Table 2', 2),
+('gmt1', 'Gem Table 1', 1),
+('got1', 'God Table 1', 1),
+('haoit1', 'Half An Ornate Item Table 1', 1),
+('hst1', 'Herbs Table 1', 1),
+('iaut1', 'Interruptions and Unexpected Table 1', 1),
+('l1a', 'Level 1 Animals', 1),
+('l1ce', 'Level 1 Crate Encounters', 1),
+('l1d', 'Level 1 Dogs', 1),
+('l1f', 'Level 1 Fungal', 1),
+('l1g', 'Level 1 Guards', 1),
+('l1m', 'Level 1 Martial', 1),
+('l1p', 'Level 1 Patrols', 1),
+('l1r', 'Level 1 Religious Enemy', 1),
+('l1s', 'Level 1 Snakes', 1),
+('l1w', 'Level 1 Wardens', 1),
+('l1wo', 'Level 1 Workers', 1),
+('ma1', 'Magical Amulet Table 1', 1),
+('mi1', 'Magical Item Table 1', 1),
+('mit1', 'Metal Item Table 1', 1),
+('mr1', 'Magical Ring Table 1', 1),
+('mw1', 'Magical Wand Table 1', 1),
+('pot1', 'Potions Table 1', 1),
+('pt1', 'Pouch T1', 1),
+('ratt1', 'Religious Artifacts Treasure Table 1', 1),
+('rpt1', 'Religious Pouch Table 1', 1),
+('rupt1', 'Rubbish Pile Table 1', 1),
+('rune1', 'Rune Stone Table 1', 1),
+('sct1', 'Scrolls T1', 1),
+('sect1', 'Secret Hatch Table 1', 1),
+('slt1', 'Sarcophagus Loot Table 1', 1),
+('sst1', 'Symbol Selection Table 1', 1),
+('tat1', 'Table Table 1', 1),
+('tct1', 'Tea Chest Table 1', 1),
+('url1', 'Urn Loot Table 1', 1),
+('wit1', 'Worship Items Table 1', 1),
+('wrt1', 'Wrecked Item Table 1', 1);
 
 
 

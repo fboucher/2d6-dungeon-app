@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS db2d6.meta_table (
   id int NOT NULL AUTO_INCREMENT,
   code varchar(25) DEFAULT NULL,
   name varchar(50) DEFAULT NULL,
+  level int DEFAULT 0,
   PRIMARY KEY (id)
 );
 
