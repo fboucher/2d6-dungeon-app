@@ -47,6 +47,10 @@
     private int displayFaceB = 1;
     private int previousFaceA = 0;
     private int previousFaceB = 0;
+    private bool hasRendered = false;
+    private bool pendingAnimation = false;
+    private bool pendingFaceAChanged = false;
+    private bool pendingFaceBChanged = false;
 
     // Expose the dice ID for doubles celebration coordination
     public string DiceId { get; } = $"dice-{Guid.NewGuid():N}";
@@ -83,8 +87,9 @@
         SetDiceFaces();
         displayFaceA = faceA;
         displayFaceB = faceB;
-        previousFaceA = faceA;
-        previousFaceB = faceB;
+        // Start from 0 so the first non-zero value can animate on first render.
+        previousFaceA = 0;
+        previousFaceB = 0;
     }
 
     protected override async Task OnParametersSetAsync()
@@ -98,7 +103,13 @@
         
         if (shouldAnimate)
         {
-            if (AnimateType == AnimationType.Flip)
+            if (!hasRendered)
+            {
+                pendingAnimation = true;
+                pendingFaceAChanged = faceAChanged;
+                pendingFaceBChanged = faceBChanged;
+            }
+            else if (AnimateType == AnimationType.Flip)
             {
                 await TriggerFlipAnimation(faceAChanged, faceBChanged);
             }
@@ -115,6 +126,28 @@
         
         previousFaceA = faceA;
         previousFaceB = faceB;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+        }
+
+        if (pendingAnimation)
+        {
+            pendingAnimation = false;
+
+            if (AnimateType == AnimationType.Flip)
+            {
+                await TriggerFlipAnimation(pendingFaceAChanged, pendingFaceBChanged);
+            }
+            else
+            {
+                await TriggerRollAnimation();
+            }
+        }
     }
 
     private async Task TriggerRollAnimation()
