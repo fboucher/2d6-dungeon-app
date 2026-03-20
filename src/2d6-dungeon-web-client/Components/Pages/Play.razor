@@ -21,8 +21,16 @@
                 <FluentAccordionItem Heading="Current Room Details" Expanded="true">
                     <FluentIcon Value="@(new Icons.Regular.Size20.ConferenceRoom())" Color="@Color.Neutral"
                         Slot="start" />
-                    <FluentLabel Typo="Typography.H4">Room:</FluentLabel> @currentRoom!.Description
-                    <FluentLabel Typo="Typography.Body">@gameTurnInstructions</FluentLabel> 
+                    <FluentStack Orientation="Orientation.Horizontal">
+                        <div>
+                            <FluentLabel Typo="Typography.H4">Room:</FluentLabel> @currentRoom!.Description
+                            <FluentLabel Typo="Typography.Body">@gameTurnInstructions</FluentLabel> 
+                        </div>
+                        <div>
+                            <FluentLabel Typo="Typography.H4">Encounter:</FluentLabel> @(string.IsNullOrEmpty(currentRoom!.Encounter) ? "None" : currentRoom!.Encounter)
+                        </div>
+                    </FluentStack>
+                    
                 </FluentAccordionItem>
             </FluentAccordion>
 

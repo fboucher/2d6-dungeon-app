@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS db2d6.meta_table (
   id int NOT NULL AUTO_INCREMENT,
   code varchar(25) DEFAULT NULL,
   name varchar(50) DEFAULT NULL,
+  level int DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -105,10 +106,10 @@ CREATE TABLE IF NOT EXISTS db2d6.creatures (
   experience int DEFAULT 0,
   shift_points int DEFAULT 0,
   treasure varchar(100),
-  interrupt1 varchar(100),
-  interrupt2 varchar(100),
-  manoeuvre1 varchar(100),
-  manoeuvre2 varchar(100),
+  interrupt1 varchar(150),
+  interrupt2 varchar(150),
+  manoeuvre1 varchar(150),
+  manoeuvre2 varchar(150),
   description varchar(255),
   prime_attack_rolls varchar(150),
   mishap_attack_rolls varchar(150),

@@ -9,8 +9,12 @@
 <FluentStack Orientation="Orientation.Vertical">
     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom">
         <div>
-            <FluentSelect Items=@metatablesQueryable Label="Select Table" OptionText="@(t => string.Concat(t.Code, " - ", t.Name))"
-                OptionValue="@(t => t.Code)" SelectedOptionChanged="@((MetaTables t) => TableSelected(t))"
+            <FluentCombobox Items=@metatablesQueryable 
+                Label="Select Table" 
+                Multiple="false"
+                OptionText="@(t => string.Concat(t!.Code, " - ", t!.Name))"
+                Autocomplete="ComboboxAutocomplete.Both"
+                SelectedOptionChanged="@((MetaTables? t) => TableSelected(t))"
                 Placeholder="Select a Table" />
         </div>
 
@@ -20,7 +24,7 @@
         </div>
 
         <div style="padding-left:20px;">
-            @if (diceResult != null)
+            @if (showDice && diceResult is not null)
             {
                 <Dice face="@diceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
                 <Dice face="@diceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
@@ -33,7 +37,8 @@
         <FluentDataGrid Items="@selectedTableDataRows" 
                         ShowHover="true"  
                         ResizableColumns=true 
-                        GridTemplateColumns="1fr 4fr">
+                        GridTemplateColumns="1fr 4fr"
+                        MultiLine="true">
             <ChildContent>
                 <PropertyColumn Property="@(t => t.Roll)" Sortable="true" />
                 <PropertyColumn Title="@secondColTitle" Property="@(t => t.Description)" Sortable="true" />
@@ -56,6 +61,8 @@
     private string secondColTitle = string.Empty;
     private string selectedTableName = string.Empty;
 
+    private bool showDice = false;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadTableData();
@@ -76,6 +83,7 @@
 
     private void RollDice(int numberOfDice)
     {
+        showDice = true;
         if (numberOfDice == 1)
         {
             diceResult = DiceResult.Roll1Dice();
@@ -86,11 +94,14 @@
         }
     }
 
-    private async Task TableSelected(MetaTables table)
+    private async Task TableSelected(MetaTables? table)
     {
+        showDice = false;
         diceResult = null;
         selectedTableData = null;
-        selectedTableName = table.Name;
+        selectedTableName = table?.Name ?? string.Empty;
+
+        if (table is null) return;
 
         try
         {

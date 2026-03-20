@@ -1,0 +1,12 @@
+Roll|Text
+2|The exit is sealed with a heavy stone door. You can try to open it. Roll 2D6 and add your Might. On an 8 or higher you open it. On a 7 or lower you fail and if you try again lose 1 health point from exhaustion.
+3|The door has a puzzle lock on it. You must solve it to exit. Roll 2D6 and add your Discipline. On an 8 or higher you solve it. On a 7 or lower you fail and trigger a trap that causes you to lose 1 health point.
+4|The exit is guarded by two guards. Face 2 GUARDS. If you defeat them you can exit.
+5|As you reach for the door handle you hear a click. The door is trapped. Roll 2D6 and add your Precision. On a 7 or higher you avoid it. On a 6 or lower you trigger it and lose 2 health points.
+6|The exit is blocked by a magical barrier. You must find another way out or have a way to dispel magic.
+7|The exit is clear and you can leave.
+8|The door opens onto a long corridor. As you enter you hear footsteps behind you. Roll on ENP2 to face an enemy who was following you.
+9|The exit leads to a chamber with three doors. Roll 1D6: 1-2 left door is the exit, 3-4 middle door is the exit, 5-6 right door is the exit. The other doors lead to traps (lose 1 health point).
+10|As you open the exit door you see an ACOLYTE performing a ritual. They turn and attack. Face an ACOLYTE.
+11|The exit door has a small window. Through it you see guards patrolling. You can try to sneak past. Roll 2D6 and add your Precision. On an 8 or higher you sneak past. On a 7 or lower you are spotted and face a GUARD.
+12|The exit opens and you find yourself in the dungeon entrance hall. You have successfully navigated the dungeon and can now leave to freedom!
