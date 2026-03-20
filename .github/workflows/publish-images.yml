@@ -4,6 +4,15 @@ on:
   push:
     tags:
       - "*"
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing git tag to publish (for example v1.2.3). Leave empty to use current ref."
+        required: false
+        type: string
 
 jobs:
   build-and-push:
@@ -14,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -35,7 +46,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-database:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-database:${{ github.event.inputs.tag || github.ref_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-database:latest
 
       - name: Build and push DAB image
@@ -46,7 +57,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-dab:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-dab:${{ github.event.inputs.tag || github.ref_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-dab:latest
 
       - name: Build and push web app image
@@ -57,5 +68,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-app:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-app:${{ github.event.inputs.tag || github.ref_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/2d6-dungeon-app:latest
