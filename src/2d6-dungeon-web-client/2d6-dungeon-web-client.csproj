@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>c5m._2d6Dungeon.web</RootNamespace>
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+    <Version>1.0.0</Version>
+    <InformationalVersion Condition="'$(GITHUB_RUN_NUMBER)' != ''">$(Version) (build $(GITHUB_RUN_NUMBER))</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
