@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore src/2d6-dungeon-client.sln 
     - name: Build
-      run: dotnet build src/2d6-dungeon-client.sln --no-restore
+      run: dotnet build src/2d6-dungeon-client.sln --no-restore -p:GITHUB_RUN_NUMBER=${{ github.run_number }}
 ## TODO: Add tests 
 #    - name: Test
 #      run: dotnet test src/2d6-dungeon-client.sln --no-build --verbosity normal
