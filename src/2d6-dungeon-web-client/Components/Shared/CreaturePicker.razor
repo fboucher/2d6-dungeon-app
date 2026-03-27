@@ -12,10 +12,32 @@ else
 {
     <h2>Select a creature</h2>
 
-    <FluentDataGrid Items="@creaturesQueryable" ShowHover="true" TGridItem="Creature" OnRowClick="@(async (args) => await SelectCreature(args.Item!))">
-        <PropertyColumn Title="Name" Property="@(c => c.name)" Sortable="true" />
+    <FluentDataGrid Items="@filteredItems" ShowHover="true" TGridItem="Creature" OnRowClick="@(async (args) => await SelectCreature(args.Item!))">
+        
+        <PropertyColumn Title="Name" 
+                        Property="@(c => c.name)" 
+                        Sortable="true" 
+                        InitialSortDirection=SortDirection.Ascending 
+                        IsDefaultSortColumn=true 
+                        Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
+            <ColumnOptions>
+                <div class="search-box">
+                    <FluentSearch type="search" Autofocus=true @bind-Value=nameFilter @oninput="HandleNameFilter" @bind-Value:after="HandleNameClear" Placeholder="Creature name..." />
+                </div>
+            </ColumnOptions>
+        </PropertyColumn>
+        
         <PropertyColumn Title="HP" Property="@(c => c.health_points.ToString())" Sortable="true"/>
-        <PropertyColumn Title="Level" Property="@(c => c.level.ToString())" Sortable="false" />
+        <PropertyColumn Title="Level" 
+                        Property="@(c => c.level.ToString())" 
+                        Sortable="true" 
+                        Filtered="!string.IsNullOrWhiteSpace(levelFilter)">
+            <ColumnOptions>
+                <div class="search-box">
+                    <FluentSearch type="search" Autofocus=true @bind-Value=levelFilter @oninput="HandleLevelFilter" @bind-Value:after="HandleLevelClear" Placeholder="Creature level..." />
+                </div>
+            </ColumnOptions>
+        </PropertyColumn>
     </FluentDataGrid>
 }
 
@@ -25,6 +47,13 @@ else
     [Parameter] public EventCallback<Creature> ParentCreatureChanged { get; set; }
 
     IQueryable<Creature>? creaturesQueryable;  
+    IQueryable<Creature>? filteredItems => creaturesQueryable?
+                                            .Where(
+                                            x => x.name.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase) 
+                                            && (string.IsNullOrWhiteSpace(levelFilter) || x.level.ToString() == levelFilter));
+
+    string nameFilter = string.Empty;
+    string levelFilter = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
@@ -40,11 +69,44 @@ else
     private async Task SelectCreature(Creature selectedCreature) 
     {
         try{
+            if(selectedCreature == null) return;
             ParentCreature = selectedCreature;
             await ParentCreatureChanged.InvokeAsync(ParentCreature);
         }
         catch(Exception ex){
             Console.WriteLine("Oops! --> " + ex.Message);
+        }
+    }
+
+    private void HandleNameFilter(ChangeEventArgs args)
+    {
+        if (args.Value is string value)
+        {
+            nameFilter = value;
+        }
+    }
+
+    private void HandleNameClear()
+    {
+        if (string.IsNullOrWhiteSpace(nameFilter))
+        {
+            nameFilter = string.Empty;
+        }
+    }
+
+    private void HandleLevelFilter(ChangeEventArgs args)
+    {
+        if (args.Value is string value)
+        {
+            levelFilter = value;
+        }
+    }
+
+    private void HandleLevelClear()
+    {
+        if (string.IsNullOrWhiteSpace(levelFilter))
+        {
+            levelFilter = string.Empty;
         }
     }
 }
