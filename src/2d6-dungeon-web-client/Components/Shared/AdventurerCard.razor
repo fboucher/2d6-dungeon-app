@@ -11,7 +11,12 @@
                 OnClick="@(() => ToggleExtended())">
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
             <FluentLabel Typo="Typography.H3">@Player.Name</FluentLabel>
-            <FluentLabel Typo="Typography.Body"><b>XP:</b><FluentNumberField @bind-Value="@Player.XP" style="width: 80px;" /></FluentLabel>
+            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+                <b>XP:</b>
+                <FluentNumberField @bind-Value="@Player.XP" style="width: 80px;" />
+                <FluentNumberField @bind-Value="@_xpDelta" Min="1" Placeholder="Add XP" style="width: 80px;" />
+                <FluentButton Appearance="Appearance.Accent" OnClick="@AddXp" IconStart="@(new Icons.Filled.Size16.Add())" >Add</FluentButton>
+            </FluentStack>
             <FluentLabel Typo="Typography.Body"><b>Level:</b> <FluentNumberField @bind-Value="@Player.Level" style="width: 80px;" /></FluentLabel>
         </FluentStack>
 </FluentPersona>
@@ -63,6 +68,15 @@
     public bool Editable { get; set; } = false;
 
     private bool healthDepletionHandled = false;
+    private int _xpDelta = 0;
+
+    private async Task AddXp()
+    {
+        if (_xpDelta <= 0) return;
+        Player.XP += _xpDelta;
+        _xpDelta = 0;
+        await PlayerChanged.InvokeAsync(Player);
+    }
 
     private async Task CheckHealth()
     {
