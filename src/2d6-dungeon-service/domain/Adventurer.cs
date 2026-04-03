@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace c5m._2d6Dungeon.Game;
 
@@ -24,10 +25,16 @@ public class Adventurer
     public int Soaked { get; set; }
     public Boolean Pneumonia { get; set; }
     public Coins Coins { get; set; }
-    public List<string>? Treasures { get; set; }
+    public string? Treasures { get; set; }
     public int LiberatedPrisoners { get; set; }
-    public List<string>? SideQuests { get; set; }
+    public string? SideQuests { get; set; }
+    public List<string> LargeAndHeavyItems { get; set; }
+    public string? SmallItems { get; set; }
+    public string? AdditionalNotes { get; set; }
+    public string? LootLockup { get; set; }
+    public Dictionary<string, string> NarrativeMoments { get; set; }
     public FavorOfTheGods FavorOfTheGods { get; set; }
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int Rations { get; set; }
     
     public Adventurer()
@@ -43,9 +50,14 @@ public class Adventurer
         Fever = false;
         Pneumonia = false;
         Coins = new Coins();
-        Treasures = new List<string>();
-        SideQuests = new List<string>();
+        Treasures = string.Empty;
+        SideQuests = string.Empty;
         LiberatedPrisoners = 0;
+        LargeAndHeavyItems = new List<string>();
+        SmallItems = string.Empty;
+        AdditionalNotes = string.Empty;
+        LootLockup = string.Empty;
+        NarrativeMoments = new Dictionary<string, string>();
         FavorOfTheGods = new FavorOfTheGods();
 
         //Values from Core Rules
@@ -69,9 +81,14 @@ public class Adventurer
         Fever = false;
         Pneumonia = false;
         Coins = new Coins();
-        Treasures = new List<string>();
-        SideQuests = new List<string>();
+        Treasures = string.Empty;
+        SideQuests = string.Empty;
         LiberatedPrisoners = 0;
+        LargeAndHeavyItems = new List<string>();
+        SmallItems = string.Empty;
+        AdditionalNotes = string.Empty;
+        LootLockup = string.Empty;
+        NarrativeMoments = new Dictionary<string, string>();
         FavorOfTheGods = new FavorOfTheGods();
 
         //Values from Core Rules
@@ -97,9 +114,14 @@ public class Adventurer
             Fever = false;
             Pneumonia = false;
             Coins = new Coins();
-            Treasures = new List<string>();
-            SideQuests = new List<string>();
+            Treasures = string.Empty;
+            SideQuests = string.Empty;
             LiberatedPrisoners = 0;
+            LargeAndHeavyItems = new List<string>();
+            SmallItems = string.Empty;
+            AdditionalNotes = string.Empty;
+            LootLockup = string.Empty;
+            NarrativeMoments = new Dictionary<string, string>();
             FavorOfTheGods = new FavorOfTheGods();
 
             //Values from Core Rules
@@ -128,13 +150,18 @@ public class Adventurer
             Treasures = aComplete.Treasures;
             SideQuests = aComplete.SideQuests;
             LiberatedPrisoners = aComplete.LiberatedPrisoners;
+            LargeAndHeavyItems = aComplete.LargeAndHeavyItems ?? new List<string>();
+            SmallItems = aComplete.SmallItems;
+            AdditionalNotes = aComplete.AdditionalNotes;
+            LootLockup = aComplete.LootLockup;
+            NarrativeMoments = aComplete.NarrativeMoments ?? new Dictionary<string, string>();
             FavorOfTheGods = aComplete.FavorOfTheGods;
 
             Shift = aComplete.Shift;
             Discipline = aComplete.Discipline;
             Precision = aComplete.Precision;
             HealthPoints = aComplete.HealthPoints;
-            Rations = aComplete.Rations;
+            Rations = aComplete.Rations <= 0 ? 3 : aComplete.Rations;
         }
     }
 

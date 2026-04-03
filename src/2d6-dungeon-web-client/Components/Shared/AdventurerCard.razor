@@ -52,11 +52,30 @@
                 </FluentStack>
             </FluentCard>
 
+            <FluentCard>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="1">
+                    <FluentLabel Typo="Typography.Body">LEGEND STATUS LEVEL TRACKER</FluentLabel>
+                    <FluentSlider Min="0" Max="10" Step="1" @bind-Value="@Player.LegendStatusLevelTracker" Style="width: 200px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
+                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
+                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
+                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+            </FluentCard>
+
         </FluentStack>
 </FluentPersona>
 @if(Extented)
 {
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="100%">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="480px">
         
         <FluentCard MinimalStyle="true">
             <div class="sheetTitle"><b>MANOEUVRES</b></div>
@@ -84,8 +103,8 @@
         <FluentCard MinimalStyle="true">
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
                 <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>BLOODIED</b></FluentLabel>
-                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Bloodied" Style="width: 350px;" >
+                    <FluentLabel Typo="Typography.Body" Style="width: 90px;"><b>BLOODIED</b></FluentLabel>
+                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Bloodied" Style="width: 300px;" >
                         <FluentSliderLabel Position="0">0</FluentSliderLabel>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
@@ -100,8 +119,8 @@
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>SOAKED</b></FluentLabel>
-                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Soaked"  Style="width: 350px;" >
+                    <FluentLabel Typo="Typography.Body" Style="width: 90px;"><b>SOAKED</b></FluentLabel>
+                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Soaked"  Style="width: 300px;" >
                         <FluentSliderLabel Position="0">0</FluentSliderLabel>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
@@ -118,83 +137,165 @@
         </FluentCard>
 
 
+        <FluentCard MinimalStyle="true">
 
-        <FluentCard>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                <div class="sheetTitle"><b>RESOURCES</b></div>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
-                    <span><span class="sheetTitle">Rations:</span> @Player.Rations.ToString()</span>
+            <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                    <div class="sheetTitle"><b>COINS</b></div>
+                    @* <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5" Wrap="true"> *@
+                        <FluentNumberField Label="Gold"  @bind-Value="@Player.Coins.GoldCoins" />
+                        <FluentNumberField Label="Silver" @bind-Value="@Player.Coins.SilverCoins" />
+                        <FluentNumberField Label="Copper" @bind-Value="@Player.Coins.CupperCoins" />
+                    @* </FluentStack> *@
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                    <FluentLabel Typo="Typography.Body"><b>TREASURE</b></FluentLabel>
+                    <FluentTextArea @bind-Value="@Player.Treasures" Cols="100" Rows="7" Resize="TextAreaResize.Both" Placeholder="Treasure Notes" />
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                    <FluentLabel Typo="Typography.Body"><b>LIBERATED PRISONERS</b></FluentLabel>
+                    <FluentNumberField @bind-Value="@Player.LiberatedPrisoners" style="width: 100%;" />
+
+                    <FluentLabel Typo="Typography.Body"><b>SIDE QUESTS</b></FluentLabel>
+                    <FluentTextArea @bind-Value="@Player.SideQuests" Cols="100" Rows="4" Resize="TextAreaResize.Both" Placeholder="Side Quests Notes" />
+                </FluentStack>
+                
+            </FluentStack>
+        </FluentCard>
+
+
+        <FluentCard MinimalStyle="true">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 50%;"><b>FAVOUR OF THE GODS</b></FluentLabel>
+                    <FluentLabel Typo="Typography.Body"><b>FAVOUR POINTS</b></FluentLabel> 
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>GRAKADA</b> THE CORE</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Grakada" Style="width: 300px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
                     
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>INTUNERIC</b> THE MURK</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Intuneric" Style="width: 200px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>MADUVA</b> THE ROT</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Maduva" Style="width: 300px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider> 
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>MURATAYNIE</b> THE PULP</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Murataynie" Style="width: 300px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>NEVAZATOR</b> THE BLIND</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Nevazator" Style="width: 300px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>RADACINA</b> THE RADIX</FluentLabel>
+                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Radacina" Style="width: 300px;" >
+                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    </FluentSlider>
                 </FluentStack>
             </FluentStack>
         </FluentCard>
 
-        <FluentCard>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                <div class="sheetTitle"><b>CURRENCY</b></div>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
-                    <span><span class="sheetTitle">Gold:</span> @Player.Coins.GoldCoins.ToString()</span>
-                    <span><span class="sheetTitle">Silver:</span> @Player.Coins.SilverCoins.ToString()</span>
-                    <span><span class="sheetTitle">Copper:</span> @Player.Coins.CupperCoins.ToString()</span>
+
+        <FluentCard MinimalStyle="true">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                    <FluentLabel Typo="Typography.Body"><b>LARGE AND HEAVY ITEMS</b></FluentLabel>
+                    <FluentListbox TOption="string" Width="300px;">
+                        @for(int i = 0; i < 10; i++)
+                        {
+                            var item = Player.LargeAndHeavyItems?.ElementAtOrDefault(i);
+                            if (!string.IsNullOrWhiteSpace(item))
+                            {
+                                <FluentOption Value="@item">@item</FluentOption>
+                            }
+                            else
+                            {
+                                var placeholder = $"{i + 1}.";
+                                <FluentOption Value="@placeholder">@placeholder</FluentOption>
+                            }
+                        }
+                    </FluentListbox>
+                    <div>
+                        <FluentButton Appearance="Appearance.Accent" OnClick="@(() => Player.LargeAndHeavyItems.Add(""))" IconStart="@(new Icons.Filled.Size16.Add())" ></FluentButton>
+                        <FluentButton OnClick="@(() => Player.LargeAndHeavyItems.RemoveAt(Player.LargeAndHeavyItems.Count - 1))" IconStart="@(new Icons.Filled.Size16.Delete())" Disabled="@(Player.LargeAndHeavyItems.Count == 0)" ></FluentButton>
+                    </div>
+
+                    <FluentLabel Typo="Typography.Body"><b>ADDITIONAL NOTES</b></FluentLabel>
+                    <FluentTextArea @bind-Value="@Player.AdditionalNotes" Cols="60" Rows="10" Resize="TextAreaResize.Both" Placeholder="Additional Notes" /> 
+
+                    <FluentLabel Typo="Typography.Body"><b>RATIONS</b></FluentLabel>
+                    <FluentNumberField @bind-Value="@Player.Rations" Min="0" style="width: 120px;" />
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                    <FluentLabel Typo="Typography.Body"><b>SMALL ITEMS</b></FluentLabel>
+                    <FluentTextArea @bind-Value="@Player.SmallItems" Cols="60" Rows="25" Resize="TextAreaResize.Both" Placeholder="Small Items Notes" />
+
+                    <FluentLabel Typo="Typography.Body"><b>LOOT LOCKUP</b></FluentLabel>
+                    <FluentTextArea @bind-Value="@Player.LootLockup" Cols="60" Rows="6" Resize="TextAreaResize.Both" Placeholder="Loot Lockup" /> 
                 </FluentStack>
             </FluentStack>
         </FluentCard>
-
-        <FluentCard>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                <div class="sheetTitle"><b>QUEST PROGRESS</b></div>
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="3">
-                    <span><span class="sheetTitle">Legend Status Level Tracker:</span> @Player.LegendStatusLevelTracker.ToString()</span>
-                    <span><span class="sheetTitle">Liberated Prisoners:</span> @Player.LiberatedPrisoners.ToString()</span>
-                    @if (Player.Treasures != null && Player.Treasures.Count > 0)
-                    {
-                        <div>
-                            <span class="sheetTitle">Treasures:</span>
-                            <ul style="margin: 5px 0; padding-left: 20px;">
-                                @foreach(var treasure in Player.Treasures)
-                                {
-                                    <li>@treasure</li>
-                                }
-                            </ul>
-                        </div>
-                    }
-                    @if (Player.SideQuests != null && Player.SideQuests.Count > 0)
-                    {
-                        <div>
-                            <span class="sheetTitle">Side Quests:</span>
-                            <ul style="margin: 5px 0; padding-left: 20px;">
-                                @foreach(var quest in Player.SideQuests)
-                                {
-                                    <li>@quest</li>
-                                }
-                            </ul>
-                        </div>
-                    }
-                </FluentStack>
-            </FluentStack>
-        </FluentCard>
-
-        <FluentCard>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                <div class="sheetTitle"><b>FAVOR OF THE GODS</b></div>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
-                    <span><span class="sheetTitle">Grakada:</span> @Player.FavorOfTheGods.Grakada.ToString()</span>
-                    <span><span class="sheetTitle">Intuneric:</span> @Player.FavorOfTheGods.Intuneric.ToString()</span>
-                    <span><span class="sheetTitle">Maduva:</span> @Player.FavorOfTheGods.Maduva.ToString()</span>
-                    <span><span class="sheetTitle">Murataynie:</span> @Player.FavorOfTheGods.Murataynie.ToString()</span>
-                    <span><span class="sheetTitle">Nevazator:</span> @Player.FavorOfTheGods.Nevazator.ToString()</span>
-                    <span><span class="sheetTitle">Radacina:</span> @Player.FavorOfTheGods.Radacina.ToString()</span>
-                </FluentStack>
-            </FluentStack>
-        </FluentCard>
-
         
 
-
-
-
-
-        
     </FluentStack>
 }
 
