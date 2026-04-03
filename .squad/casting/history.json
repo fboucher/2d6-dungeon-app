@@ -1,0 +1,10 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "2d6-dungeon-app-001",
+      "universe": "Alien",
+      "created_at": "2026-04-03T18:47:00Z",
+      "agents": ["Dallas", "Ripley", "Lambert", "Hicks"]
+    }
+  ]
+}

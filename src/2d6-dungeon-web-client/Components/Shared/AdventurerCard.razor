@@ -23,8 +23,8 @@
 @if(Extented)
 {
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="100%">
-        <div>
-            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%">
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%" Wrap="true">
                 @if(Editable)
                 {
                     <span class="sheetTitle">HP</span> <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" style="width: 80px;" />
@@ -36,18 +36,121 @@
                     
                 <span class="sheetTitle">SH </span> @Player.Shift.ToString()
                 <span><span class="sheetTitle">Precision</span> @Player.Precision.ToString()</span>
+                <span><span class="sheetTitle">Discipline</span> @Player.Discipline.ToString()</span>
             </FluentStack>
-        </div>
-        @* <div class="sheetTitle"><b>WEAPON</b> @Player.Weapon?.Name ?? ""</div>*@
-        <div class="sheetTitle"><b>APPLIED RUNES</b> @Player.AppliedRunes.ToString()</div> 
-        <div class="sheetTitle">Manoeuvre</div>
-        @foreach(var weaponManoeuvre in Player.WeaponManoeuvres!)
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <div class="sheetTitle"><b>STATUS EFFECTS</b></div>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
+                    <span><span class="sheetTitle">Bloodied:</span> @Player.Bloodied.ToString()</span>
+                    <span><span class="sheetTitle">Fever:</span> @(Player.Fever ? "Yes" : "No")</span>
+                    <span><span class="sheetTitle">Soaked:</span> @Player.Soaked.ToString()</span>
+                    <span><span class="sheetTitle">Pneumonia:</span> @(Player.Pneumonia ? "Yes" : "No")</span>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <div class="sheetTitle"><b>RESOURCES</b></div>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
+                    <span><span class="sheetTitle">Rations:</span> @Player.Rations.ToString()</span>
+                    <span><span class="sheetTitle">Applied Runes:</span> @Player.AppliedRunes.ToString()</span>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <div class="sheetTitle"><b>CURRENCY</b></div>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
+                    <span><span class="sheetTitle">Gold:</span> @Player.Coins.GoldCoins.ToString()</span>
+                    <span><span class="sheetTitle">Silver:</span> @Player.Coins.SilverCoins.ToString()</span>
+                    <span><span class="sheetTitle">Copper:</span> @Player.Coins.CupperCoins.ToString()</span>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <div class="sheetTitle"><b>QUEST PROGRESS</b></div>
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="3">
+                    <span><span class="sheetTitle">Legend Status Level Tracker:</span> @Player.LegendStatusLevelTracker.ToString()</span>
+                    <span><span class="sheetTitle">Liberated Prisoners:</span> @Player.LiberatedPrisoners.ToString()</span>
+                    @if (Player.Treasures != null && Player.Treasures.Count > 0)
+                    {
+                        <div>
+                            <span class="sheetTitle">Treasures:</span>
+                            <ul style="margin: 5px 0; padding-left: 20px;">
+                                @foreach(var treasure in Player.Treasures)
+                                {
+                                    <li>@treasure</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    @if (Player.SideQuests != null && Player.SideQuests.Count > 0)
+                    {
+                        <div>
+                            <span class="sheetTitle">Side Quests:</span>
+                            <ul style="margin: 5px 0; padding-left: 20px;">
+                                @foreach(var quest in Player.SideQuests)
+                                {
+                                    <li>@quest</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <div class="sheetTitle"><b>FAVOR OF THE GODS</b></div>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Wrap="true">
+                    <span><span class="sheetTitle">Grakada:</span> @Player.FavorOfTheGods.Grakada.ToString()</span>
+                    <span><span class="sheetTitle">Intuneric:</span> @Player.FavorOfTheGods.Intuneric.ToString()</span>
+                    <span><span class="sheetTitle">Maduva:</span> @Player.FavorOfTheGods.Maduva.ToString()</span>
+                    <span><span class="sheetTitle">Murataynie:</span> @Player.FavorOfTheGods.Murataynie.ToString()</span>
+                    <span><span class="sheetTitle">Nevazator:</span> @Player.FavorOfTheGods.Nevazator.ToString()</span>
+                    <span><span class="sheetTitle">Radacina:</span> @Player.FavorOfTheGods.Radacina.ToString()</span>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        @if(Player.Weapon != null)
         {
-            <div><Manoeuvre manoeuvre="@weaponManoeuvre" /></div>
+            <FluentCard>
+                <div class="sheetTitle"><b>WEAPON</b></div>
+                <span>@Player.Weapon.Name</span>
+            </FluentCard>
         }
-        <ArmourPieces armourPiece="@Player.ArmourPieces" />
-        <MagicScrolls magicScrolls="@Player.MagicScrolls" />
-        <MagicPotions magicPotions="@Player.MagicPotions" />
+
+        <FluentCard>
+            <div class="sheetTitle"><b>MANOEUVRES</b></div>
+            @if(Player.WeaponManoeuvres != null && Player.WeaponManoeuvres.Count > 0)
+            {
+                @foreach(var weaponManoeuvre in Player.WeaponManoeuvres)
+                {
+                    <div><Manoeuvre manoeuvre="@weaponManoeuvre" /></div>
+                }
+            }
+        </FluentCard>
+
+        <FluentCard>
+            <ArmourPieces armourPiece="@Player.ArmourPieces" />
+        </FluentCard>
+
+        <FluentCard>
+            <MagicScrolls magicScrolls="@Player.MagicScrolls" />
+        </FluentCard>
+
+        <FluentCard>
+            <MagicPotions magicPotions="@Player.MagicPotions" />
+        </FluentCard>
     </FluentStack>
 }
 

@@ -1,0 +1,5 @@
+{
+  "universe_allowlist": ["Alien"],
+  "max_agents_per_universe": 20,
+  "allow_overflow": true
+}
