@@ -20,6 +20,7 @@ This project is a digital version of the game, with creator's approval. It's a w
 - [X] No need of physical dice.
 - [X] digital map.
 - [X] Help with battle rules  
+- [ ] Character sheet
 
 
 ### Related Content
