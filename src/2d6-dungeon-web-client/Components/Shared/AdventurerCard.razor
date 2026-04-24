@@ -10,8 +10,27 @@
                 StatusSize="PresenceBadgeSize.Small"
                 OnClick="@(() => ToggleExtended())">
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
-            <FluentLabel Typo="Typography.H3">@Player.Name</FluentLabel>
-            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Width="100%">
+                <FluentLabel Typo="Typography.H3">@Player.Name</FluentLabel>
+                <FluentSpacer />
+                <FluentLabel Typo="Typography.Body"><b>Level:</b> @Player.Level</FluentLabel>
+            </FluentStack>
+            
+            @if(!Extented)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+                    <FluentLabel Typo="Typography.Body"><b>HP:</b> @Player.HealthPoints</FluentLabel>
+                    <FluentSpacer Width="50"/>
+                    <FluentLabel Typo="Typography.Body"><b>XP:</b> @Player.XP</FluentLabel>
+                </FluentStack>
+            }
+        </FluentStack>
+</FluentPersona>
+@if(Extented)
+{
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="480px">
+
+        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
                 <b>XP:</b>
                 <FluentNumberField @bind-Value="@Player.XP" style="width: 80px;" />
                 <FluentNumberField @bind-Value="@_xpDelta" Min="1" Placeholder="Add XP" style="width: 80px;" />
@@ -21,14 +40,8 @@
             </FluentStack>
 
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%" Wrap="true">
-                @if(Editable)
-                {
-                    <FluentLabel Typo="Typography.Body"><b>Level:</b>HP</FluentLabel> <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" style="width: 80px;" />
-                }
-                else 
-                {
-                    <FluentLabel Typo="Typography.Body"><b>HP:</b></FluentLabel> @Player.HealthPoints.ToString()
-                }
+                    <FluentLabel Typo="Typography.Body"><b>Level:</b>HP</FluentLabel> 
+                    <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" style="width: 80px;" />
             </FluentStack>
 
             <FluentCard  MinimalStyle="true">
@@ -52,30 +65,9 @@
                 </FluentStack>
             </FluentCard>
 
-            <FluentCard>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="1">
-                    <FluentLabel Typo="Typography.Body">LEGEND STATUS LEVEL TRACKER</FluentLabel>
-                    <FluentSlider Min="0" Max="10" Step="1" @bind-Value="@Player.LegendStatusLevelTracker" Style="width: 200px;" >
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
-                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                    </FluentSlider>
-                </FluentStack>
-            </FluentCard>
+            
 
-        </FluentStack>
-</FluentPersona>
-@if(Extented)
-{
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="480px">
+
         
         <FluentCard MinimalStyle="true">
             <div class="sheetTitle"><b>MANOEUVRES</b></div>
@@ -98,6 +90,25 @@
 
         <FluentCard MinimalStyle="true">
             <MagicPotions magicPotions="@Player.MagicPotions" />
+        </FluentCard>
+
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="1">
+                <FluentLabel Typo="Typography.Body">LEGEND STATUS LEVEL TRACKER</FluentLabel>
+                <FluentSlider Min="0" Max="10" Step="1" @bind-Value="@Player.LegendStatusLevelTracker" Style="width: 200px;" >
+                    <FluentSliderLabel Position="0">0</FluentSliderLabel>
+                    <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                    <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                    <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                    <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                    <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                    <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                    <FluentSliderLabel Position="7">7</FluentSliderLabel>
+                    <FluentSliderLabel Position="8">8</FluentSliderLabel>
+                    <FluentSliderLabel Position="9">9</FluentSliderLabel>
+                    <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                </FluentSlider>
+            </FluentStack>
         </FluentCard>
 
         <FluentCard MinimalStyle="true">
