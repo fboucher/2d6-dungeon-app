@@ -24,7 +24,7 @@
     </table>  *@
 
 
-    <FluentDataGrid Items="@scrolls" MultiLine="true">
+    <FluentDataGrid Items="@scrolls" MultiLine="true" Style="width: 100%;">
         <PropertyColumn Title="Magic scrolls" Property="@(a => a.Description)" Sortable="false" Class="multiline-text" />
         <PropertyColumn Title="Orbit" Property="@(a => a.Orbit ?? "")" Sortable="false"  Class="multiline-text"/>
         <PropertyColumn Title="Displel doubles" Property="@(a => a.DispelDoubles ?? "")" Sortable="false" Class="multiline-text" />
