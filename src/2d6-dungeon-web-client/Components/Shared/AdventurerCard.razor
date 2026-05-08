@@ -98,7 +98,7 @@
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
-            <MagicPotions magicPotions="@Player.MagicPotions" />
+            <MagicPotions magicPotions="@Player.MagicPotions" OnPotionDeleted="@HandlePotionDeleted" OnPotionAdded="@HandlePotionAdded" />
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
@@ -369,6 +369,18 @@
             healthDepletionHandled = true;
             await OnHealthDepleted.InvokeAsync();
         }
+    }
+
+    private async Task HandlePotionDeleted(int id)
+    {
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private async Task HandlePotionAdded(MagicPotion potion)
+    {
+        Player.MagicPotions ??= new List<MagicPotion>();
+        Player.MagicPotions.Add(potion);
+        await PlayerChanged.InvokeAsync(Player);
     }
 
     private void ToggleExtended()

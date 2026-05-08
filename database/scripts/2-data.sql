@@ -80,7 +80,8 @@ VALUES('Melt metal', 'Destroys one lock or armour-related interrupt on an enemy'
 
 -- Starting Potion
 INSERT INTO db2d6.magic_potions(potion_type, modifier, duration, cost) 
-    VALUES('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '18gc');
+VALUES
+    ('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '18gc');
 
 
 -- rooms Level 1

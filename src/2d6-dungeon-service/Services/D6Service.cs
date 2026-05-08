@@ -288,6 +288,12 @@ public class D6Service
         return result!.value.First<MagicPotion>();
     }
 
+    public async Task<List<MagicPotion>> GetMagicPotions()
+    {
+        var result = await httpClient.GetFromJsonAsync<MagicPotionlList>("api/magic_potion");
+        return result!.value;
+    }
+
     #endregion
 
 
