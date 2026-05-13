@@ -2,10 +2,19 @@
 
 @if(magicPotions != null){
 
-    <FluentDataGrid Items="@potions" style="width: 100%;" MultiLine="true">
-        <PropertyColumn Title="Magic Potions" Property="@(a => a.PotionType)" Sortable="false" Class="multiline-text" />
-        <PropertyColumn Title="Orbit" Property="@(a => a.Modifier ?? "")" Sortable="false"  Class="multiline-text" />
-        <PropertyColumn Title="Displel doubles" Property="@(a => a.Duration ?? "")" Sortable="false" Class="multiline-text" />
+    <FluentDataGrid Items="@potions" style="width: 100%;" MultiLine="true" ResizableColumns="true" AutoFit="true">
+        <PropertyColumn Title="Magic Potions" 
+                        Property="@(a => a.PotionType)" 
+                        Sortable="false" 
+                        Tooltip="true" 
+                        TooltipText="@(c => c.Modifier)"/>
+        @* <PropertyColumn Title="Orbit" 
+                        Property="@(a => a.Modifier ?? "")" 
+                        Sortable="false" /> *@
+        <PropertyColumn Title="Displel doubles" 
+                        Property="@(a => a.Duration ?? "")" 
+                        Sortable="false" 
+                        Tooltip="true" />
         <TemplateColumn>
             <FluentButton @onclick="@(async () => await PotionDelete(context!.Id))"
                             IconEnd="@(new Icons.Filled.Size16.HandLeft())" 

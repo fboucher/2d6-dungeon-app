@@ -93,8 +93,8 @@
             <ArmourPieces armourPiece="@Player.ArmourPieces" />
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
-            <MagicScrolls magicScrolls="@Player.MagicScrolls" />
+        <FluentCard MinimalStyle="true" Width="90%" >
+            <MagicScrolls magicScrolls="@Player.MagicScrolls" OnScrollDeleted="@HandleScrollDeleted" OnScrollAdded="@HandleScrollAdded" />
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
@@ -380,6 +380,17 @@
     {
         @* Player.MagicPotions ??= new List<MagicPotion>();
         Player.MagicPotions.Add(potion); *@
+        await PlayerChanged.InvokeAsync(Player);
+        StateHasChanged();
+    }
+
+    private async Task HandleScrollDeleted(int id)
+    {
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private async Task HandleScrollAdded(MagicScroll scroll)
+    {
         await PlayerChanged.InvokeAsync(Player);
         StateHasChanged();
     }
