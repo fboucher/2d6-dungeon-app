@@ -36,10 +36,10 @@
     {
         potions = magicPotions?.AsQueryable();
     }
-
+    
     private async Task PotionDelete(int id)
     {
-        magicPotions?.RemoveAll(p => p.Id == id);
+        magicPotions?.Remove(magicPotions.FirstOrDefault(p => p.Id == id)!);
         potions = magicPotions?.AsQueryable();
         await OnPotionDeleted.InvokeAsync(id);
     }
@@ -61,6 +61,8 @@
         var result = await dialog.Result;
         if (!result.Cancelled && result.Data is MagicPotion potion)
         {
+            magicPotions?.Add(potion);
+            potions = magicPotions?.AsQueryable(); 
             await OnPotionAdded.InvokeAsync(potion);
         }
     }

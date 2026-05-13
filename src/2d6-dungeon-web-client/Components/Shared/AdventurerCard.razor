@@ -378,9 +378,10 @@
 
     private async Task HandlePotionAdded(MagicPotion potion)
     {
-        Player.MagicPotions ??= new List<MagicPotion>();
-        Player.MagicPotions.Add(potion);
+        @* Player.MagicPotions ??= new List<MagicPotion>();
+        Player.MagicPotions.Add(potion); *@
         await PlayerChanged.InvokeAsync(Player);
+        StateHasChanged();
     }
 
     private void ToggleExtended()
