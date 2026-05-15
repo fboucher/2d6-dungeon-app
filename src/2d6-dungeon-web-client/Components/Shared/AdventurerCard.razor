@@ -1,5 +1,6 @@
 ﻿@using c5m._2d6Dungeon;
 @inject D6Service D6Service;
+@inject IDialogService DialogService;
 
 @rendermode InteractiveServer
 
@@ -287,28 +288,21 @@
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                     <FluentLabel Typo="Typography.Body"><b>LARGE AND HEAVY ITEMS</b></FluentLabel>
-                    <FluentListbox TOption="string" Width="300px;">
-                        @for (int i = 0; i < 10; i++)
+                    <FluentListbox TOption="string" Width="300px"
+                                 @bind-SelectedOption="@_selectedLargeAndHeavyItemIndexValue">
+                        @for (int i = 0; i < LargeAndHeavyItemDisplayItems.Count; i++)
                         {
-                            var item = Player.LargeAndHeavyItems?.ElementAtOrDefault(i);
-                            if (!string.IsNullOrWhiteSpace(item))
-                            {
-                                <FluentOption Value="@item">@item</FluentOption>
-                            }
-                            else
-                            {
-                                var placeholder = $"{i + 1}.";
-                                <FluentOption Value="@placeholder">@placeholder</FluentOption>
-                            }
+                            var displayText = LargeAndHeavyItemDisplayItems[i];
+                            <FluentOption Value="@i.ToString()">@displayText</FluentOption>
                         }
                     </FluentListbox>
                     <div>
-                        <FluentButton Appearance="Appearance.Accent" OnClick="@(() => Player.LargeAndHeavyItems.Add(""))"
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="@OpenEditLargeAndHeavyItemDialog"
                                       IconStart="@(new Icons.Filled.Size16.Edit())"></FluentButton>
                         <FluentButton
-                        OnClick="@(() => Player.LargeAndHeavyItems.RemoveAt(Player.LargeAndHeavyItems.Count - 1))"
-                        IconStart="@(new Icons.Filled.Size16.Delete())"
-                        Disabled="@(Player.LargeAndHeavyItems.Count == 0)"></FluentButton>
+                            OnClick="@DeleteSelectedLargeAndHeavyItem"
+                            IconStart="@(new Icons.Filled.Size16.Delete())"></FluentButton>
                     </div>
 
                     <FluentLabel Typo="Typography.Body"><b>ADDITIONAL NOTES</b></FluentLabel>
@@ -353,6 +347,11 @@
 
     private bool healthDepletionHandled = false;
     private int _xpDelta = 0;
+    private string? _selectedLargeAndHeavyItemIndexValue;
+
+    private int SelectedLargeAndHeavyItemIndex => int.TryParse(_selectedLargeAndHeavyItemIndexValue, out var index)
+        ? index
+        : -1;
 
     private async Task AddXp()
     {
@@ -398,6 +397,104 @@
     private void ToggleExtended()
     {
         Extented = !Extented;
+    }
+
+    private async Task OpenEditLargeAndHeavyItemDialog()
+    {
+        if (SelectedLargeAndHeavyItemIndex < 0)
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        var dialogData = new EditLargeAndHeavyItemDialogData
+        {
+            Text = SelectedLargeAndHeavyItemIndex < actualItems.Count
+                ? actualItems[SelectedLargeAndHeavyItemIndex]
+                : string.Empty
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<EditLargeAndHeavyItemDialog>(
+            dialogData,
+            new DialogParameters()
+            {
+                Title = "Edit Large and Heavy Item",
+                PrimaryAction = "Save",
+                PrimaryActionEnabled = !string.IsNullOrWhiteSpace(dialogData.Text),
+                SecondaryAction = "Cancel",
+                Width = "420px",
+                Modal = true,
+            });
+
+        var result = await dialog.Result;
+        if (!result.Cancelled && result.Data is EditLargeAndHeavyItemDialogData resultData)
+        {
+            SetLargeAndHeavyItemText(SelectedLargeAndHeavyItemIndex, resultData.Text);
+            await PlayerChanged.InvokeAsync(Player);
+        }
+    }
+
+    private async Task DeleteSelectedLargeAndHeavyItem()
+    {
+        if (!CanDeleteSelectedLargeAndHeavyItem())
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        actualItems.RemoveAt(SelectedLargeAndHeavyItemIndex);
+        Player.LargeAndHeavyItems = actualItems;
+        _selectedLargeAndHeavyItemIndexValue = null;
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private bool CanDeleteSelectedLargeAndHeavyItem()
+    {
+        var actualItems = GetActualLargeAndHeavyItems();
+         return SelectedLargeAndHeavyItemIndex >= 0
+             && SelectedLargeAndHeavyItemIndex < actualItems.Count;
+    }
+
+    private List<string> GetActualLargeAndHeavyItems()
+    {
+        return Player.LargeAndHeavyItems?
+                   .Where(item => !string.IsNullOrWhiteSpace(item))
+                   .ToList()
+               ?? new List<string>();
+    }
+
+    private List<string> LargeAndHeavyItemDisplayItems
+    {
+        get
+        {
+            var actualItems = GetActualLargeAndHeavyItems();
+            var displayItems = new List<string>(actualItems);
+            for (int i = actualItems.Count; i < 10; i++)
+            {
+                displayItems.Add($"{i + 1}.");
+            }
+            return displayItems;
+        }
+    }
+
+    private void SetLargeAndHeavyItemText(int index, string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        if (index < actualItems.Count)
+        {
+            actualItems[index] = text;
+        }
+        else
+        {
+            actualItems.Add(text);
+        }
+
+        Player.LargeAndHeavyItems = actualItems;
     }
 
     public void ResetHealthDepletion()

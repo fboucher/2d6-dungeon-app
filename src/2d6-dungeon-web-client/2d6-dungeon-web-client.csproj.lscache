@@ -56,6 +56,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 AppVersion.cs
+Components/Dialogues/EditLargeAndHeavyItemDialogData.cs
 Domain/MapTools.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
@@ -447,6 +448,7 @@ obj/Debug/net10.0/2d6-dungeon-web-client.GeneratedMSBuildEditorConfig.editorconf
 Components/
  App.razor
  Dialogues/
+  EditLargeAndHeavyItemDialog.razor
   EditRoomDialog.razor
   NewRoomDialog.razor
   SelectDoorDialog.razor
@@ -491,6 +493,7 @@ Components/
 Components/
  App.razor
  Dialogues/
+  EditLargeAndHeavyItemDialog.razor
   EditRoomDialog.razor
   NewRoomDialog.razor
   SelectDoorDialog.razor

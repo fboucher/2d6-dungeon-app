@@ -1,0 +1,28 @@
+@implements IDialogContentComponent<EditLargeAndHeavyItemDialogData>
+@rendermode InteractiveServer
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+    <FluentTextField Label="Item text"
+                     Value="@Content.Text"
+                     ValueChanged="@OnTextChanged"
+                     Placeholder="Type the large or heavy item text" />
+</FluentStack>
+
+@code {
+    [Parameter]
+    public required EditLargeAndHeavyItemDialogData Content { get; set; }
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Dialog.TogglePrimaryActionButton(!string.IsNullOrWhiteSpace(Content.Text));
+    }
+
+    private void OnTextChanged(string? value)
+    {
+        Content.Text = value ?? string.Empty;
+        Dialog.TogglePrimaryActionButton(!string.IsNullOrWhiteSpace(Content.Text));
+    }
+}
