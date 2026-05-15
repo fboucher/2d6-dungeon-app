@@ -15,20 +15,20 @@ INSERT INTO dbo.magic_scrolls(scroll_type, description, duration, orbit, dispel_
     ('BRUTE FORCE', 'Your physical attack goes through with force, strength soaring through your body', 'NEXT COMBAT', 'METABOLISM', 'NONE', '17g', '+2', '+3 COMBAT, ±2 DAMAGE'),
     ('CUNNING', 'You have advantage in checks to hide or discern magic or use dexterity checks', 'LITTLE USED', 'FACILITY', 'NONE', '16g', '+1', '+2 PERCEPTION, ±1 HIDE'),
     ('DISTRACT', 'You surive the enemy''s mind and turn their thoughts to something else', 'INSTANT', 'PSYCHE', 'NONE', '20g', '+1', '±1 FOLIAGE IS CALLING, ±1 NOTICE'),
-    ('FIREWALL', '+2 Fire Resistance against all fire based or fire damage and attacks', 'INSTANT', 'PRIMORDIAL', '[·][·]', '26g', '+1', '+2 BURN CLEANSE, ±1 DAMAGE'),
+    ('FIREWALL', '+2 Fire Resistance against all fire based or fire damage and attacks', 'INSTANT', 'PRIMORDIAL', '4-4', '26g', '+1', '+2 BURN CLEANSE, ±1 DAMAGE'),
     ('FOCUSED WEAPON', 'Heavy strike from the blade of your weapon add +1 to next damage roll', 'NEXT COMBAT', 'METABOLISM', 'NONE', '18g', '+2', '+2 DAMAGE, ±1 ATTACK'),
-    ('FLEETING ACTION', 'You bead your pulse quickly and near automatically move from location', 'NEXT COMBAT', 'FACILITY', '[·][·]', '16g', '-1', '+2 FLEE, ±1 EVASION'),
+    ('FLEETING ACTION', 'You bead your pulse quickly and near automatically move from location', 'NEXT COMBAT', 'FACILITY', '1-1', '16g', '-1', '+2 FLEE, ±1 EVASION'),
     ('BRIGHTEN COMBAT', '+1 Coordination added to your next attack and action during combat', 'NEXT COMBAT', 'METABOLISM', 'NONE', '17g', '+1', '+1 COMBAT, ±1 PRECISION'),
-    ('INSPIRING WORDS', 'Yourself and nearby allies get +1 on any wisdom and skill checks', 'NEXT COMBAT', 'PRIMORDIAL', '[·][·]', '19g', '+2', '+1 MORAL, ±1 MORALE'),
-    ('LIGHTNING STRIKE', 'Bolt of time raining upon strikes toward your next attack hit and damage', 'INSTANT', 'PRIMORDIAL', '[·][·]', '56g', '+3', '+3 ELECTRIC, ±2 LIGHT'),
+    ('INSPIRING WORDS', 'Yourself and nearby allies get +1 on any wisdom and skill checks', 'NEXT COMBAT', 'PRIMORDIAL', '3-3', '19g', '+2', '+1 MORAL, ±1 MORALE'),
+    ('LIGHTNING STRIKE', 'Bolt of time raining upon strikes toward your next attack hit and damage', 'INSTANT', 'PRIMORDIAL', '3-3-6-6', '56g', '+3', '+3 ELECTRIC, ±2 LIGHT'),
     ('LUCKY SHOT', 'Reroll any attack roll you made or let someone reroll a saving throw', 'INSTANT', 'PSYCHE', 'NONE', '25g', '+1', '±1 ACCURACY, ±1 REROLL'),
     ('MENTAL WHIP', 'Your reach out it should strike tiny furrowed mind and it will hurt', 'INSTANT', 'PSYCHE', 'NONE', '29g', '+1', '±1 PSYCHE DAMAGE, ±1 MENTAL'),
     ('PARALYZE', 'Freeze muscle and in order foe can''t for the next time', 'INSTANT', 'PSYCHE', 'NONE', '22g', '+4', '±1 FREEZE TIME, ±1 PARALYZE'),
     ('SCENT TRAIL', 'Sharpen sense you you and decide any misted cards', 'INSTANT', 'FACILITY', 'NONE', '13g', '+1', '+1 SMELL, ±1 PERCEIVE'),
     ('STEADY HAND', 'Far stone near momentarily is I magical', 'LITTLE USED', 'FACILITY', 'NONE', '13g', '+1', '±1 PRECISION, ±1 ACCURACY'),
     ('SUNBOLT', 'You take a strike in a sunline that must cover you', 'INSTANT', 'METABOLISM', 'NONE', '30g', '-1', '+3 LIGHT, ±2 RADIANT'),
-    ('WARD HEALTH', '+1 Health protection that heals 1d4 health and spiritual damage', 'INSTANT', 'METABOLISM', '[·][·]', '55g', '-1', '+1 HEALTH, ±1 WARD'),
-    ('SWAMP LUNG', 'You torch air a burst of swamp water pass over and is to terrain', 'INSTANT', 'PRIMORDIAL', '[·][·]', '25g', '+1', '+1 FREE WATER, ±1 SWAMP');
+    ('WARD HEALTH', '+1 Health protection that heals 1d4 health and spiritual damage', 'INSTANT', 'METABOLISM', '2-2', '55g', '-1', '+1 HEALTH, ±1 WARD'),
+    ('SWAMP LUNG', 'You torch air a burst of swamp water pass over and is to terrain', 'INSTANT', 'PRIMORDIAL', '5-5', '25g', '+1', '+1 FREE WATER, ±1 SWAMP');
 
 -- Starting Potion
 INSERT INTO dbo.magic_potions(potion_type, modifier, duration, cost) VALUES
