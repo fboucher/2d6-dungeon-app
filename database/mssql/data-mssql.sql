@@ -10,18 +10,50 @@ INSERT INTO dbo.armour_pieces(name, dice_set, modifier)
 VALUES('Hide doublet', 2, '-1 Damage');
 
 -- Starting Scroll
-INSERT INTO dbo.magic_scrolls(scroll_type, description, modifier)
-VALUES('Balance', 'Increses discipline and magical focus for a time', '+1 Discipline for dungeon level');
-INSERT INTO dbo.magic_scrolls(scroll_type, description, modifier)
-VALUES('Mental whip', 'A damaging psychic attack', '1 strike of 10 damage');
-INSERT INTO dbo.magic_scrolls(scroll_type, description, modifier)
-VALUES('Reflexes', 'Increases combat ability for a time', '+1 Shift for 1 combat');
-INSERT INTO dbo.magic_scrolls(scroll_type, description, modifier)
-VALUES('Melt metal', 'Destroys one lock or armour-related interrupt on an enemy', 'Destroy 1 lock or peace of armour');
+INSERT INTO dbo.magic_scrolls(scroll_type, description, duration, orbit, dispel_doubles, cost, fail,  modifier) VALUES
+    ('BALANCE', 'Roll +4 on balance and stability and increase number of balance is still good', 'LITTLE USED', 'FACILITY', 'NONE', '15g', '+1', '±1 DISCIPLINE, ±1 ACROBAT'),
+    ('BRUTE FORCE', 'Your physical attack goes through with force, strength soaring through your body', 'NEXT COMBAT', 'METABOLISM', 'NONE', '17g', '+2', '+3 COMBAT, ±2 DAMAGE'),
+    ('CUNNING', 'You have advantage in checks to hide or discern magic or use dexterity checks', 'LITTLE USED', 'FACILITY', 'NONE', '16g', '+1', '+2 PERCEPTION, ±1 HIDE'),
+    ('DISTRACT', 'You surive the enemy''s mind and turn their thoughts to something else', 'INSTANT', 'PSYCHE', 'NONE', '20g', '+1', '±1 FOLIAGE IS CALLING, ±1 NOTICE'),
+    ('FIREWALL', '+2 Fire Resistance against all fire based or fire damage and attacks', 'INSTANT', 'PRIMORDIAL', '[·][·]', '26g', '+1', '+2 BURN CLEANSE, ±1 DAMAGE'),
+    ('FOCUSED WEAPON', 'Heavy strike from the blade of your weapon add +1 to next damage roll', 'NEXT COMBAT', 'METABOLISM', 'NONE', '18g', '+2', '+2 DAMAGE, ±1 ATTACK'),
+    ('FLEETING ACTION', 'You bead your pulse quickly and near automatically move from location', 'NEXT COMBAT', 'FACILITY', '[·][·]', '16g', '-1', '+2 FLEE, ±1 EVASION'),
+    ('BRIGHTEN COMBAT', '+1 Coordination added to your next attack and action during combat', 'NEXT COMBAT', 'METABOLISM', 'NONE', '17g', '+1', '+1 COMBAT, ±1 PRECISION'),
+    ('INSPIRING WORDS', 'Yourself and nearby allies get +1 on any wisdom and skill checks', 'NEXT COMBAT', 'PRIMORDIAL', '[·][·]', '19g', '+2', '+1 MORAL, ±1 MORALE'),
+    ('LIGHTNING STRIKE', 'Bolt of time raining upon strikes toward your next attack hit and damage', 'INSTANT', 'PRIMORDIAL', '[·][·]', '56g', '+3', '+3 ELECTRIC, ±2 LIGHT'),
+    ('LUCKY SHOT', 'Reroll any attack roll you made or let someone reroll a saving throw', 'INSTANT', 'PSYCHE', 'NONE', '25g', '+1', '±1 ACCURACY, ±1 REROLL'),
+    ('MENTAL WHIP', 'Your reach out it should strike tiny furrowed mind and it will hurt', 'INSTANT', 'PSYCHE', 'NONE', '29g', '+1', '±1 PSYCHE DAMAGE, ±1 MENTAL'),
+    ('PARALYZE', 'Freeze muscle and in order foe can''t for the next time', 'INSTANT', 'PSYCHE', 'NONE', '22g', '+4', '±1 FREEZE TIME, ±1 PARALYZE'),
+    ('SCENT TRAIL', 'Sharpen sense you you and decide any misted cards', 'INSTANT', 'FACILITY', 'NONE', '13g', '+1', '+1 SMELL, ±1 PERCEIVE'),
+    ('STEADY HAND', 'Far stone near momentarily is I magical', 'LITTLE USED', 'FACILITY', 'NONE', '13g', '+1', '±1 PRECISION, ±1 ACCURACY'),
+    ('SUNBOLT', 'You take a strike in a sunline that must cover you', 'INSTANT', 'METABOLISM', 'NONE', '30g', '-1', '+3 LIGHT, ±2 RADIANT'),
+    ('WARD HEALTH', '+1 Health protection that heals 1d4 health and spiritual damage', 'INSTANT', 'METABOLISM', '[·][·]', '55g', '-1', '+1 HEALTH, ±1 WARD'),
+    ('SWAMP LUNG', 'You torch air a burst of swamp water pass over and is to terrain', 'INSTANT', 'PRIMORDIAL', '[·][·]', '25g', '+1', '+1 FREE WATER, ±1 SWAMP');
 
 -- Starting Potion
-INSERT INTO dbo.magic_potions(potion_type, modifier, duration, cost) 
-    VALUES('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '18gc');
+INSERT INTO dbo.magic_potions(potion_type, modifier, duration, cost) VALUES
+    ('ALACRITY', '+1 Dexterity skill +1 Dexterity for 1 wagon/potion', 'INSTANT', '10g'),
+    ('BLESSED ACTIONS', '+2 Shift from your opponent''s Shift points for 1 whole combat', 'ONE COMBAT', '180g'),
+    ('DIVINE SHIELD', '+10 damage taken is split and 50% rolled back for 1 whole combat', 'ONE COMBAT', '130g'),
+    ('DIMINUTION', '+2 Bargains for 1 dungeon level', 'INSTANT', '5g'),
+    ('EXAMINATION', '+5 Fire Resistance rolls per 1 wagon', 'INSTANT', '10g'),
+    ('EXTRA WEANING', 'Heal up to 30 Health Points', 'INSTANT', '25g'),
+    ('FIDELITY', '+1 Precision for 1 dungeon level', 'INSTANT', '15g'),
+    ('FINESSE', '+2 Shift for 1 whole combat', 'ONE COMBAT', '50g'),
+    ('LIMIT HEALTH', '+5 Health Points (max exceed baseline level)', 'INSTANT', '35g'),
+    ('GAIN HEALTH', '+5 Health Points (can exceed baseline level)', 'INSTANT', '75g'),
+    ('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '20g'),
+    ('MIGHTY STRENGTH', '+2 Damage per hit for 1 whole combat', 'ONE COMBAT', '20g'),
+    ('PHASING', 'Phase through walls and one (phased) life blocked status', 'INSTANT', '60g'),
+    ('PROWESS', '+1 Shift for 1 whole combat', 'ONE COMBAT', '25g'),
+    ('RANCID BREATH', '+10 on melee or damage per round for 1 whole combat', 'ONE COMBAT', '75g'),
+    ('REGENERATION', 'Heal up to 60 Health Points', 'INSTANT', '60g'),
+    ('RESIST MAGIC', '+3 Damage resistance from magic attacks per line for 1 magic based', 'INSTANT', '45g'),
+    ('SHIELD AURA', '+1 Damage taken per round (all 1 whole combat)', 'ONE COMBAT', '10g'),
+    ('SPEED BURST', '+2 Haste attacks at the start of 1 combat', 'ONE COMBAT', '1g'),
+    ('STARKNESS', '+2 Precision for 1 dungeon level', 'INSTANT', '40g'),
+    ('STRENGTH', '+1 Damage per hit for 1 whole combat', 'ONE COMBAT', '15g'),
+    ('WILLPOWER', '+1 Discipline for 1 dungeon level', 'INSTANT', '30g');
 
 
 -- rooms Level 1
