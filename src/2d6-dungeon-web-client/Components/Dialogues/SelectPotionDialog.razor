@@ -15,7 +15,7 @@
         <FluentListbox TOption="MagicPotion"
                        Items="@potions"
                        OptionValue="@(p => p.Id.ToString())"
-                       OptionText="@(p => string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} - {p.Modifier}")"
+                       OptionText="@(p => string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} | {p.Modifier}")"
                        SelectedOptionChanged="@OnSelectionChanged"
                        Height="120px"
                        style="width: 100%;" />

@@ -15,7 +15,7 @@
         <FluentListbox TOption="MagicScroll"
                        Items="@scrolls"
                        OptionValue="@(s => s.Id.ToString())"
-                       OptionText="@(s => string.IsNullOrEmpty(s.Modifier) ? s.ScrollType : $"{s.ScrollType} - {s.Modifier}")"
+                       OptionText="@(s => string.IsNullOrEmpty(s.Modifier) ? s.ScrollType : $"{s.ScrollType} | {s.Modifier}")"
                        SelectedOptionChanged="@OnSelectionChanged"
                        Height="120px"
                        style="width: 100%;" />
