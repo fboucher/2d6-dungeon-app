@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.MySql" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.MySql" Version="13.3.3" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Azure.DataApiBuilder" Version="13.0.0" />
 
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
