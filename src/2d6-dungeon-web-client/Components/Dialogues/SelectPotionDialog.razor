@@ -1,0 +1,52 @@
+@using c5m._2d6Dungeon
+@inject D6Service D6Service
+
+@implements IDialogContentComponent<MagicPotion>
+
+@rendermode InteractiveServer
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+    @if (potions == null)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <FluentListbox TOption="MagicPotion"
+                       Items="@potions"
+                       OptionValue="@(p => p.Id.ToString())"
+                       OptionText="@(p => string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} | {p.Modifier}")"
+                       SelectedOptionChanged="@OnSelectionChanged"
+                       Height="120px"
+                       style="width: 100%;" />
+    }
+</FluentStack>
+
+@code {
+    [Parameter]
+    public MagicPotion Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    private List<MagicPotion>? potions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        potions = await D6Service.GetMagicPotions();
+        Dialog.TogglePrimaryActionButton(false);
+    }
+
+    private void OnSelectionChanged(MagicPotion? potion)
+    {
+        if (potion != null)
+        {
+            Content.Id = potion.Id;
+            Content.PotionType = potion.PotionType;
+            Content.Modifier = potion.Modifier;
+            Content.Duration = potion.Duration;
+            Content.Cost = potion.Cost;
+        }
+        Dialog.TogglePrimaryActionButton(potion != null);
+    }
+}

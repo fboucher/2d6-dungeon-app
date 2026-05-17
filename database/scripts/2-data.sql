@@ -68,19 +68,52 @@ INSERT INTO db2d6.armour_pieces(name, dice_set, modifier)
 VALUES('Hide doublet', 2, '-1 Damage');
 
 -- Starting Scroll
-INSERT INTO db2d6.magic_scrolls(scroll_type, description, modifier)
-VALUES('Balance', 'Increses discipline and magical focus for a time', '+1 Discipline for dungeon level');
-INSERT INTO db2d6.magic_scrolls(scroll_type, description, modifier)
-VALUES('Mental whip', 'A damaging psychic attack', '1 strike of 10 damage');
-INSERT INTO db2d6.magic_scrolls(scroll_type, description, modifier)
-VALUES('Reflexes', 'Increases combat ability for a time', '+1 Shift for 1 combat');
-INSERT INTO db2d6.magic_scrolls(scroll_type, description, modifier)
-VALUES('Melt metal', 'Destroys one lock or armour-related interrupt on an enemy', 'Destroy 1 lock or peace of armour');
+INSERT INTO db2d6.magic_scrolls(scroll_type, description, duration, orbit, dispel_doubles, cost, fail,  modifier) VALUES
+    ('BALANCE', 'You sense an inner stability and become aware of magic flowing through the air.', 'UNTIL USED', 'FACULTY', 'NONE', '15gs', '-1', '+1 DISCIPLINE FOR 1 DUNGEON LEVEL'),
+    ('BRUTE FORCE', 'Your muscles tighten and bulge and you feel strength coursing through your body.', 'NEXT COMBAT', 'METAMORPH', 'NONE', '17gs', '+2', '+2 DAMAGE FOR 1 COMBAT'),
+    ('DEEP FOCUS', 'You feel connected to the streams of magic energy and control them with ease.', 'UNTIL USED', 'FACULTY', 'NONE', '25gs', '-1', '+2 DISCIPLINE FOR 1 DUNGEON LEVEL'),
+    ('DISTRACT', 'You enter the enemy''s mind and turn their thoughts against their companion.', 'INSTANT', 'PSYCHE', 'NONE', '30gs', '+1', 'IF YOU FACE 2 FOES 1 LEAVES'),
+    ('FIREBALL', 'You blast a ball of fire from your open palm, at your enemy, who bursts into flames.', 'INSTANT', 'PRIMORDIAL', '4-4', '20gs', '-1', 'CAUSES 20 DAMAGE'),
+    ('FLAMING WEAPON', 'Flames erupt from the blade of your weapon and burn those you strike.', 'NEXT COMBAT', 'PRIMORDIAL', '1-1', '32gs', '0', '+4 DAMAGE FOR 1 COMBAT'),
+    ('FLEETING ACTION', 'You feel your pulse quicken and become swift and graceless.', 'NEXT COMBAT', 'FACULTY', '3-3', '10gs', '-1', '+2 SHIFT FOR 1 COMBAT'),
+    ('INSIGHTFUL COMBAT', 'The world slows and details seem clearer as you study your opponent''s movements.', 'NEXT COMBAT', 'PSYCHE', 'NONE', '70gs', '-2', '+20 PERCEPT XP FROM 1 COMBAT'),
+    ('INVISIBILITY', 'You glance down to see your body has disappeared and that you have vanished.', 'NEXT COMBAT', 'METAMORPH', '5-5', '21gs', '-1', 'AVOID 1 COMBAT AND ROOM CONTENTS'),
+    ('LIGHTNING STRIKE', 'A fork of bluish lightning explodes from your chest to strike your foe with unholy force.', 'INSTANT', 'PRIMORDIAL', '3-3-6-6', '50gs', '-3', '1 STRIKE OF 50 DAMAGE'),
+    ('MELT METAL', 'You concentrate on the metal and watch it melt into a soft dripping gloop.', 'INSTANT', 'METAMORPH', 'NONE', '18gs', '0', 'DESTROY 1 LOCK OR INTERRUPT ARMOUR'),
+    ('MENTAL WHIP', 'You reach out a thought into their mind and it transforms to become a barbed lash.', 'INSTANT', 'PSYCHE', 'NONE', '20gs', '-1', '1 STRIKE OF 10 DAMAGE'),
+    ('PARALYSIS', 'You clench your fist and focus on one foe and they freeze to the spot motionless.', 'INSTANT', 'PSYCHE', 'NONE', '22gs', '+1', '+3 FREE SWINGS IN 1 COMBAT'),
+    ('REFLEXES', 'Warmth floods your body making you feel at ease and unexpectedly flexible.', 'NEXT COMBAT', 'FACULTY', 'NONE', '10gs', '-2', '+1 SHIFT FOR 1 COMBAT'),
+    ('STEADY HAND', 'You sense your movements as if magnified allowing you to steady yourself.', 'UNTIL USED', 'FACULTY', 'NONE', '13gs', '-1', '+1 PRECISION FOR 1 DUNGEON LEVEL'),
+    ('SUNDER', 'There is a loud crack and the ceiling above your foe collapses inwards on them.', 'INSTANT', 'METAMORPH', '2-2', '30gs', '-1', '1 STRIKE OF 20 DAMAGE TO ALL FOES'),
+    ('SURGING HEALTH', 'You watch as your wounds close and heal and renewed vigour surges through you.', 'INSTANT', 'METAMORPH', '4-4', '55gs', '-1', '+20 HEALTH POINTS'),
+    ('SWAMP LUNG', 'You watch as a torrent of swamp water pours from your foe''s mouth.', 'INSTANT', 'PRIMORDIAL', '5-5', '25gs', '-1', '1 FREE SWING + 20 DAMAGE');
+
 
 
 -- Starting Potion
-INSERT INTO db2d6.magic_potions(potion_type, modifier, duration, cost) 
-    VALUES('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '18gc');
+INSERT INTO db2d6.magic_potions(potion_type, modifier, duration, cost) VALUES
+    ('CONSTANCY', '+1 Precision and +1 Discipline for 1 dungeon level', 'INSTANT', '45gs'),
+    ('DEXTEROUS ACTIONS', '-2 Shift from your opponent''s Shift Points for 1 whole combat', 'ONE COMBAT', '100gs'),
+    ('DIVINE SHIELD', '-10 damage from each hit you take for 1 whole combat', 'ONE COMBAT', '110gs'),
+    ('DOMINATION', '+2 Discipline for 1 dungeon level', 'INSTANT', '50gs'),
+    ('EXAMINATION', 'Go to the treasure rolls in 1 room', 'INSTANT', '10gs'),
+    ('EXTRA HEALING', 'Heal up to 30 Health Points', 'INSTANT', '28gs'),
+    ('FIDELITY', '+1 Precision for 1 dungeon level', 'INSTANT', '8gs'),
+    ('FINESSE', '+2 Shift for 1 whole combat', 'ONE COMBAT', '50gs'),
+    ('FURTHER HEALTH', 'Gain 25 Health Points (can exceed baseline level)', 'INSTANT', '40gs'),
+    ('GAIN HEALTH', 'Gain 15 Health Points (can exceed baseline level)', 'INSTANT', '25gs'),
+    ('HEALING', 'Heal up to 10 Health Points', 'INSTANT', '18gs'),
+    ('MIGHTY STRENGTH', '+2 damage per hit for 1 whole combat', 'ONE COMBAT', '20gs'),
+    ('PHASING', 'Phase through one locked door ignoring the locked status', 'INSTANT', '4gs'),
+    ('PROWESS', '+1 Shift for 1 whole combat', 'ONE COMBAT', '10gs'),
+    ('RANCID BREATH', 'Do an extra 5 points of damage per round for 1 whole combat', 'ONE COMBAT', '55gs'),
+    ('REGENERATION', 'Heal up to 60 Health Points', 'INSTANT', '60gs'),
+    ('RESIST MAGIC', 'Ignore 1 successful enemy manoeuvre against you that is magic based', 'INSTANT', '10gs'),
+    ('SHIELD AURA', '-1 Damage taken per round in 1 whole combat', 'ONE COMBAT', '18gs'),
+    ('SPEED BLAST', '+2 free attacks at the start of 1 combat', 'INSTANT', '12gs'),
+    ('STEADINESS', '+2 Precision for 1 dungeon level', 'INSTANT', '40gs'),
+    ('STRENGTH', '+1 damage per hit for 1 whole combat', 'ONE COMBAT', '15gs'),
+    ('WILLPOWER', '+1 Discipline for 1 dungeon level', 'INSTANT', '30gs');
 
 
 -- rooms Level 1

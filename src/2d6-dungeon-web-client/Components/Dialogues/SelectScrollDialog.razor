@@ -1,0 +1,57 @@
+@using c5m._2d6Dungeon
+@inject D6Service D6Service
+
+@implements IDialogContentComponent<MagicScroll>
+
+@rendermode InteractiveServer
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+    @if (scrolls == null)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <FluentListbox TOption="MagicScroll"
+                       Items="@scrolls"
+                       OptionValue="@(s => s.Id.ToString())"
+                       OptionText="@(s => string.IsNullOrEmpty(s.Modifier) ? s.ScrollType : $"{s.ScrollType} | {s.Modifier}")"
+                       SelectedOptionChanged="@OnSelectionChanged"
+                       Height="120px"
+                       style="width: 100%;" />
+    }
+</FluentStack>
+
+@code {
+    [Parameter]
+    public MagicScroll Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    private List<MagicScroll>? scrolls;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var scrollList = await D6Service.GetMagicScrolls();
+        scrolls = scrollList.value;
+        Dialog.TogglePrimaryActionButton(false);
+    }
+
+    private void OnSelectionChanged(MagicScroll? scroll)
+    {
+        if (scroll != null)
+        {
+            Content.Id = scroll.Id;
+            Content.ScrollType = scroll.ScrollType;
+            Content.Description = scroll.Description;
+            Content.Duration = scroll.Duration;
+            Content.Orbit = scroll.Orbit;
+            Content.DispelDoubles = scroll.DispelDoubles;
+            Content.Cost = scroll.Cost;
+            Content.Fail = scroll.Fail;
+            Content.Modifier = scroll.Modifier;
+        }
+        Dialog.TogglePrimaryActionButton(scroll != null);
+    }
+}

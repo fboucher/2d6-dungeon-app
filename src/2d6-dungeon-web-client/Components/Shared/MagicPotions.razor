@@ -1,22 +1,78 @@
-﻿
+@inject IDialogService DialogService
+
 @if(magicPotions != null){
 
-    <FluentDataGrid Items="@potions" style="width: 100%;" MultiLine="true">
-        <PropertyColumn Title="Magic Potions" Property="@(a => a.PotionType)" Sortable="false" Class="multiline-text" />
-        <PropertyColumn Title="Orbit" Property="@(a => a.Modifier ?? "")" Sortable="false"  Class="multiline-text"/>
-        <PropertyColumn Title="Displel doubles" Property="@(a => a.Duration ?? "")" Sortable="false" Class="multiline-text" />
+    <FluentDataGrid Items="@potions" style="width: 100%;" MultiLine="true" ResizableColumns="true" AutoFit="true">
+        <PropertyColumn Title="Magic Potions" 
+                        Property="@(a => a.PotionType)" 
+                        Sortable="false" 
+                        Tooltip="true" 
+                        TooltipText="@(c => c.Modifier)"/>
+        @* <PropertyColumn Title="Orbit" 
+                        Property="@(a => a.Modifier ?? "")" 
+                        Sortable="false" /> *@
+        <PropertyColumn Title="Displel doubles" 
+                        Property="@(a => a.Duration ?? "")" 
+                        Sortable="false" 
+                        Tooltip="true" />
+        <TemplateColumn>
+            <FluentButton @onclick="@(async () => await PotionDelete(context!.Id))"
+                            IconEnd="@(new Icons.Filled.Size16.HandLeft())" 
+                            stopPropagation="true"
+                            ToolTip="Use this Potion"/>
+        </TemplateColumn>
     </FluentDataGrid>
+    <FluentButton @onclick="@(async () => await PotionShowlist())"
+                            IconEnd="@(new Icons.Filled.Size20.BeakerAdd())" 
+                            stopPropagation="true"
+                            ToolTip="Add a Potion to your inventory"/>
 }
 
 @code {
 
     [Parameter]
     public List<MagicPotion>? magicPotions { get; set; }
-    
+
+    [Parameter]
+    public EventCallback<int> OnPotionDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback<MagicPotion> OnPotionAdded { get; set; }
+
     IQueryable<MagicPotion>? potions;
-    
+
     protected override void OnInitialized()
     {
         potions = magicPotions?.AsQueryable();
+    }
+    
+    private async Task PotionDelete(int id)
+    {
+        magicPotions?.Remove(magicPotions.FirstOrDefault(p => p.Id == id)!);
+        potions = magicPotions?.AsQueryable();
+        await OnPotionDeleted.InvokeAsync(id);
+    }
+
+    private async Task PotionShowlist()
+    {
+        var dialog = await DialogService.ShowDialogAsync<SelectPotionDialog>(
+            new MagicPotion { PotionType = "" },
+            new DialogParameters()
+            {
+                Title = "Select a Potion",
+                PrimaryAction = "Add",
+                PrimaryActionEnabled = false,
+                SecondaryAction = "Cancel",
+                Width = "420px",
+                Modal = true,
+            });
+
+        var result = await dialog.Result;
+        if (!result.Cancelled && result.Data is MagicPotion potion)
+        {
+            magicPotions?.Add(potion);
+            potions = magicPotions?.AsQueryable(); 
+            await OnPotionAdded.InvokeAsync(potion);
+        }
     }
 }

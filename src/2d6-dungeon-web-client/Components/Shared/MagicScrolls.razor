@@ -1,47 +1,84 @@
 ﻿
+@inject IDialogService DialogService
+
 @if(magicScrolls != null){
 
-    @* <table>
-        <thead>
-            <tr>
-                <th>Magic scrolls</th>
-                <th>Orbit</th>
-                <th>Displel doubles</th>
-                <th>Effect modifier</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var scroll in scrolls)
-            {
-                <tr>
-                    <td>@scroll.Description</td>
-                    <td>@(scroll.Orbit ?? "")</td>
-                    <td>@(scroll.DispelDoubles ?? "")</td>
-                    <td>@scroll.Modifier</td>
-                </tr>
-            }
-        </tbody>
-    </table>  *@
-
-
-    <FluentDataGrid Items="@scrolls" MultiLine="true" Style="width: 100%;">
-        <PropertyColumn Title="Magic scrolls" Property="@(a => a.Description)" Sortable="false" Class="multiline-text" />
-        <PropertyColumn Title="Orbit" Property="@(a => a.Orbit ?? "")" Sortable="false"  Class="multiline-text"/>
-        <PropertyColumn Title="Displel doubles" Property="@(a => a.DispelDoubles ?? "")" Sortable="false" Class="multiline-text" />
-        <PropertyColumn Title="Effect modifier" Property="@(a => a.Modifier)" Sortable="false"  Class="multiline-text" />
+    <FluentDataGrid Items="@scrolls" MultiLine="true" ResizableColumns="true" AutoFit="true">
+        <PropertyColumn Title="Magic scrolls" 
+                        Property="@(a => a.ScrollType)" 
+                        Sortable="false"
+                        Tooltip="true" 
+                        TooltipText="@(c => c.Description)"/>
+        <PropertyColumn Title="Orbit" 
+                        Property="@(a => a.Orbit ?? "")" 
+                        Sortable="false"  
+                        ToolTip="true"/>
+        <PropertyColumn Title="Displel doubles" 
+                        Property="@(a => a.DispelDoubles ?? "")" 
+                        Sortable="false"
+                        Tooltip="true"/>
+        <PropertyColumn Title="Effect modifier" 
+                        Property="@(a => a.Modifier ?? "")" 
+                        Sortable="false" 
+                        Tooltip="true"/>
+        <TemplateColumn >
+            <FluentButton @onclick="@(async () => await ScrollDelete(context!.Id))"
+                          IconEnd="@(new Icons.Filled.Size16.HandLeft())" 
+                          stopPropagation="true"
+                          ToolTip="Remove this Scroll"/>
+        </TemplateColumn>
     </FluentDataGrid>
-
+    <FluentButton @onclick="@(async () => await ScrollShowlist())"
+                            IconEnd="@(new Icons.Filled.Size20.DocumentAdd())" 
+                            stopPropagation="true"
+                            ToolTip="Add a Scroll to your inventory"/>
 }
 
 @code {
 
     [Parameter]
     public List<MagicScroll>? magicScrolls { get; set; }
-    
+
+    [Parameter]
+    public EventCallback<int> OnScrollDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback<MagicScroll> OnScrollAdded { get; set; }
+
     IQueryable<MagicScroll>? scrolls;
-    
+
     protected override void OnInitialized()
     {
         scrolls = magicScrolls?.AsQueryable();
+    }
+    
+    private async Task ScrollDelete(int id)
+    {
+        magicScrolls?.Remove(magicScrolls.FirstOrDefault(s => s.Id == id)!);
+        scrolls = magicScrolls?.AsQueryable();
+        await OnScrollDeleted.InvokeAsync(id);
+    }
+
+    private async Task ScrollShowlist()
+    {
+        var dialog = await DialogService.ShowDialogAsync<SelectScrollDialog>(
+            new MagicScroll { ScrollType = "", Description = "" },
+            new DialogParameters()
+            {
+                Title = "Select a Scroll",
+                PrimaryAction = "Add",
+                PrimaryActionEnabled = false,
+                SecondaryAction = "Cancel",
+                Width = "420px",
+                Modal = true,
+            });
+
+        var result = await dialog.Result;
+        if (!result.Cancelled && result.Data is MagicScroll scroll)
+        {
+            magicScrolls?.Add(scroll);
+            scrolls = magicScrolls?.AsQueryable(); 
+            await OnScrollAdded.InvokeAsync(scroll);
+        }
     }
 }

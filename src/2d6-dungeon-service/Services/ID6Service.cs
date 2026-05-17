@@ -39,6 +39,7 @@ public interface ID6Service
 
     // MagicPotion
     Task<MagicPotion> GetInitialMagicPotion();
+    Task<List<MagicPotion>> GetMagicPotions();
 
     // MetaTables
     Task<MetaTablesList> GetMetaTables();

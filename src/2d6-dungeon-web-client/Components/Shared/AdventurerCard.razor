@@ -1,5 +1,6 @@
 ﻿@using c5m._2d6Dungeon;
 @inject D6Service D6Service;
+@inject IDialogService DialogService;
 
 @rendermode InteractiveServer
 
@@ -93,12 +94,12 @@
             <ArmourPieces armourPiece="@Player.ArmourPieces" />
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
-            <MagicScrolls magicScrolls="@Player.MagicScrolls" />
+        <FluentCard MinimalStyle="true" Width="90%" >
+            <MagicScrolls magicScrolls="@Player.MagicScrolls" OnScrollDeleted="@HandleScrollDeleted" OnScrollAdded="@HandleScrollAdded" />
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
-            <MagicPotions magicPotions="@Player.MagicPotions" />
+            <MagicPotions magicPotions="@Player.MagicPotions" OnPotionDeleted="@HandlePotionDeleted" OnPotionAdded="@HandlePotionAdded" />
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
@@ -287,28 +288,19 @@
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                     <FluentLabel Typo="Typography.Body"><b>LARGE AND HEAVY ITEMS</b></FluentLabel>
-                    <FluentListbox TOption="string" Width="300px;">
-                        @for (int i = 0; i < 10; i++)
-                        {
-                            var item = Player.LargeAndHeavyItems?.ElementAtOrDefault(i);
-                            if (!string.IsNullOrWhiteSpace(item))
-                            {
-                                <FluentOption Value="@item">@item</FluentOption>
-                            }
-                            else
-                            {
-                                var placeholder = $"{i + 1}.";
-                                <FluentOption Value="@placeholder">@placeholder</FluentOption>
-                            }
-                        }
+                    <FluentListbox TOption="int" Width="300px"
+                                 Items="@Enumerable.Range(0, LargeAndHeavyItemDisplayItems.Count)"
+                                 OptionText="@(i => LargeAndHeavyItemDisplayItems[i])"
+                                 @bind-SelectedOption="@_selectedLargeAndHeavyItemIndex">
                     </FluentListbox>
                     <div>
-                        <FluentButton Appearance="Appearance.Accent" OnClick="@(() => Player.LargeAndHeavyItems.Add(""))"
-                                      IconStart="@(new Icons.Filled.Size16.Add())"></FluentButton>
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="@OpenEditLargeAndHeavyItemDialog"
+                                      IconStart="@(new Icons.Filled.Size16.Edit())"></FluentButton>
                         <FluentButton
-                        OnClick="@(() => Player.LargeAndHeavyItems.RemoveAt(Player.LargeAndHeavyItems.Count - 1))"
-                        IconStart="@(new Icons.Filled.Size16.Delete())"
-                        Disabled="@(Player.LargeAndHeavyItems.Count == 0)"></FluentButton>
+                            OnClick="@DeleteSelectedLargeAndHeavyItem"
+                            Disabled="@(!CanDeleteSelectedLargeAndHeavyItem())"
+                            IconStart="@(new Icons.Filled.Size16.Delete())"></FluentButton>
                     </div>
 
                     <FluentLabel Typo="Typography.Body"><b>ADDITIONAL NOTES</b></FluentLabel>
@@ -353,6 +345,9 @@
 
     private bool healthDepletionHandled = false;
     private int _xpDelta = 0;
+    private int _selectedLargeAndHeavyItemIndex = -1;
+
+    private int SelectedLargeAndHeavyItemIndex => _selectedLargeAndHeavyItemIndex;
 
     private async Task AddXp()
     {
@@ -371,9 +366,131 @@
         }
     }
 
+    private async Task HandlePotionDeleted(int id)
+    {
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private async Task HandlePotionAdded(MagicPotion potion)
+    {
+        @* Player.MagicPotions ??= new List<MagicPotion>();
+        Player.MagicPotions.Add(potion); *@
+        await PlayerChanged.InvokeAsync(Player);
+        StateHasChanged();
+    }
+
+    private async Task HandleScrollDeleted(int id)
+    {
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private async Task HandleScrollAdded(MagicScroll scroll)
+    {
+        await PlayerChanged.InvokeAsync(Player);
+        StateHasChanged();
+    }
+
     private void ToggleExtended()
     {
         Extented = !Extented;
+    }
+
+    private async Task OpenEditLargeAndHeavyItemDialog()
+    {
+        if (SelectedLargeAndHeavyItemIndex < 0)
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        var dialogData = new EditLargeAndHeavyItemDialogData
+        {
+            Text = SelectedLargeAndHeavyItemIndex < actualItems.Count
+                ? actualItems[SelectedLargeAndHeavyItemIndex]
+                : string.Empty
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<EditLargeAndHeavyItemDialog>(
+            dialogData,
+            new DialogParameters()
+            {
+                Title = "Edit Large and Heavy Item",
+                PrimaryAction = "Save",
+                PrimaryActionEnabled = !string.IsNullOrWhiteSpace(dialogData.Text),
+                SecondaryAction = "Cancel",
+                Width = "420px",
+                Modal = true,
+            });
+
+        var result = await dialog.Result;
+        if (!result.Cancelled && result.Data is EditLargeAndHeavyItemDialogData resultData)
+        {
+            SetLargeAndHeavyItemText(SelectedLargeAndHeavyItemIndex, resultData.Text);
+            await PlayerChanged.InvokeAsync(Player);
+        }
+    }
+
+    private async Task DeleteSelectedLargeAndHeavyItem()
+    {
+        if (!CanDeleteSelectedLargeAndHeavyItem())
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        actualItems.RemoveAt(SelectedLargeAndHeavyItemIndex);
+        Player.LargeAndHeavyItems = actualItems;
+        _selectedLargeAndHeavyItemIndex = -1;
+        await PlayerChanged.InvokeAsync(Player);
+    }
+
+    private bool CanDeleteSelectedLargeAndHeavyItem()
+    {
+        var actualItems = GetActualLargeAndHeavyItems();
+         return SelectedLargeAndHeavyItemIndex >= 0
+             && SelectedLargeAndHeavyItemIndex < actualItems.Count;
+    }
+
+    private List<string> GetActualLargeAndHeavyItems()
+    {
+        return Player.LargeAndHeavyItems?
+                   .Where(item => !string.IsNullOrWhiteSpace(item))
+                   .ToList()
+               ?? new List<string>();
+    }
+
+    private List<string> LargeAndHeavyItemDisplayItems
+    {
+        get
+        {
+            var actualItems = GetActualLargeAndHeavyItems();
+            var displayItems = new List<string>(actualItems);
+            for (int i = actualItems.Count; i < 10; i++)
+            {
+                displayItems.Add($"{i + 1}.");
+            }
+            return displayItems;
+        }
+    }
+
+    private void SetLargeAndHeavyItemText(int index, string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        var actualItems = GetActualLargeAndHeavyItems();
+        if (index < actualItems.Count)
+        {
+            actualItems[index] = text;
+        }
+        else
+        {
+            actualItems.Add(text);
+        }
+
+        Player.LargeAndHeavyItems = actualItems;
     }
 
     public void ResetHealthDepletion()
