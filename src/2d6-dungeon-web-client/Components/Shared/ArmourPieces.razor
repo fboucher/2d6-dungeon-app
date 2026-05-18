@@ -1,5 +1,10 @@
 @rendermode InteractiveServer
+@inject IDialogService DialogService
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+    <div class="sheetTitle"><b>ARMOUR PIECES</b></div>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@OpenEditArmourPiecesDialog" IconStart="@(new Icons.Regular.Size16.ShieldSettings())" ToolTip="Edit Armour Pieces" />
+</div>
 @if(armourPiece != null){
     <FluentDataGrid Items="@pieces" style="width: 100%;" MultiLine="true">
         <PropertyColumn Title="ARMOUR PIECE" Property="@(a => a.Name)" Sortable="false" />
@@ -24,6 +29,9 @@
 
     [Parameter]
     public List<ArmourPiece>? armourPiece { get; set; }
+
+    [Parameter]
+    public EventCallback<List<ArmourPiece>> OnArmourPiecesChanged { get; set; }
     
     IQueryable<ArmourPiece>? pieces;
     
@@ -32,4 +40,32 @@
         pieces = armourPiece?.AsQueryable();
     }
 
+    private async Task OpenEditArmourPiecesDialog()
+    {
+        var currentPieces = armourPiece != null ? new List<ArmourPiece>(armourPiece) : new List<ArmourPiece>();
+        
+        var dialog = await DialogService.ShowDialogAsync<SelectArmourPiecesDialog>(
+            currentPieces,
+            new DialogParameters()
+            {
+                Title = "Edit Armour Pieces",
+                PrimaryAction = "Save",
+                PrimaryActionEnabled = currentPieces.Count <= 3,
+                SecondaryAction = "Cancel",
+                Width = "450px",
+                Modal = true,
+            });
+
+        var result = await dialog.Result;
+        if (!result.Cancelled && result.Data is List<ArmourPiece> selectedPieces)
+        {
+            if (armourPiece != null)
+            {
+                armourPiece.Clear();
+                armourPiece.AddRange(selectedPieces);
+            }
+            pieces = armourPiece?.AsQueryable();
+            await OnArmourPiecesChanged.InvokeAsync(armourPiece);
+        }
+    }
 }

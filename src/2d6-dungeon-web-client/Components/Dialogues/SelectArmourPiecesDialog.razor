@@ -1,0 +1,64 @@
+@using c5m._2d6Dungeon
+@inject D6Service D6Service
+
+@implements IDialogContentComponent<List<ArmourPiece>>
+
+@rendermode InteractiveServer
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 400px;">
+    @if (allPieces == null)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <FluentLabel Typo="Typography.Body">
+            Select up to 3 armour pieces 
+            <span style="color: @(Content.Count > 3 ? "red" : "inherit")">
+                (@(Content.Count)/3 selected)
+            </span>
+        </FluentLabel>
+        
+        <FluentListbox TOption="ArmourPiece"
+                       Items="@allPieces"
+                       Multiple="true"
+                       SelectedOptions="@Content"
+                       SelectedOptionsChanged="@OnSelectionChanged"
+                       OptionValue="@(p => p.Id.ToString())"
+                       OptionText="@(p => $"{p.Name} | {p.Modifier} | {p.DiceSet}")"
+                       Height="200px"
+                       style="width: 100%;" />
+    }
+</FluentStack>
+
+@code {
+    [Parameter]
+    public List<ArmourPiece> Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    private List<ArmourPiece>? allPieces;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var piecesList = await D6Service.GetArmourPieces();
+        allPieces = piecesList.value;
+        UpdateDialogButtonState();
+    }
+
+    private void OnSelectionChanged(IEnumerable<ArmourPiece> selected)
+    {
+        Content.Clear();
+        Content.AddRange(selected);
+        UpdateDialogButtonState();
+    }
+
+    private void UpdateDialogButtonState()
+    {
+        if (Dialog != null)
+        {
+            Dialog.TogglePrimaryActionButton(Content.Count <= 3);
+        }
+    }
+}

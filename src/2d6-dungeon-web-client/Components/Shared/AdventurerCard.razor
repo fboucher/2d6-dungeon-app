@@ -1,4 +1,4 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @inject D6Service D6Service;
 @inject IDialogService DialogService;
 
@@ -91,7 +91,7 @@
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%">
-            <ArmourPieces armourPiece="@Player.ArmourPieces" />
+            <ArmourPieces armourPiece="@Player.ArmourPieces" OnArmourPiecesChanged="@HandleArmourPiecesChanged" />
         </FluentCard>
 
         <FluentCard MinimalStyle="true" Width="90%" >
@@ -375,6 +375,12 @@
     {
         @* Player.MagicPotions ??= new List<MagicPotion>();
         Player.MagicPotions.Add(potion); *@
+        await PlayerChanged.InvokeAsync(Player);
+        StateHasChanged();
+    }
+
+    private async Task HandleArmourPiecesChanged(List<ArmourPiece> pieces)
+    {
         await PlayerChanged.InvokeAsync(Player);
         StateHasChanged();
     }
