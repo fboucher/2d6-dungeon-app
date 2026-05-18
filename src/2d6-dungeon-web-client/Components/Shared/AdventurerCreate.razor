@@ -1,4 +1,4 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @inject D6Service D6Service;
 @inject NavigationManager Navigation;
 @inject IDialogService DialogService
@@ -127,8 +127,8 @@
             ParentAdventurer = new Game.Adventurer();
             weapons = await D6Service.GetWeapons();
 
-            armourPiecesQueryable = (await D6Service.GetArmourPieces()).value;
-            magicScollsQueryable = (await D6Service.GetMagicScrolls()).value;
+            armourPiecesQueryable = (await D6Service.GetInitialArmourPieces()).value;
+            magicScollsQueryable = (await D6Service.GetInitialMagicScrolls()).value;
 
         }
         catch(Exception ex){

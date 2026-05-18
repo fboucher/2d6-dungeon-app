@@ -1,34 +1,82 @@
 
 -- Starting Amour
-INSERT INTO dbo.armour_pieces(name, dice_set, modifier)
-VALUES('Jerkin', 4, '-1 Damage');
-INSERT INTO dbo.armour_pieces(name, dice_set, modifier)
-VALUES('Padded Tunic', 5, '-1 Damage');
-INSERT INTO dbo.armour_pieces(name, dice_set, modifier)
-VALUES('Quilted Coat', 3, '-1 Damage');
-INSERT INTO dbo.armour_pieces(name, dice_set, modifier)
-VALUES('Hide doublet', 2, '-1 Damage');
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Jerkin', '1', '-1 Damage', 1);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Padded Tunic', '2', '-1 Damage', 1);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Quilted Coat', '3', '-1 Damage', 1);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Hide doublet', '4', '-1 Damage', 1);
+
+-- Other Amour
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Bishop''s Mantle', '1-2', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Long Leather Jacket', '1-3', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Leather Breast Plate', '1-4', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Leather Bracers', '1-5', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Brigandine Overcoat', '2-3', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Studded Buckler', '2-4', '-1 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Steel Buckler', '2-5', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Wooden Shield', '2-6', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Banded Shield', '3-4', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Shoulder Platelets', '3-5', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Mail Coif', '3-6', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Metal Bracers', '4-5', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Helmet', '4-6', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Winged Helmet', '5-6', '-2 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Great Helm', '1-2+3', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Gauntlets', '1-2+4', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Long Gauntlets', '1-2+5', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Scale Jacket', '1-2+6', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Exquisite Scale Jacket', '1-3+4', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Chainmail Shirt', '1-3+5', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Metal Breast Plate', '1-3+6', '-3 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Reinforced Banded Mail', '1-4+2-5', '-4 Damage', 0);
+INSERT INTO dbo.armour_pieces(name, dice_set, modifier, is_initial)
+VALUES('Full Plate', '1-4+2-6', '-4 Damage', 0);
 
 -- Starting Scroll
-INSERT INTO dbo.magic_scrolls(scroll_type, description, duration, orbit, dispel_doubles, cost, fail,  modifier) VALUES
-    ('BALANCE', 'You sense an inner stability and become aware of magic flowing through the air.', 'UNTIL USED', 'FACULTY', 'NONE', '15gs', '-1', '+1 DISCIPLINE FOR 1 DUNGEON LEVEL'),
-    ('BRUTE FORCE', 'Your muscles tighten and bulge and you feel strength coursing through your body.', 'NEXT COMBAT', 'METAMORPH', 'NONE', '17gs', '+2', '+2 DAMAGE FOR 1 COMBAT'),
-    ('DEEP FOCUS', 'You feel connected to the streams of magic energy and control them with ease.', 'UNTIL USED', 'FACULTY', 'NONE', '25gs', '-1', '+2 DISCIPLINE FOR 1 DUNGEON LEVEL'),
-    ('DISTRACT', 'You enter the enemy''s mind and turn their thoughts against their companion.', 'INSTANT', 'PSYCHE', 'NONE', '30gs', '+1', 'IF YOU FACE 2 FOES 1 LEAVES'),
-    ('FIREBALL', 'You blast a ball of fire from your open palm, at your enemy, who bursts into flames.', 'INSTANT', 'PRIMORDIAL', '4-4', '20gs', '-1', 'CAUSES 20 DAMAGE'),
-    ('FLAMING WEAPON', 'Flames erupt from the blade of your weapon and burn those you strike.', 'NEXT COMBAT', 'PRIMORDIAL', '1-1', '32gs', '0', '+4 DAMAGE FOR 1 COMBAT'),
-    ('FLEETING ACTION', 'You feel your pulse quicken and become swift and graceless.', 'NEXT COMBAT', 'FACULTY', '3-3', '10gs', '-1', '+2 SHIFT FOR 1 COMBAT'),
-    ('INSIGHTFUL COMBAT', 'The world slows and details seem clearer as you study your opponent''s movements.', 'NEXT COMBAT', 'PSYCHE', 'NONE', '70gs', '-2', '+20 PERCEPT XP FROM 1 COMBAT'),
-    ('INVISIBILITY', 'You glance down to see your body has disappeared and that you have vanished.', 'NEXT COMBAT', 'METAMORPH', '5-5', '21gs', '-1', 'AVOID 1 COMBAT AND ROOM CONTENTS'),
-    ('LIGHTNING STRIKE', 'A fork of bluish lightning explodes from your chest to strike your foe with unholy force.', 'INSTANT', 'PRIMORDIAL', '3-3-6-6', '50gs', '-3', '1 STRIKE OF 50 DAMAGE'),
-    ('MELT METAL', 'You concentrate on the metal and watch it melt into a soft dripping gloop.', 'INSTANT', 'METAMORPH', 'NONE', '18gs', '0', 'DESTROY 1 LOCK OR INTERRUPT ARMOUR'),
-    ('MENTAL WHIP', 'You reach out a thought into their mind and it transforms to become a barbed lash.', 'INSTANT', 'PSYCHE', 'NONE', '20gs', '-1', '1 STRIKE OF 10 DAMAGE'),
-    ('PARALYSIS', 'You clench your fist and focus on one foe and they freeze to the spot motionless.', 'INSTANT', 'PSYCHE', 'NONE', '22gs', '+1', '+3 FREE SWINGS IN 1 COMBAT'),
-    ('REFLEXES', 'Warmth floods your body making you feel at ease and unexpectedly flexible.', 'NEXT COMBAT', 'FACULTY', 'NONE', '10gs', '-2', '+1 SHIFT FOR 1 COMBAT'),
-    ('STEADY HAND', 'You sense your movements as if magnified allowing you to steady yourself.', 'UNTIL USED', 'FACULTY', 'NONE', '13gs', '-1', '+1 PRECISION FOR 1 DUNGEON LEVEL'),
-    ('SUNDER', 'There is a loud crack and the ceiling above your foe collapses inwards on them.', 'INSTANT', 'METAMORPH', '2-2', '30gs', '-1', '1 STRIKE OF 20 DAMAGE TO ALL FOES'),
-    ('SURGING HEALTH', 'You watch as your wounds close and heal and renewed vigour surges through you.', 'INSTANT', 'METAMORPH', '4-4', '55gs', '-1', '+20 HEALTH POINTS'),
-    ('SWAMP LUNG', 'You watch as a torrent of swamp water pours from your foe''s mouth.', 'INSTANT', 'PRIMORDIAL', '5-5', '25gs', '-1', '1 FREE SWING + 20 DAMAGE');
+INSERT INTO dbo.magic_scrolls(scroll_type, description, duration, orbit, dispel_doubles, cost, fail,  modifier, is_initial) VALUES
+    ('BALANCE', 'You sense an inner stability and become aware of magic flowing through the air.', 'UNTIL USED', 'FACULTY', 'NONE', '15gs', '-1', '+1 DISCIPLINE FOR 1 DUNGEON LEVEL', 1),
+    ('BRUTE FORCE', 'Your muscles tighten and bulge and you feel strength coursing through your body.', 'NEXT COMBAT', 'METAMORPH', 'NONE', '17gs', '+2', '+2 DAMAGE FOR 1 COMBAT', 0),
+    ('DEEP FOCUS', 'You feel connected to the streams of magic energy and control them with ease.', 'UNTIL USED', 'FACULTY', 'NONE', '25gs', '-1', '+2 DISCIPLINE FOR 1 DUNGEON LEVEL', 0),
+    ('DISTRACT', 'You enter the enemy''s mind and turn their thoughts against their companion.', 'INSTANT', 'PSYCHE', 'NONE', '30gs', '+1', 'IF YOU FACE 2 FOES 1 LEAVES', 0),
+    ('FIREBALL', 'You blast a ball of fire from your open palm, at your enemy, who bursts into flames.', 'INSTANT', 'PRIMORDIAL', '4-4', '20gs', '-1', 'CAUSES 20 DAMAGE', 0),
+    ('FLAMING WEAPON', 'Flames erupt from the blade of your weapon and burn those you strike.', 'NEXT COMBAT', 'PRIMORDIAL', '1-1', '32gs', '0', '+4 DAMAGE FOR 1 COMBAT', 0),
+    ('FLEETING ACTION', 'You feel your pulse quicken and become swift and graceless.', 'NEXT COMBAT', 'FACULTY', '3-3', '10gs', '-1', '+2 SHIFT FOR 1 COMBAT', 0),
+    ('INSIGHTFUL COMBAT', 'The world slows and details seem clearer as you study your opponent''s movements.', 'NEXT COMBAT', 'PSYCHE', 'NONE', '70gs', '-2', '+20 PERCEPT XP FROM 1 COMBAT', 0),
+    ('INVISIBILITY', 'You glance down to see your body has disappeared and that you have vanished.', 'NEXT COMBAT', 'METAMORPH', '5-5', '21gs', '-1', 'AVOID 1 COMBAT AND ROOM CONTENTS', 0),
+    ('LIGHTNING STRIKE', 'A fork of bluish lightning explodes from your chest to strike your foe with unholy force.', 'INSTANT', 'PRIMORDIAL', '3-3-6-6', '50gs', '-3', '1 STRIKE OF 50 DAMAGE', 0),
+    ('MELT METAL', 'You concentrate on the metal and watch it melt into a soft dripping gloop.', 'INSTANT', 'METAMORPH', 'NONE', '18gs', '0', 'DESTROY 1 LOCK OR INTERRUPT ARMOUR', 1),
+    ('MENTAL WHIP', 'You reach out a thought into their mind and it transforms to become a barbed lash.', 'INSTANT', 'PSYCHE', 'NONE', '20gs', '-1', '1 STRIKE OF 10 DAMAGE', 1),
+    ('PARALYSIS', 'You clench your fist and focus on one foe and they freeze to the spot motionless.', 'INSTANT', 'PSYCHE', 'NONE', '22gs', '+1', '+3 FREE SWINGS IN 1 COMBAT', 0),
+    ('REFLEXES', 'Warmth floods your body making you feel at ease and unexpectedly flexible.', 'NEXT COMBAT', 'FACULTY', 'NONE', '10gs', '-2', '+1 SHIFT FOR 1 COMBAT', 1),
+    ('STEADY HAND', 'You sense your movements as if magnified allowing you to steady yourself.', 'UNTIL USED', 'FACULTY', 'NONE', '13gs', '-1', '+1 PRECISION FOR 1 DUNGEON LEVEL', 0),
+    ('SUNDER', 'There is a loud crack and the ceiling above your foe collapses inwards on them.', 'INSTANT', 'METAMORPH', '2-2', '30gs', '-1', '1 STRIKE OF 20 DAMAGE TO ALL FOES', 0),
+    ('SURGING HEALTH', 'You watch as your wounds close and heal and renewed vigour surges through you.', 'INSTANT', 'METAMORPH', '4-4', '55gs', '-1', '+20 HEALTH POINTS', 0),
+    ('SWAMP LUNG', 'You watch as a torrent of swamp water pours from your foe''s mouth.', 'INSTANT', 'PRIMORDIAL', '5-5', '25gs', '-1', '1 FREE SWING + 20 DAMAGE', 0);
 
 -- Starting Potion
 INSERT INTO dbo.magic_potions(potion_type, modifier, duration, cost) VALUES

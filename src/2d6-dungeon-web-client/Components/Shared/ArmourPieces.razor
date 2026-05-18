@@ -1,10 +1,19 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 
 @if(armourPiece != null){
     <FluentDataGrid Items="@pieces" style="width: 100%;" MultiLine="true">
         <PropertyColumn Title="ARMOUR PIECE" Property="@(a => a.Name)" Sortable="false" />
         <TemplateColumn Title="DICESET" >
-            <Dice color="Dice.DiceColor.white" size="Dice.DiceSize.tiny" face="@context.DiceSet" />
+            @foreach(var part in context.DiceSet.Split('+')) {
+                if(part.Contains("-")) {
+                    <Dice color="Dice.DiceColor.white" size="Dice.DiceSize.tiny" diceset="@part.Trim()" />
+                } else {
+                    <Dice color="Dice.DiceColor.white" size="Dice.DiceSize.tiny" face="@int.Parse(part.Trim())" />
+                }
+                if (part != context.DiceSet.Split('+').Last()) {
+                    <span> + </span>
+                }
+            }
         </TemplateColumn>
         <PropertyColumn Title="MODIFIER" Property="@(a => a.Modifier)" Sortable="false"/>
     </FluentDataGrid>

@@ -35,8 +35,9 @@ CREATE TABLE IF NOT EXISTS db2d6.adventures (
 CREATE TABLE IF NOT EXISTS db2d6.armour_pieces (
   id int NOT NULL AUTO_INCREMENT,
   name varchar(255) DEFAULT NULL,
-  dice_set int DEFAULT 0,
+  dice_set varchar(50) DEFAULT '1',
   modifier varchar(255) DEFAULT NULL,
+  is_initial bool DEFAULT false,
   PRIMARY KEY (id)
 );
 
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS db2d6.magic_scrolls (
   cost varchar(50) DEFAULT NULL,
   fail varchar(50) DEFAULT NULL,
   modifier varchar(255) NOT NULL,
+  is_initial bool DEFAULT false,
   PRIMARY KEY (id)
 );
 

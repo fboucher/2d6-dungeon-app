@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace c5m._2d6Dungeon;
 
@@ -17,4 +17,7 @@ public class MagicScroll
     public string? Cost { get; set; }
     public string? Fail { get; set; }
     public string? Modifier { get; set; }
+
+    [JsonPropertyName("is_initial")]
+    public bool IsInitial { get; set; }
 }

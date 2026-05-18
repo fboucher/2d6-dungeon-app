@@ -1,4 +1,4 @@
-﻿namespace c5m._2d6Dungeon;
+namespace c5m._2d6Dungeon;
 
 using c5m._2d6Dungeon.domain;
 using c5m._2d6Dungeon.Game;
@@ -32,10 +32,12 @@ public interface ID6Service
 
      // ArmourPieces
     Task<ArmourPieceList> GetArmourPieces();
+    Task<ArmourPieceList> GetInitialArmourPieces();
 
 
     // MagicScroll
     Task<MagicScrollList> GetMagicScrolls();
+    Task<MagicScrollList> GetInitialMagicScrolls();
 
     // MagicPotion
     Task<MagicPotion> GetInitialMagicPotion();
