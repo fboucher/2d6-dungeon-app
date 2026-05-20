@@ -142,7 +142,7 @@ else{
 
         if (CombatState.TurnCounter == 0)
         {
-            CombatTurnChanged(1);
+            await CombatTurnChanged(1);
             shiftLeft = adjustedShift;
         }
     }
@@ -171,7 +171,7 @@ else{
 
             if (CombatState.TurnCounter == 0)
             {
-                CombatTurnChanged(1);
+                await CombatTurnChanged(1);
                 shiftLeft = adjustedShift;
             }
 
@@ -181,7 +181,7 @@ else{
             StateHasChanged();
         }
     }
-    private void CombatTurnChanged(int turn){
+    private async Task CombatTurnChanged(int turn){
 
         CombatState.TurnCounter = turn;
 
@@ -205,7 +205,7 @@ else{
 
             adjustedShift = CombatState.Player.Shift + adjustmentShift;
         }
-        CombatStateChanged.InvokeAsync(CombatState);
+        await CombatStateChanged.InvokeAsync(CombatState);
     }
 
     private async Task Roll2Dice()
@@ -229,16 +229,16 @@ else{
         }
     }
 
-    private void NextTurn()
+    private async Task NextTurn()
     {
         ToggleCurrentFighter();
 
         if (currentFighter == firstFighter)
         {
             CombatState.TurnCounter++;
-            CombatTurnChanged(CombatState.TurnCounter);
+            await CombatTurnChanged(CombatState.TurnCounter);
             shiftLeft = adjustedShift;
-            CombatStateChanged.InvokeAsync(CombatState);
+            await CombatStateChanged.InvokeAsync(CombatState);
         }
 
         primaryDice = primaryShiftedDice = 0;
@@ -316,7 +316,7 @@ else{
         creatureCardRef?.ResetHealthDepletion();
         
         CombatState.CombatActions.Add("Combat reset - ready for a new fight");
-        CombatStateChanged.InvokeAsync(CombatState);
+        await CombatStateChanged.InvokeAsync(CombatState);
         StateHasChanged();
     }
 

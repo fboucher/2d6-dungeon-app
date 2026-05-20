@@ -13,7 +13,7 @@ var dab = builder.AddDataAPIBuilder("dab", ["../../database/dab-config.json"])
                                 .WithEnvironment(context =>
                                 {
                                         context.EnvironmentVariables["ConnectionStrings__db2d6"] =
-                                                $"Server={mysql.Resource.Name};User ID=root;Password={mysql.Resource.PasswordParameter.Value};Database=db2d6";
+                                                $"Server={mysql.Resource.Name};User ID=root;Password={mysql.Resource.PasswordParameter.GetValueAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult()};Database=db2d6";
                                 })
                                 .WaitFor(db2d6);
 

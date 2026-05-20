@@ -1,0 +1,42 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ServiceDefaults -> /home/frank/gh/2d6-dungeon-app/src/ServiceDefaults/bin/Debug/net10.0/ServiceDefaults.dll
+  2d6-dungeon-service -> /home/frank/gh/2d6-dungeon-app/src/2d6-dungeon-service/bin/Debug/net10.0/2d6-dungeon-service.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.19
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ServiceDefaults -> /home/frank/gh/2d6-dungeon-app/src/ServiceDefaults/bin/Debug/net10.0/ServiceDefaults.dll
+  2d6-dungeon-service -> /home/frank/gh/2d6-dungeon-app/src/2d6-dungeon-service/bin/Debug/net10.0/2d6-dungeon-service.dll
+  2d6-dungeon-web-client -> /home/frank/gh/2d6-dungeon-app/src/2d6-dungeon-web-client/bin/Debug/net10.0/2d6-dungeon-web-client.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.80
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ServiceDefaults -> /home/frank/gh/2d6-dungeon-app/src/ServiceDefaults/bin/Debug/net10.0/ServiceDefaults.dll
+  2d6-dungeon-service -> /home/frank/gh/2d6-dungeon-app/src/2d6-dungeon-service/bin/Debug/net10.0/2d6-dungeon-service.dll
+  2d6-dungeon-web-client -> /home/frank/gh/2d6-dungeon-app/src/2d6-dungeon-web-client/bin/Debug/net10.0/2d6-dungeon-web-client.dll
+  AppHost -> /home/frank/gh/2d6-dungeon-app/src/AppHost/bin/Debug/net10.0/AppHost.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.34
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ServiceDefaults -> /home/frank/gh/2d6-dungeon-app/src/ServiceDefaults/bin/Debug/net10.0/ServiceDefaults.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.17
