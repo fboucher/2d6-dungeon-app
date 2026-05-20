@@ -209,7 +209,8 @@ public class GameTurn
             Direction.North => Direction.South,
             Direction.South => Direction.North,
             Direction.East => Direction.West,
-            Direction.West => Direction.East
+            Direction.West => Direction.East,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
 

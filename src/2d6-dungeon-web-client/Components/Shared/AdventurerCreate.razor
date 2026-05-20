@@ -22,7 +22,7 @@
     <FluentCard AreaRestricted=false>
         <FluentHeader Height="18">Weapon</FluentHeader>
 
-        <FluentCombobox Items=@weapons.value
+        <FluentCombobox Items=@(weapons?.value ?? new List<Weapon>())
                         Appearance="Appearance.Filled"
                         Label="Weapons"
                         Multiple=false
