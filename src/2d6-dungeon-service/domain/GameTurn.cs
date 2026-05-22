@@ -153,6 +153,7 @@ public class GameTurn
 
         CurrentRoom!.Description = room.description;
         CurrentRoom!.Encounter = room.encounter;
+        CurrentRoom!.ExitsType = room.exits;
         //NextAction = ActionType.RollForExits;
         Message = $"Go to the sumary to see all the details of the room.";
     }
@@ -182,6 +183,8 @@ public class GameTurn
         if(currentRoom.Exits == null)
                 currentRoom.Exits = new Dictionary<Direction,Exit>();
 
+        string doorType = ResolveDoorType(currentRoom.ExitsType, rnd);
+
         foreach(var wall in wallsWithExits.ToList())
         {
             var aDoor = new Exit();
@@ -198,8 +201,41 @@ public class GameTurn
             aDoor.Direction = wall;
             aDoor.PositionOnWall = rnd.Next(1, maxPos);
             aDoor.Lockable = false;
+            aDoor.ExitType = doorType;
             currentRoom.Exits.Add(wall, aDoor); 
         }
+    }
+
+    private static readonly string[] DoorTypes = new[]
+    {
+        "archway", "wooden", "metal", "reinforced", "curtain", "portcullis", "stone_slab"
+    };
+
+    private static string ResolveDoorType(string? exitsType, Random rnd)
+    {
+        if (string.IsNullOrWhiteSpace(exitsType))
+        {
+            return "archway";
+        }
+
+        string normalized = exitsType.Trim().ToLowerInvariant();
+
+        if (normalized == "random")
+        {
+            return DoorTypes[rnd.Next(DoorTypes.Length)];
+        }
+
+        return normalized switch
+        {
+            "archways" or "archway" => "archway",
+            "wooden doors" or "wooden" => "wooden",
+            "metal doors" or "metal" => "metal",
+            "reinforced doors" or "reinforced" => "reinforced",
+            "curtains" or "curtain" => "curtain",
+            "portcullis" or "portcullises" => "portcullis",
+            "stone slab" or "stone_slab" or "stoneslab" => "stone_slab",
+            _ => "archway"
+        };
     }
 
     public static Direction GetOppositeDirection(Direction direction)

@@ -721,4 +721,43 @@ if (document.readyState === 'loading') {
   setupKeyboardPanning();
 }
 
+// ============================================
+// LEGEND PANEL - Draw door icons for legend
+// ============================================
+function drawLegendDoor(canvasId, doorType) {
+  const legendCanvas = document.getElementById(canvasId);
+  if (!legendCanvas) return;
+
+  const size = legendCanvas.width;
+  const ctx = legendCanvas.getContext('2d');
+
+  // Clear canvas
+  ctx.clearRect(0, 0, size, size);
+
+  // Save original context
+  const savedContext = context;
+  context = ctx;
+
+  // Draw parchment background cell
+  ctx.fillStyle = MapTheme.STONE_LIGHT;
+  ctx.fillRect(0, 0, size, size);
+
+  // Draw wall frame (like a single grid cell)
+  ctx.strokeStyle = MapTheme.WALL_OUTER;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(1, 1, size - 2, size - 2);
+
+  // Draw door symbol in the center
+  // DrawDoorType expects top-left (posX, posY); it computes center internally
+  const doorColor = DoorColors.UNLOCKED;
+
+  DrawDoorType(0, 0, size, size, 'H', doorType, doorColor, false);
+
+  // Restore original context
+  context = savedContext;
+}
+
+// Explicitly expose drawLegendDoor on window for Blazor JS interop
+window.drawLegendDoor = drawLegendDoor;
+
 

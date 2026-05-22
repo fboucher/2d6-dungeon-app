@@ -74,7 +74,7 @@ public static class MapTools
                 isMain = currentRoom.IsLobby;
             }
 
-            await js.InvokeVoidAsync("DrawDoor", x, y, orientation, isMain, null, null, youAreHere);
+            await js.InvokeVoidAsync("DrawDoor", x, y, orientation, isMain, door.Value.ExitType, door.Value.IsLocked, youAreHere);
         }
 
 

@@ -318,6 +318,115 @@ body.dungeon-theme fluent-button {
     }
 }
 
+/* ============================================
+   MAP LEGEND PANEL
+   ============================================ */
+.legend-floating-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
+    background: var(--neutral-layer-3, #5a4738);
+    color: var(--neutral-foreground-rest, #f5e6d3);
+    border: 2px solid var(--accent-fill-rest, #8b6f47);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: var(--body-font, "Segoe UI", sans-serif);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: background 0.2s, transform 0.1s;
+}
+
+.legend-floating-btn:hover {
+    background: var(--accent-fill-hover, #a0845a);
+    transform: scale(1.05);
+}
+
+.legend-panel {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    z-index: 101;
+    width: 220px;
+    background: linear-gradient(135deg, #E8DCC4 0%, #C4B59A 100%);
+    border: 3px solid #2A2420;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    font-family: var(--body-font, "Segoe UI", sans-serif);
+    color: #2A2420;
+}
+
+.legend-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #2A2420;
+    padding-bottom: 8px;
+}
+
+.legend-panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2A2420;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.legend-panel-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #2A2420;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color 0.2s, transform 0.1s;
+}
+
+.legend-panel-close:hover {
+    color: #8B2500;
+    transform: scale(1.2);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.legend-item:hover {
+    background: rgba(42, 36, 32, 0.08);
+}
+
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.legend-canvas {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #2A2420;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.legend-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2A2420;
+    text-transform: capitalize;
+}
+
 @media (max-width: 600px) {
     .header-gutters {
         margin: 0.5rem 3rem 0.5rem 1.5rem !important;
