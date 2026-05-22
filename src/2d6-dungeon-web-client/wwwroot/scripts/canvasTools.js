@@ -748,11 +748,10 @@ function drawLegendDoor(canvasId, doorType) {
   ctx.strokeRect(1, 1, size - 2, size - 2);
 
   // Draw door symbol in the center
-  const centerX = size / 2;
-  const centerY = size / 2;
+  // DrawDoorType expects top-left (posX, posY); it computes center internally
   const doorColor = DoorColors.UNLOCKED;
 
-  DrawDoorType(centerX, centerY, size, size, 'H', doorType, doorColor, false);
+  DrawDoorType(0, 0, size, size, 'H', doorType, doorColor, false);
 
   // Restore original context
   context = savedContext;
