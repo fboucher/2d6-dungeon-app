@@ -758,4 +758,7 @@ function drawLegendDoor(canvasId, doorType) {
   context = savedContext;
 }
 
+// Explicitly expose drawLegendDoor on window for Blazor JS interop
+window.drawLegendDoor = drawLegendDoor;
+
 
