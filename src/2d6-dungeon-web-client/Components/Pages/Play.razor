@@ -54,7 +54,53 @@
 
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
 
-                <canvas id="dotCanvas" style="width: 800px; height: 800px;"></canvas>
+                <div style="position: relative;">
+                    <canvas id="dotCanvas" style="width: 800px; height: 800px;"></canvas>
+
+                    <!-- Legend Floating Button -->
+                    <button class="legend-floating-btn" @onclick="ToggleLegendPanel" title="Show door legend">
+                        Legend
+                    </button>
+
+                    <!-- Legend Panel -->
+                    @if (isLegendVisible)
+                    {
+                        <div class="legend-panel">
+                            <div class="legend-panel-header">
+                                <span class="legend-panel-title">Door Types</span>
+                                <button class="legend-panel-close" @onclick="ToggleLegendPanel" title="Close legend">&#10005;</button>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-archway" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Archway</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-wooden" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Wooden Door</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-metal" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Metal Door</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-reinforced" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Reinforced Door</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-curtain" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Curtain</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-portcullis" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Portcullis</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-stone_slab" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Stone Slab</span>
+                            </div>
+                        </div>
+                    }
+                </div>
 
                 <div id="maps-menu" style="position: sticky; top: 20px; align-self: flex-start;">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
@@ -159,6 +205,27 @@
         ? "border:3px solid var(--accent-fill-rest); box-shadow:0 0 8px var(--accent-fill-rest);"
         : null;
 
+    private bool isLegendVisible = false;
+
+    private async Task ToggleLegendPanel()
+    {
+        isLegendVisible = !isLegendVisible;
+        if (isLegendVisible)
+        {
+            // Allow DOM to render canvases before drawing
+            await Task.Yield();
+            await DrawLegendIcons();
+        }
+    }
+
+    private async Task DrawLegendIcons()
+    {
+        string[] doorTypes = new[] { "archway", "wooden", "metal", "reinforced", "curtain", "portcullis", "stone_slab" };
+        foreach (var type in doorTypes)
+        {
+            await JSRuntime.InvokeVoidAsync("drawLegendDoor", $"legend-{type}", type);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
