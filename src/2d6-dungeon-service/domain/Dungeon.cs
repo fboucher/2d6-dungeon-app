@@ -97,8 +97,14 @@ public class Dungeon
 
     public void ChangeRoom(MappedRoom roomFrom, MappedRoom roomTo)
     {
-        MappedRooms.First(r => r.Id == roomFrom.Id).YouAreHere = false;
-        MappedRooms.First(r => r.Id == roomTo.Id).YouAreHere = true;
+        var from = MappedRooms.FirstOrDefault(r => r.Id == roomFrom.Id);
+        var to = MappedRooms.FirstOrDefault(r => r.Id == roomTo.Id);
+
+        if (from != null)
+            from.YouAreHere = false;
+
+        if (to != null)
+            to.YouAreHere = true;
     }
 
     /// <summary>

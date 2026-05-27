@@ -278,10 +278,21 @@
         if(directionTo is not null){
             var exit = currentRoom!.Exits![directionTo.Value];
 
+            if (exit.IsLocked)
+            {
+                ToastService.ShowToast(ToastIntent.Warning, "This door is locked! You need to find a way to unlock it.");
+                return;
+            }
+
             if (exit.TargetRoomId > 0)
             {
                 var destinationRoom = currentAdventure!.Dungeon.GetRoom(exit.TargetRoomId.Value);
-                currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom!);
+                if (destinationRoom is null)
+                {
+                    ToastService.ShowToast(ToastIntent.Warning, "That room hasn't been added to the dungeon yet. Position it and click Add Room to Map first.");
+                    return;
+                }
+                currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom);
                 currentRoom = destinationRoom;
                 gameTurnInstructions = "You already visited that room, Pick another door!";
                 await RefreshCanvas();
@@ -374,7 +385,7 @@
 
             @* Char entranceWall = directionFrom.ToString()[0]; *@
             GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
-            GameTurn.AssignExits(nextRoom!, directionFrom);
+            GameTurn.AssignExits(nextRoom!, directionFrom, nextRoom.LockRoll);
 
             var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(nextRoom!, directionFrom, entranceDoorX, entranceDoorY);
             nextRoom.CoordX = originX;
