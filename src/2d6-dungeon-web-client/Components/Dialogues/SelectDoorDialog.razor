@@ -8,13 +8,13 @@
 {
     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
         <span>Which door do you want to open?</span>
-        <FluentButton Disabled=@(!isDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
+        <FluentButton Disabled=@(!isDoorN || isLockedDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
         <FluentStack Orientation="Orientation.Horizontal"  HorizontalAlignment="HorizontalAlignment.Center">
-            <FluentButton Disabled=@(!isDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
+            <FluentButton Disabled=@(!isDoorW || isLockedDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
             <FluentIcon Value="@(new Icons.Regular.Size32.Globe())" />
-            <FluentButton Disabled=@(!isDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
+            <FluentButton Disabled=@(!isDoorE || isLockedDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
         </FluentStack>
-        <FluentButton Disabled=@(!isDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
+        <FluentButton Disabled=@(!isDoorS || isLockedDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
     </FluentStack>
 }
 
@@ -30,6 +30,11 @@
     private bool isDoorS = false;
     private bool isDoorW = false;
     private bool isDoorE = false;
+
+    private bool isLockedDoorN = false;
+    private bool isLockedDoorS = false;
+    private bool isLockedDoorW = false;
+    private bool isLockedDoorE = false;
 
     private Icon iconDoorN = new Icons.Regular.Size20.Door();
     private Icon iconDoorS = new Icons.Regular.Size20.Door();
@@ -51,18 +56,22 @@
             switch(door.Key){
                 case(Direction.North): 
                     isDoorN = true;
+                    isLockedDoorN = door.Value.IsLocked;
                     iconDoorN = (door.Value.IsLocked) ? doorLockedIcon: doorIcon;
                     break;
                 case(Direction.East): 
                     isDoorE = true;
+                    isLockedDoorE = door.Value.IsLocked;
                     iconDoorE = (door.Value.IsLocked) ? doorLockedIcon: doorIcon;
                     break;
                 case(Direction.South): 
                     isDoorS = true;
+                    isLockedDoorS = door.Value.IsLocked;
                     iconDoorS = (door.Value.IsLocked) ? doorLockedIcon: doorIcon;
                     break;
                 case(Direction.West): 
                     isDoorW = true;
+                    isLockedDoorW = door.Value.IsLocked;
                     iconDoorW = (door.Value.IsLocked) ? doorLockedIcon: doorIcon;
                     break;
             }

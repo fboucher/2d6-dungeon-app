@@ -68,15 +68,38 @@
                 </div>
             </FluentStack>
         </FluentWizardStep>
+        <FluentWizardStep Label="Locks"
+                          Summary="Check for locked doors"
+                          OnChange="@OnStepChange"
+                          Disabled="@(isCorridor || hasNoExits)">
+            <FluentStack Orientation="Orientation.Vertical">
+                @if (hasNoExits)
+                {
+                    <p>There are no doors in this room, so there's nothing to lock.</p>
+                }
+                else
+                {
+                    <p>@(gameTurn!.Message ?? string.Empty)</p>
+                    <FluentButton @onclick=RollDiceForLocks Appearance="Appearance.Accent" disabled="@(isLocksSet)">Roll 1D6</FluentButton>
+
+                    <div style="padding:20px;">
+                        <span style="@(locksDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                            <Dice face="@locksDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        </span>
+                    </div>
+                }
+            </FluentStack>
+        </FluentWizardStep>
         <FluentWizardStep   Label="Summary"
                             Summary="Summary of the new room"
                             OnChange="@OnStepChange">
             <div style="padding:20px;">
-            @if(isSizeSet && isExitsSet && isDescriptionSet)
+            @if(isSizeSet && isExitsSet && isDescriptionSet && isLocksSet)
             {
                 <p>The room is @gameTurn.CurrentRoom!.Width by @gameTurn.CurrentRoom.Height</p>
                 <p>Excluding the door you used to ge in, there @gameTurn.CurrentRoom.ExitsCount other door(s)</p>
                 <p>@gameTurn.CurrentRoom.Description</p>
+                <p>@(gameTurn!.Message ?? string.Empty)</p>
             }
             </div>
         </FluentWizardStep>
@@ -97,10 +120,13 @@
     private DiceResult sizeDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private DiceResult exitsDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private DiceResult DescriptionDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
+    private DiceResult locksDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private bool isSizeSet = false;
     private bool isExitsSet = false;
     private bool isDescriptionSet = false;
+    private bool isLocksSet = false;
     private bool isCorridor = false;
+    private bool hasNoExits = false;
     
     // Dice refs for doubles celebration
     private Dice? sizeDiceA;
@@ -131,6 +157,9 @@
                 gameTurn.Message = "Roll 2D6 to know what's in that room";
                 break;
             case 3:
+                gameTurn.Message = "Roll 1D6 to check for locked doors";
+                break;
+            case 4:
                 Dialog!.TogglePrimaryActionButton(true);
                 break;
         }
@@ -154,6 +183,7 @@
             {
                 gameTurn.CurrentRoom.Description = "You found a corridor";
                 isDescriptionSet = true;
+                isLocksSet = true;
                 isCorridor = true;
             }
         }
@@ -172,6 +202,13 @@
         gameTurn.NextAction = ActionType.RollForExits;
         await gameTurn.ContinueTurn(exitsDiceResult, Content.Dungeon);
         isExitsSet = true;
+
+        if (gameTurn.CurrentRoom!.ExitsCount == 0)
+        {
+            hasNoExits = true;
+            isLocksSet = true;
+            gameTurn.Message = "There are no doors in this room to lock.";
+        }
     }
 
     private async Task RollDiceForDescription()
@@ -187,6 +224,14 @@
             await Task.Delay(650);
             await descDiceA.CelebrateDoublesWith(descDiceB.DiceId);
         }
+    }
+
+    private async Task RollDiceForLocks()
+    {
+        locksDiceResult = DiceResult.Roll1Dice();
+        gameTurn.NextAction = ActionType.RollForLocks;
+        await gameTurn.ContinueTurn(locksDiceResult, Content.Dungeon);
+        isLocksSet = true;
     }
 
     private async Task SaveAsync()

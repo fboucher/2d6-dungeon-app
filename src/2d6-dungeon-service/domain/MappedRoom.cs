@@ -14,6 +14,7 @@ public class MappedRoom
     public string? Description { get; set; }
     public string? Encounter { get; set; }
     public string? ExitsType { get; set; }
+    public int? LockRoll { get; set; }
     public bool YouAreHere { get; set; } = false;
 
 
