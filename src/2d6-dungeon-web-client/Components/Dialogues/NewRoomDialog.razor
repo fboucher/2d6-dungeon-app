@@ -98,7 +98,10 @@
             {
                 <p>The room is @gameTurn.CurrentRoom!.Width by @gameTurn.CurrentRoom.Height</p>
                 <p>Excluding the door you used to ge in, there @gameTurn.CurrentRoom.ExitsCount other door(s)</p>
-                <p>Door(s): @gameTurn.CurrentRoom.ExitsType (@(AreDoorsLocked() ? "locked" : "unlocked"))</p> 
+                if(!hasNoExits)
+                {
+                    <p>Door(s): @gameTurn.CurrentRoom.ExitsType</p> 
+                }
                 <p>@gameTurn.CurrentRoom.Description</p>
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
             }
@@ -158,7 +161,14 @@
                 gameTurn.Message = "Roll 2D6 to know what's in that room";
                 break;
             case 3:
-                gameTurn.Message = $"This room has {gameTurn.CurrentRoom!.ExitsType}. Roll 1D6 to check for locked doors.";
+                if(gameTurn.CurrentRoom!.ExitsCount > 0)
+                {
+                    gameTurn.Message = $"This room has {gameTurn.CurrentRoom!.ExitsType?.ToLower() ?? "doors"}. Roll 1D6 to check for locked doors.";
+                }
+                else
+                {
+                    gameTurn.Message = "Roll 1D6 to check for locked doors.";
+                }
                 break;
             case 4:
                 Dialog!.TogglePrimaryActionButton(true);
@@ -233,24 +243,6 @@
         gameTurn.NextAction = ActionType.RollForLocks;
         await gameTurn.ContinueTurn(locksDiceResult, Content.Dungeon);
         isLocksSet = true;
-    }
-
-    private bool AreDoorsLocked()
-    {
-        var room = gameTurn.CurrentRoom;
-        if (room == null || room.LockRoll == null) return false;
-
-        string doorType = room.ExitsType?.Trim().ToLowerInvariant() ?? "";
-        if (doorType.Contains("reinforced")) doorType = "reinforced";
-        else if (doorType.Contains("metal")) doorType = "metal";
-
-        return room.LockRoll.Value switch
-        {
-            6 => true,
-            5 => doorType == "reinforced",
-            4 => doorType == "metal",
-            _ => false
-        };
     }
 
     private async Task SaveAsync()
