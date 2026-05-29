@@ -165,12 +165,13 @@
                     {
                         <div style="margin-top: 10px; text-align: center;">
                             <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@patrolDiceResult.PrimaryDice" Animate="true" />
+                            <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
                             <div style="margin-top: 8px; text-align: left; padding: 10px; background-color: var(--neutral-fill-subtle-rest); border-radius: 4px;">
                                 <div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-fill-rest);">
-                                    Patrol Roll: @patrolDiceResult.PrimaryDice
+                                    Patrol Roll: @(patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice)
                                 </div>
                                 <div style="font-size: 13px; line-height: 1.4; margin-bottom: 5px;">
-                                    A hostile <strong>@patrolResultText</strong> patrol has arrived!
+                                    @patrolResultText
                                 </div>
                                 <div style="font-size: 12px; color: var(--neutral-foreground-hint); border-top: 1px solid var(--neutral-stroke-rest); padding-top: 5px; margin-top: 5px;">
                                     @patrolLog
@@ -364,8 +365,8 @@
     private async Task RollPatrol()
     {
         patrolAttempted = true;
-        patrolDiceResult = DiceResult.Roll1Dice();
-        int rollTotal = patrolDiceResult.PrimaryDice;
+        patrolDiceResult = DiceResult.Roll2Dice();
+        int rollTotal = patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice;
 
         var adventurer = Content.Adventure.Adventurer;
         if (rationChoice == "use" && adventurer.Rations >= 1)
@@ -380,33 +381,46 @@
             patrolLog = $"Waited without rations. Suffered {2 * adventurer.Level} HP damage. ";
         }
 
-        var table = await D6Service.GetTableData("l1p");
+        var table = await D6Service.GetTableData("enp2");
         var row = table?.Rows.FirstOrDefault(r => r.Roll == rollTotal.ToString());
-        string description = row?.Description ?? "GUARD";
+        string description = row?.Description ?? "A quiet patrol passes, opening the door for you.";
 
         patrolResultText = description;
 
-        // The encounter is always hostile
-        string creatureName = description;
-        if (creatureName.Contains("GUARD AND GUARD DOG", StringComparison.OrdinalIgnoreCase))
-        {
-            creatureName = "GUARD";
-        }
+        // Check hostile
+        bool isHostile = false;
+        string creatureName = "";
+        if (description.Contains("Face a GUARD", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "GUARD"; }
+        else if (description.Contains("Face a THUG", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "THUG"; }
+        else if (description.Contains("Face an ACOLYTE", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "ACOLYTE"; }
+        else if (description.Contains("Face an INFERNAL MONK", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "INFERNAL MONK"; }
+        else if (description.Contains("Face a KNIGHT", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "KNIGHT"; }
 
-        var creature = await GetCreatureForPatrol(creatureName);
-        Content.Adventure.CombatState = new CombatState(adventurer)
+        if (isHostile)
         {
-            Creature = creature,
-            TurnCounter = 0
-        };
-        Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {creatureName} patrol while waiting!");
-        
-        Content.Exit.IsLocked = false;
-        Content.CombatInitiated = true;
-        Content.Unlocked = true;
-        
-        patrolLog += $"Hostile encounter initiated! Fighting {creatureName}.";
-        ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {creatureName}!");
+            var creature = await GetCreatureForPatrol(creatureName);
+            Content.Adventure.CombatState = new CombatState(adventurer)
+            {
+                Creature = creature,
+                TurnCounter = 0
+            };
+            Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {creatureName} patrol while waiting!");
+            
+            Content.Exit.IsLocked = false;
+            Content.CombatInitiated = true;
+            Content.Unlocked = true;
+            
+            patrolLog += $"Hostile encounter initiated! Fighting {creatureName}.";
+            ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {creatureName}!");
+        }
+        else
+        {
+            Content.Exit.IsLocked = false;
+            Content.Unlocked = true;
+            
+            patrolLog += "Non-hostile encounter. The door is now unlocked.";
+            ToastService.ShowToast(ToastIntent.Success, "A non-hostile patrol bypassed the door and unlocked it!");
+        }
 
         await SaveAdventure();
         showPatrolFinishedButton = true;
@@ -414,82 +428,11 @@
 
     private async Task<Creature> GetCreatureForPatrol(string name)
     {
-        try
-        {
-            var creatures = await D6Service.GetCreatures();
-            var match = creatures.FirstOrDefault(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            if (match != null)
-            {
-                return match;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching creature list: {ex.Message}");
-        }
-
-        // Fallbacks for missing database creatures
-        if (name.Equals("ACOLYTE", StringComparison.OrdinalIgnoreCase))
-        {
-            return new Creature
-            {
-                id = 999,
-                name = "ACOLYTE",
-                level = 1,
-                creature_type = "Humanoid",
-                health_points = 8,
-                experience = 5,
-                shift_points = 1,
-                treasure = "Roll on RPT1",
-                interrupt1 = "Robe Deflect on Secondary|3s|-1 damage",
-                interrupt2 = "",
-                manoeuvre1 = "4-3|STAFF BASH|D6 -3 damage",
-                manoeuvre2 = "",
-                description = "Loyal follower of the dungeon's dark cults. They wear robes and carry simple staves.",
-                prime_attack_rolls = "The Acolyte invokes a minor curse. You feel dizzy. Lose 1 HP.",
-                mishap_attack_rolls = "The Acolyte trips on their heavy robes. Gain 1 extra attack."
-            };
-        }
-        else if (name.Equals("KNIGHT", StringComparison.OrdinalIgnoreCase))
-        {
-            return new Creature
-            {
-                id = 998,
-                name = "KNIGHT",
-                level = 1,
-                creature_type = "Humanoid",
-                health_points = 18,
-                experience = 12,
-                shift_points = 1,
-                treasure = "Roll on PT2",
-                interrupt1 = "Shield Block on Secondary|2s and 5s|-2 damage",
-                interrupt2 = "Armor Deflect on Primary|4s|-1 damage",
-                manoeuvre1 = "5-3|SLASH|D6 -1 damage",
-                manoeuvre2 = "6-2|SHIELD BASH|D6 -2 damage",
-                description = "A heavily armored warrior clad in dark steel plate, carrying a massive sword and shield.",
-                prime_attack_rolls = "The knight executes a heavy overhead strike. Lose D3+1 HP.",
-                mishap_attack_rolls = "The knight's heavy armor makes them slow, leaving an opening. Gain 1 extra attack."
-            };
-        }
-
-        // Generic fallback in case of anything else
-        return new Creature
-        {
-            id = 997,
-            name = name,
-            level = 1,
-            creature_type = "Humanoid",
-            health_points = 10,
-            experience = 6,
-            shift_points = 1,
-            treasure = "None",
-            interrupt1 = "",
-            interrupt2 = "",
-            manoeuvre1 = "3-3|ATTACK|D6 -2 damage",
-            manoeuvre2 = "",
-            description = "A patrol member."
-        };
+        var creatures = await D6Service.GetCreatures();
+        var match = creatures.First(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return match;
     }
+    
 
     private async Task SaveAdventure()
     {
