@@ -1,4 +1,4 @@
-﻿@implements IDialogContentComponent<NewRoomDialogData>
+@implements IDialogContentComponent<NewRoomDialogData>
 @inject IJSRuntime JSRuntime 
 @inject D6Service d6Service;
 
@@ -157,7 +157,7 @@
                 gameTurn.Message = "Roll 2D6 to know what's in that room";
                 break;
             case 3:
-                gameTurn.Message = "Roll 1D6 to check for locked doors";
+                gameTurn.Message = $"The room is {gameTurn.CurrentRoom!.Width}x{gameTurn.CurrentRoom!.Height} ({gameTurn.CurrentRoom!.Description}) with {gameTurn.CurrentRoom!.ExitsCount} other door(s) of type '{gameTurn.CurrentRoom!.ExitsType}'. Roll 1D6 to check for locked doors.";
                 break;
             case 4:
                 Dialog!.TogglePrimaryActionButton(true);
