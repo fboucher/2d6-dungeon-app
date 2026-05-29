@@ -165,13 +165,12 @@
                     {
                         <div style="margin-top: 10px; text-align: center;">
                             <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@patrolDiceResult.PrimaryDice" Animate="true" />
-                            <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
                             <div style="margin-top: 8px; text-align: left; padding: 10px; background-color: var(--neutral-fill-subtle-rest); border-radius: 4px;">
                                 <div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-fill-rest);">
-                                    Patrol Roll: @(patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice)
+                                    Patrol Roll: @patrolDiceResult.PrimaryDice
                                 </div>
                                 <div style="font-size: 13px; line-height: 1.4; margin-bottom: 5px;">
-                                    @patrolResultText
+                                    A hostile <strong>@patrolResultText</strong> patrol has arrived!
                                 </div>
                                 <div style="font-size: 12px; color: var(--neutral-foreground-hint); border-top: 1px solid var(--neutral-stroke-rest); padding-top: 5px; margin-top: 5px;">
                                     @patrolLog
@@ -365,8 +364,8 @@
     private async Task RollPatrol()
     {
         patrolAttempted = true;
-        patrolDiceResult = DiceResult.Roll2Dice();
-        int rollTotal = patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice;
+        patrolDiceResult = DiceResult.Roll1Dice();
+        int rollTotal = patrolDiceResult.PrimaryDice;
 
         var adventurer = Content.Adventure.Adventurer;
         if (rationChoice == "use" && adventurer.Rations >= 1)
@@ -381,46 +380,33 @@
             patrolLog = $"Waited without rations. Suffered {2 * adventurer.Level} HP damage. ";
         }
 
-        var table = await D6Service.GetTableData("enp2");
+        var table = await D6Service.GetTableData("l1p");
         var row = table?.Rows.FirstOrDefault(r => r.Roll == rollTotal.ToString());
-        string description = row?.Description ?? "A quiet patrol passes, opening the door for you.";
+        string description = row?.Description ?? "GUARD";
 
         patrolResultText = description;
 
-        // Check hostile
-        bool isHostile = false;
-        string creatureName = "";
-        if (description.Contains("Face a GUARD", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "GUARD"; }
-        else if (description.Contains("Face a THUG", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "THUG"; }
-        else if (description.Contains("Face an ACOLYTE", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "ACOLYTE"; }
-        else if (description.Contains("Face an INFERNAL MONK", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "INFERNAL MONK"; }
-        else if (description.Contains("Face a KNIGHT", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "KNIGHT"; }
+        // The encounter is always hostile
+        string creatureName = description;
+        if (creatureName.Contains("GUARD AND GUARD DOG", StringComparison.OrdinalIgnoreCase))
+        {
+            creatureName = "GUARD";
+        }
 
-        if (isHostile)
+        var creature = await GetCreatureForPatrol(creatureName);
+        Content.Adventure.CombatState = new CombatState(adventurer)
         {
-            var creature = await GetCreatureForPatrol(creatureName);
-            Content.Adventure.CombatState = new CombatState(adventurer)
-            {
-                Creature = creature,
-                TurnCounter = 0
-            };
-            Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {creatureName} patrol while waiting!");
-            
-            Content.Exit.IsLocked = false;
-            Content.CombatInitiated = true;
-            Content.Unlocked = true;
-            
-            patrolLog += $"Hostile encounter initiated! Fighting {creatureName}.";
-            ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {creatureName}!");
-        }
-        else
-        {
-            Content.Exit.IsLocked = false;
-            Content.Unlocked = true;
-            
-            patrolLog += "Non-hostile encounter. The door is now unlocked.";
-            ToastService.ShowToast(ToastIntent.Success, "A non-hostile patrol bypassed the door and unlocked it!");
-        }
+            Creature = creature,
+            TurnCounter = 0
+        };
+        Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {creatureName} patrol while waiting!");
+        
+        Content.Exit.IsLocked = false;
+        Content.CombatInitiated = true;
+        Content.Unlocked = true;
+        
+        patrolLog += $"Hostile encounter initiated! Fighting {creatureName}.";
+        ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {creatureName}!");
 
         await SaveAdventure();
         showPatrolFinishedButton = true;
