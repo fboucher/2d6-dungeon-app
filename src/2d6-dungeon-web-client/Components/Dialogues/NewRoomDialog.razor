@@ -98,6 +98,7 @@
             {
                 <p>The room is @gameTurn.CurrentRoom!.Width by @gameTurn.CurrentRoom.Height</p>
                 <p>Excluding the door you used to ge in, there @gameTurn.CurrentRoom.ExitsCount other door(s)</p>
+                <p>Door type: @gameTurn.CurrentRoom.ExitsType</p>
                 <p>@gameTurn.CurrentRoom.Description</p>
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
             }
@@ -157,7 +158,7 @@
                 gameTurn.Message = "Roll 2D6 to know what's in that room";
                 break;
             case 3:
-                gameTurn.Message = $"The room is {gameTurn.CurrentRoom!.Width}x{gameTurn.CurrentRoom!.Height} ({gameTurn.CurrentRoom!.Description}) with {gameTurn.CurrentRoom!.ExitsCount} other door(s) of type '{gameTurn.CurrentRoom!.ExitsType}'. Roll 1D6 to check for locked doors.";
+                gameTurn.Message = $"This room has {gameTurn.CurrentRoom!.ExitsType}. Roll 1D6 to check for locked doors.";
                 break;
             case 4:
                 Dialog!.TogglePrimaryActionButton(true);
