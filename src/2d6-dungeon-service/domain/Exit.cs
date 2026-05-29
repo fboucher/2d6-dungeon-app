@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace c5m._2d6Dungeon;
 
@@ -10,6 +10,9 @@ public class Exit
     public bool Lockable { get; set; }
     public bool IsLocked { get; set; }
     public int PositionOnWall { get; set; }
+    public int LockModifier { get; set; } = 0;
+    public int? LockQuality { get; set; }
+    public bool IsDamaged { get; set; } = false;
 
     public static string GetDirection(Direction value)
     {

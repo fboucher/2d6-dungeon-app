@@ -1,4 +1,4 @@
-﻿@implements IDialogContentComponent<DoorSelections>
+@implements IDialogContentComponent<DoorSelections>
 
 @rendermode InteractiveServer
 
@@ -8,13 +8,13 @@
 {
     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
         <span>Which door do you want to open?</span>
-        <FluentButton Disabled=@(!isDoorN || isLockedDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
+        <FluentButton Disabled=@(!isDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
         <FluentStack Orientation="Orientation.Horizontal"  HorizontalAlignment="HorizontalAlignment.Center">
-            <FluentButton Disabled=@(!isDoorW || isLockedDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
+            <FluentButton Disabled=@(!isDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
             <FluentIcon Value="@(new Icons.Regular.Size32.Globe())" />
-            <FluentButton Disabled=@(!isDoorE || isLockedDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
+            <FluentButton Disabled=@(!isDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
         </FluentStack>
-        <FluentButton Disabled=@(!isDoorS || isLockedDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
+        <FluentButton Disabled=@(!isDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
     </FluentStack>
 }
 

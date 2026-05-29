@@ -14,7 +14,8 @@ const DoorColors = {
   LOCKED: '#8B2500',    // Dark rust red for locked doors
   UNLOCKED: '#2E5A2E',  // Forest green for unlocked doors
   SYMBOL: '#1a1a1a',    // Near-black for door symbols
-  WALL: '#1a1a1a'       // Near-black for wall sections around doors
+  WALL: '#1a1a1a',      // Near-black for wall sections around doors
+  DAMAGED: '#7C3AED'    // Purple for damaged locks/doors
 };
 
 // Map visual theme colors
@@ -294,9 +295,12 @@ function drawRoomGlow(x, y, width, height) {
   context.fillRect(x, y, width, height);
 }
 
-function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false, youAreHere= false) {
+function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false, youAreHere= false, isDamaged=false) {
   // Use lock state colors
   let doorColor = isLocked ? DoorColors.LOCKED : DoorColors.UNLOCKED;
+  if (isDamaged) {
+    doorColor = DoorColors.DAMAGED;
+  }
 
   // Door dimensions
   let doorWidth = cubeSize;

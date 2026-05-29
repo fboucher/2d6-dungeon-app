@@ -1,4 +1,5 @@
 @page "/play/{AdventureId:int}"
+@using c5m._2d6Dungeon
 @using c5m._2d6Dungeon.web.Domain;
 @inject D6Service d6Service;
 @inject IJSRuntime JSRuntime;
@@ -280,7 +281,34 @@
 
             if (exit.IsLocked)
             {
-                ToastService.ShowToast(ToastIntent.Warning, "This door is locked! You need to find a way to unlock it.");
+                var dialogData = new ResolveLockedDoorDialogData
+                {
+                    Exit = exit,
+                    Adventure = currentAdventure!,
+                    Direction = directionTo.Value
+                };
+
+                DialogParameters parameters = new()
+                {
+                    Title = $"Locked Door",
+                    PrimaryAction = "Close",
+                    PrimaryActionEnabled = true,
+                    Width = "800px",
+                    TrapFocus = true,
+                    Modal = true
+                };
+
+                IDialogReference dialog = await DialogService.ShowDialogAsync<ResolveLockedDoorDialog>(dialogData, parameters);
+                DialogResult? result = await dialog.Result;
+
+                await SaveAventure();
+                await RefreshCanvas();
+
+                if (dialogData.CombatInitiated)
+                {
+                    activeid = "tab-combat";
+                    StateHasChanged();
+                }
                 return;
             }
 
