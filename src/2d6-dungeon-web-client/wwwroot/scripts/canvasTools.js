@@ -342,10 +342,14 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   const pixelX = (posX - viewportOffsetX) * cubeSize;
   const pixelY = (posY - viewportOffsetY) * cubeSize;
 
-  // Draw floor under door
+  // Draw floor under door, extending slightly to clear adjacent wall lines
   let floorColor = GetFloorColor(youAreHere);
   context.fillStyle = floorColor;
-  context.fillRect(pixelX + 2, pixelY + 2, doorWidth - 4, doorHeight - 4);
+  if (orientation === 'H') {
+    context.fillRect(pixelX + 2, pixelY - 4, doorWidth - 4, doorHeight + 8);
+  } else {
+    context.fillRect(pixelX - 4, pixelY + 2, doorWidth + 8, doorHeight - 4);
+  }
 
   // Draw subtle door frame shadow
   context.fillStyle = 'rgba(0, 0, 0, 0.2)';

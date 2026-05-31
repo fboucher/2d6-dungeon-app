@@ -584,21 +584,25 @@ else
     {
         await RenderCanvas();
         var rooms = currentAdventure!.Dungeon.GetRooms();
-        int roomCount = rooms.Count;
 
+        // Step 1: Draw all rooms first
         foreach (var room in rooms)
         {
-            // Here to help debugging a intermittent issue with drawing rooms
+            // Here to help debugging an intermittent issue with drawing rooms
             Console.WriteLine($"Drawing Room Id: {room.Id} at X:{room.CoordX} Y:{room.CoordY} Height:{room.Height}" +
                               $" Width:{room.Width} YouAreHere:{room.YouAreHere}");
-            if(currentRoom?.ExitsCount>0)
+            int gidX = room.CoordX;
+            int gidY = room.CoordY;
+            await JSRuntime.InvokeVoidAsync("DrawRoom", gidX, gidY, room.Width, room.Height, room.YouAreHere, room.IsUnique);
+        }
+
+        // Step 2: Draw all doors on top
+        foreach (var room in rooms)
+        {
+            if (room.Exits != null)
             {
-                foreach (var exit in currentRoom!.Exits!.Values)
-                {
-                    Console.WriteLine($"Direction-Position: {exit.Direction.ToString()} - {exit.PositionOnWall}");
-                }
-            }                  
-            await MapTools.DrawRoom(JSRuntime, room);
+                await MapTools.DrawDoors(JSRuntime, room, room.YouAreHere);
+            }
         }
     }
     FluentAccordionItem? changed;
