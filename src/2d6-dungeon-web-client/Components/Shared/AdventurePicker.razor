@@ -1,7 +1,9 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @using System.Text.Json;
+@using c5m._2d6Dungeon.web.Components.Dialogues;
 @inject D6Service D6Service;
 @inject NavigationManager Navigation;
+@inject IDialogService DialogService;
 
 @rendermode InteractiveServer
 
@@ -20,9 +22,13 @@
             <PropertyColumn Property="@(a => a.name)" Title="Adventure Name" Sortable="true" Width="200"/>
             <PropertyColumn Property="@(a => a.level)" Title="Level" Sortable="true"/>
             <PropertyColumn Property="@(a => a.last_saved_datetime)" Title="Saved Date" Sortable="true"/>
-            <TemplateColumn Width="60px">  
-                <FluentButton @onclick="@(async () => await AdventureDelete(context!.id))" 
-                             IconEnd="@(new Icons.Regular.Size16.Delete())" stopPropagation="true"/>
+            <TemplateColumn Width="110px">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentButton @onclick="@(async () => await AdventureEdit(context!.id, context!.name))" 
+                                 IconEnd="@(new Icons.Regular.Size16.Edit())" stopPropagation="true"/>
+                    <FluentButton @onclick="@(async () => await AdventureDelete(context!.id))" 
+                                 IconEnd="@(new Icons.Regular.Size16.Delete())" stopPropagation="true"/>
+                </FluentStack>
             </TemplateColumn>
         </ChildContent>
         <EmptyContent>
@@ -82,6 +88,45 @@
             AdventurePreviews = null;
             await LoadAdventurePreviewsAsync();
             StateHasChanged();
+        }
+    }
+
+    private async Task AdventureEdit(int id, string currentName)
+    {
+        var dialogData = new EditAdventureNameDialogData
+        {
+            Name = currentName
+        };
+
+        DialogParameters parameters = new()
+        {
+            Title = "Rename Adventure",
+            PrimaryAction = "Save",
+            SecondaryAction = "Cancel",
+            Width = "400px",
+            TrapFocus = true,
+            Modal = true
+        };
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<EditAdventureNameDialog>(dialogData, parameters);
+        DialogResult? result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data != null)
+        {
+            var resultData = result.Data as EditAdventureNameDialogData;
+            if (resultData != null && !string.IsNullOrWhiteSpace(resultData.Name))
+            {
+                var adventure = await D6Service.GetAdventure(id);
+                if (adventure != null)
+                {
+                    adventure.Name = resultData.Name;
+                    await D6Service.AdventureSave(adventure);
+                    
+                    AdventurePreviews = null;
+                    await LoadAdventurePreviewsAsync();
+                    StateHasChanged();
+                }
+            }
         }
     }
 
