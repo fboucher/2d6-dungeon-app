@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 
@@ -171,6 +171,8 @@ public class GameTurn
         CurrentRoom!.Description = room.description;
         CurrentRoom!.Encounter = room.encounter;
         CurrentRoom!.ExitsType = room.exits;
+        CurrentRoom!.IsUnique = room.is_unique;
+        CurrentRoom!.RoomType = room.room_type;
         //NextAction = ActionType.RollForExits;
         Message = $"Go to the sumary to see all the details of the room.";
     }

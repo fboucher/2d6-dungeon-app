@@ -427,6 +427,18 @@ body.dungeon-theme fluent-button {
     text-transform: capitalize;
 }
 
+.legend-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2A2420;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px dashed #2A2420;
+    padding-bottom: 2px;
+}
+
 @media (max-width: 600px) {
     .header-gutters {
         margin: 0.5rem 3rem 0.5rem 1.5rem !important;

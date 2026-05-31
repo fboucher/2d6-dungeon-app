@@ -56,7 +56,13 @@
                           Disabled="@(isCorridor)">
             <FluentStack Orientation="Orientation.Vertical">
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
-                <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Gap="10">
+                    <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
+                    @if (isDescriptionSet && gameTurn.CurrentRoom?.IsUnique == true)
+                    {
+                        <FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge>
+                    }
+                </FluentStack>
 
                 <div style="padding:20px;">
                     <span style="@(DescriptionDiceResult.PrimaryDice == 0 ? "display:none" : "")">
@@ -103,6 +109,10 @@
                     <p>Door(s): @gameTurn.CurrentRoom.ExitsType?.ToLower()</p> 
                 }
                 <p>@gameTurn.CurrentRoom.Description</p>
+                @if (gameTurn.CurrentRoom.IsUnique)
+                {
+                    <p><FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge></p>
+                }
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
             }
             </div>

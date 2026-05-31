@@ -81,6 +81,7 @@
         entryRoom.YouAreHere = true;
 
         betaAdventure.Dungeon.AddRoom(entryRoom);
+        betaAdventure.AppendJournal("Entered the dungeon entrance room (Lobby).");
 
         betaAdventure = await D6Service.AdventureSave(betaAdventure);
         Navigation.NavigateTo($"play/{betaAdventure.Id}");
