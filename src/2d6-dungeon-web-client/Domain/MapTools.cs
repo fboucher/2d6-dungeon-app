@@ -56,7 +56,7 @@ public static class MapTools
         int gidX = (currentRoom.CoordX);
         int gidY = (currentRoom.CoordY);
 
-        await js.InvokeVoidAsync("DrawRoom", gidX, gidY, currentRoom.Width, currentRoom.Height, currentRoom.YouAreHere);
+        await js.InvokeVoidAsync("DrawRoom", gidX, gidY, currentRoom.Width, currentRoom.Height, currentRoom.YouAreHere, currentRoom.IsUnique);
 
         await DrawDoors(js, currentRoom, currentRoom.YouAreHere);
     }

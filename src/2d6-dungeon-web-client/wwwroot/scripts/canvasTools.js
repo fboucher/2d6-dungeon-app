@@ -31,13 +31,17 @@ const MapTheme = {
   WALL_HIGHLIGHT: '#6A5A4A',
   GRID_DOT: '#8B7355',
   CURRENT_ROOM_GLOW: 'rgba(255, 200, 100, 0.15)',
-  TORCH_GLOW: 'rgba(255, 180, 80, 0.08)'
+  TORCH_GLOW: 'rgba(255, 180, 80, 0.08)',
+  STONE_UNIQUE_LIGHT: '#ECD5B0',
+  STONE_UNIQUE_MID: '#CBAE85',
+  STONE_UNIQUE_DARK: '#9E8665'
 };
 
 // resize the canvas to fill the browser window
 window.addEventListener('resize', onResize, false);
 function onResize() {
   canvas = document.getElementById('dotCanvas');
+  if (!canvas) return;
   context = canvas.getContext('2d');
 
   vw = canvas.width;
@@ -151,14 +155,23 @@ function drawGridDots(width, height) {
   }
 }
 
-GetFloorColor = function(youAreHere){
+GetFloorColor = function(youAreHere, isUnique=false){
+  if (isUnique) {
+    if (youAreHere == true) {
+      return MapTheme.STONE_UNIQUE_LIGHT;
+    }
+    return MapTheme.STONE_UNIQUE_MID;
+  }
   if(youAreHere == true){
     return MapTheme.STONE_LIGHT;
   }
   return MapTheme.STONE_MID;
 }
 
-function DrawRoom(posX, posY, width, height, youAreHere=false){
+function DrawRoom(posX, posY, width, height, youAreHere=false, isUnique=false){
+  if (!width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
   // Apply viewport offset
   const pixelX = (posX - viewportOffsetX) * cubeSize;
   const pixelY = (posY - viewportOffsetY) * cubeSize;
@@ -209,11 +222,11 @@ function DrawRoom(posX, posY, width, height, youAreHere=false){
   const floorHeight = pixelHeight - (wallThickness * 2);
 
   // Floor base color
-  context.fillStyle = GetFloorColor(youAreHere);
+  context.fillStyle = GetFloorColor(youAreHere, isUnique);
   context.fillRect(floorX, floorY, floorWidth, floorHeight);
 
   // Draw stone tile pattern
-  drawStoneTiles(floorX, floorY, floorWidth, floorHeight, youAreHere);
+  drawStoneTiles(floorX, floorY, floorWidth, floorHeight, youAreHere, isUnique);
 
   // Current room glow effect
   if (youAreHere) {
@@ -222,10 +235,17 @@ function DrawRoom(posX, posY, width, height, youAreHere=false){
 }
 
 // Draw stone tile pattern on floor
-function drawStoneTiles(x, y, width, height, youAreHere) {
+function drawStoneTiles(x, y, width, height, youAreHere, isUnique=false) {
+  if (width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
   const tileSize = cubeSize;
   
-  context.strokeStyle = youAreHere ? MapTheme.STONE_MID : MapTheme.STONE_DARK;
+  if (isUnique) {
+    context.strokeStyle = youAreHere ? MapTheme.STONE_UNIQUE_MID : MapTheme.STONE_UNIQUE_DARK;
+  } else {
+    context.strokeStyle = youAreHere ? MapTheme.STONE_MID : MapTheme.STONE_DARK;
+  }
   context.lineWidth = 1;
   context.globalAlpha = 0.4;
 
@@ -279,20 +299,32 @@ function drawStoneTiles(x, y, width, height, youAreHere) {
 
 // Glow effect for current room
 function drawRoomGlow(x, y, width, height) {
+  if (!width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
+  
   const centerX = x + width / 2;
   const centerY = y + height / 2;
   const maxRadius = Math.max(width, height) * 0.8;
 
-  const glowGradient = context.createRadialGradient(
-    centerX, centerY, 0,
-    centerX, centerY, maxRadius
-  );
-  glowGradient.addColorStop(0, MapTheme.CURRENT_ROOM_GLOW);
-  glowGradient.addColorStop(0.5, MapTheme.TORCH_GLOW);
-  glowGradient.addColorStop(1, 'rgba(255, 180, 80, 0)');
+  if (isNaN(centerX) || isNaN(centerY) || isNaN(maxRadius) || maxRadius <= 0) {
+    return;
+  }
 
-  context.fillStyle = glowGradient;
-  context.fillRect(x, y, width, height);
+  try {
+    const glowGradient = context.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, maxRadius
+    );
+    glowGradient.addColorStop(0, MapTheme.CURRENT_ROOM_GLOW);
+    glowGradient.addColorStop(0.5, MapTheme.TORCH_GLOW);
+    glowGradient.addColorStop(1, 'rgba(255, 180, 80, 0)');
+
+    context.fillStyle = glowGradient;
+    context.fillRect(x, y, width, height);
+  } catch (e) {
+    console.error("Failed to draw room glow:", e);
+  }
 }
 
 function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false, youAreHere= false, isDamaged=false) {
@@ -310,10 +342,14 @@ function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isL
   const pixelX = (posX - viewportOffsetX) * cubeSize;
   const pixelY = (posY - viewportOffsetY) * cubeSize;
 
-  // Draw floor under door
+  // Draw floor under door, extending slightly to clear adjacent wall lines
   let floorColor = GetFloorColor(youAreHere);
   context.fillStyle = floorColor;
-  context.fillRect(pixelX + 2, pixelY + 2, doorWidth - 4, doorHeight - 4);
+  if (orientation === 'H') {
+    context.fillRect(pixelX + 2, pixelY - 4, doorWidth - 4, doorHeight + 8);
+  } else {
+    context.fillRect(pixelX - 4, pixelY + 2, doorWidth + 8, doorHeight - 4);
+  }
 
   // Draw subtle door frame shadow
   context.fillStyle = 'rgba(0, 0, 0, 0.2)';
@@ -761,7 +797,38 @@ function drawLegendDoor(canvasId, doorType) {
   context = savedContext;
 }
 
-// Explicitly expose drawLegendDoor on window for Blazor JS interop
+function drawLegendRoom(canvasId, isUnique=false) {
+  const legendCanvas = document.getElementById(canvasId);
+  if (!legendCanvas) return;
+
+  const size = legendCanvas.width;
+  const ctx = legendCanvas.getContext('2d');
+
+  // Clear canvas
+  ctx.clearRect(0, 0, size, size);
+
+  // Save original context
+  const savedContext = context;
+  context = ctx;
+
+  // Draw room floor color base on uniqueness
+  ctx.fillStyle = isUnique ? MapTheme.STONE_UNIQUE_MID : MapTheme.STONE_MID;
+  ctx.fillRect(0, 0, size, size);
+
+  // Draw tile pattern
+  drawStoneTiles(0, 0, size, size, false, isUnique);
+
+  // Draw wall frame around it
+  ctx.strokeStyle = MapTheme.WALL_OUTER;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(1, 1, size - 2, size - 2);
+
+  // Restore original context
+  context = savedContext;
+}
+
+// Explicitly expose drawLegendDoor and drawLegendRoom on window for Blazor JS interop
 window.drawLegendDoor = drawLegendDoor;
+window.drawLegendRoom = drawLegendRoom;
 
 

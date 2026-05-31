@@ -12,10 +12,17 @@
 
 <FluentButton @onclick="@( () => SaveAventure())" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Save())" />
 
-<FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
+@if (currentAdventure == null)
+{
+    <FluentProgressRing Style="margin: 20px;" />
+    <p style="margin: 20px;">Loading adventure...</p>
+}
+else
+{
+    <FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
 
 
-    <FluentTab Id="tab-map" Label="Dungeon Map" Icon="@(new Icons.Regular.Size24.Map())">
+        <FluentTab Id="tab-map" Label="Dungeon Map" Icon="@(new Icons.Regular.Size24.Map())">
         <FluentStack Orientation="Orientation.Vertical">
 
             <FluentAccordion  OnAccordionItemChange="HandleOnAccordionItemChange" Style="width: 100%;">
@@ -66,11 +73,12 @@
                     <!-- Legend Panel -->
                     @if (isLegendVisible)
                     {
-                        <div class="legend-panel">
+                        <div class="legend-panel" style="max-height: 500px; overflow-y: auto;">
                             <div class="legend-panel-header">
-                                <span class="legend-panel-title">Door Types</span>
+                                <span class="legend-panel-title">Legend</span>
                                 <button class="legend-panel-close" @onclick="ToggleLegendPanel" title="Close legend">&#10005;</button>
                             </div>
+                            <div class="legend-section-title">Doors</div>
                             <div class="legend-item">
                                 <canvas id="legend-archway" class="legend-canvas" width="80" height="80"></canvas>
                                 <span class="legend-label">Archway</span>
@@ -99,6 +107,15 @@
                                 <canvas id="legend-stone_slab" class="legend-canvas" width="80" height="80"></canvas>
                                 <span class="legend-label">Stone Slab</span>
                             </div>
+                            <div class="legend-section-title">Rooms</div>
+                            <div class="legend-item">
+                                <canvas id="legend-standard-room" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Standard Room</span>
+                            </div>
+                            <div class="legend-item">
+                                <canvas id="legend-unique-room" class="legend-canvas" width="80" height="80"></canvas>
+                                <span class="legend-label">Unique Room</span>
+                            </div>
                         </div>
                     }
                 </div>
@@ -106,7 +123,7 @@
                 <div id="maps-menu" style="position: sticky; top: 20px; align-self: flex-start;">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
 
-                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom == null)">Refresh Canvas</FluentButton>
+                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom != null)">Refresh Canvas</FluentButton>
 
                         <!-- Viewport Pan Controls -->
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Pan Map View</FluentLabel>
@@ -158,30 +175,32 @@
     </FluentTab>
 
 
-    <FluentTab Id="tab-adventurer" Label="Adventurer" Icon="@(new Icons.Regular.Size24.NotepadPerson())"
-        DeferredLoading=true>
+    <FluentTab Id="tab-adventurer" Label="Adventurer" Icon="@(new Icons.Regular.Size24.NotepadPerson())">
         <AdventurerCard @bind-Player="currentAdventure!.Adventurer" Extented="true"></AdventurerCard>
     </FluentTab>
 
 
-    <FluentTab Id="tab-combat" Label="Combat Screen" Icon="@(new Icons.Regular.Size24.Shield())"
-        DeferredLoading=true>
-        <Combat @bind-CombatState="currentAdventure!.CombatState"></Combat>
+    <FluentTab Id="tab-combat" Label="Combat Screen" Icon="@(new Icons.Regular.Size24.Shield())">
+        <Combat @bind-CombatState="currentAdventure!.CombatState" OnJournalLog="AppendJournalEntry"></Combat>
     </FluentTab>
 
-    <FluentTab Id="tab-tables" Label="Tables" Icon="@(new Icons.Regular.Size24.Table())"
-        DeferredLoading=true>
+    <FluentTab Id="tab-tables" Label="Tables" Icon="@(new Icons.Regular.Size24.Table())">
         <TableViewer />
     </FluentTab>
 
 
-    <FluentTab Id="tab-note" Label="Game Notes" Icon="@(new Icons.Regular.Size24.ArchiveSettings())"
-        DeferredLoading=true>
+    <FluentTab Id="tab-note" Label="Game Notes" Icon="@(new Icons.Regular.Size24.ArchiveSettings())">
 
         <FluentTextArea @bind-Value=@currentAdventure!.Notes Label="Notes:" Rows="15" style="width: 100%;height: 100%;"/>
     </FluentTab>
 
+    <FluentTab Id="tab-journal" Label="Game Journal" Icon="@(new Icons.Regular.Size24.Book())">
+
+        <FluentTextArea @bind-Value=@currentAdventure!.Journal Label="Journal:" Rows="15" style="width: 100%;height: 100%;"/>
+    </FluentTab>
+
 </FluentTabs>
+}
 
 
 @code {
@@ -198,6 +217,7 @@
     bool isRollDiceDisable = false;
     string? activeid = "tab-map";
     FluentTab? changedto;
+    private bool hasInitializedCanvas = false;
 
     private string gameTurnInstructions = String.Empty;
     private GameTurn? gameTurn;
@@ -226,6 +246,8 @@
         {
             await JSRuntime.InvokeVoidAsync("drawLegendDoor", $"legend-{type}", type);
         }
+        await JSRuntime.InvokeVoidAsync("drawLegendRoom", "legend-standard-room", false);
+        await JSRuntime.InvokeVoidAsync("drawLegendRoom", "legend-unique-room", true);
     }
 
     protected override async Task OnInitializedAsync()
@@ -245,7 +267,6 @@
                 {
                     gameTurnInstructions = "You are in the lobby, you can go anywhere!";
                 }
-                await FillCanvas();
             }
         }
         catch (Exception ex)
@@ -256,9 +277,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (currentAdventure != null && !hasInitializedCanvas)
         {
+            hasInitializedCanvas = true;
             await MapTools.RefreshCanvas(JSRuntime);
+            await FillCanvas();
         }
     }
 
@@ -321,6 +344,7 @@
                     return;
                 }
                 currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom);
+                currentAdventure.AppendJournal($"Entered room: {(string.IsNullOrEmpty(destinationRoom.RoomType) ? "Room " + destinationRoom.Id : destinationRoom.RoomType)}");
                 currentRoom = destinationRoom;
                 gameTurnInstructions = "You already visited that room, Pick another door!";
                 await RefreshCanvas();
@@ -508,6 +532,7 @@
         
         currentAdventure!.Dungeon.AddRoom(nextRoom);
         currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom);
+        currentAdventure.AppendJournal($"Entered room: {(string.IsNullOrEmpty(nextRoom.RoomType) ? "Room " + nextRoom.Id : nextRoom.RoomType)}");
         currentRoom = nextRoom;
 
         await SaveAventure();
@@ -559,21 +584,25 @@
     {
         await RenderCanvas();
         var rooms = currentAdventure!.Dungeon.GetRooms();
-        int roomCount = rooms.Count;
 
+        // Step 1: Draw all rooms first
         foreach (var room in rooms)
         {
-            // Here to help debugging a intermittent issue with drawing rooms
+            // Here to help debugging an intermittent issue with drawing rooms
             Console.WriteLine($"Drawing Room Id: {room.Id} at X:{room.CoordX} Y:{room.CoordY} Height:{room.Height}" +
                               $" Width:{room.Width} YouAreHere:{room.YouAreHere}");
-            if(currentRoom?.ExitsCount>0)
+            int gidX = room.CoordX;
+            int gidY = room.CoordY;
+            await JSRuntime.InvokeVoidAsync("DrawRoom", gidX, gidY, room.Width, room.Height, room.YouAreHere, room.IsUnique);
+        }
+
+        // Step 2: Draw all doors on top
+        foreach (var room in rooms)
+        {
+            if (room.Exits != null)
             {
-                foreach (var exit in currentRoom!.Exits!.Values)
-                {
-                    Console.WriteLine($"Direction-Position: {exit.Direction.ToString()} - {exit.PositionOnWall}");
-                }
-            }                  
-            await MapTools.DrawRoom(JSRuntime, room);
+                await MapTools.DrawDoors(JSRuntime, room, room.YouAreHere);
+            }
         }
     }
     FluentAccordionItem? changed;
@@ -587,5 +616,11 @@
     {
         await d6Service.AdventureSave(currentAdventure!);
         ToastService.ShowToast(ToastIntent.Success, "Adventure saved!");
+    }
+
+    private async Task AppendJournalEntry(string entry)
+    {
+        currentAdventure?.AppendJournal(entry);
+        await SaveAventure();
     }
 }

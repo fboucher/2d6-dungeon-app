@@ -1,4 +1,4 @@
-﻿@using System.Threading.Tasks
+@using System.Threading.Tasks
 @using c5m._2d6Dungeon;
 
 @rendermode InteractiveServer
@@ -106,6 +106,9 @@ else{
     [Parameter] 
     public EventCallback<CombatState> CombatStateChanged { get; set; }
 
+    [Parameter]
+    public EventCallback<string> OnJournalLog { get; set; }
+
     private int adjustmentShift = 0;
     private int adjustedShift = 0;
     private DiceResult? originalDice;
@@ -123,6 +126,8 @@ else{
     private FighterType? currentFighter;
     private FighterType? firstFighter;
     private bool combatEnded = false;
+    private bool shouldShowFirstFighterDialog = false;
+    private bool dialogShowing = false;
 
     private AdventurerCard? adventurerCardRef;
     private CreatureCard? creatureCardRef;
@@ -145,10 +150,63 @@ else{
             await CombatTurnChanged(1);
             shiftLeft = adjustedShift;
         }
+
+        if (CombatState.FirstFighter != null)
+        {
+            firstFighter = CombatState.FirstFighter;
+        }
+        if (CombatState.CurrentFighter != null)
+        {
+            currentFighter = CombatState.CurrentFighter;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        adjustedShift = CombatState.Player.Shift;
+
+        if (CombatState.TurnCounter == 0)
+        {
+            await CombatTurnChanged(1);
+            shiftLeft = adjustedShift;
+        }
+
+        if (CombatState.FirstFighter != null)
+        {
+            firstFighter = CombatState.FirstFighter;
+        }
+        else
+        {
+            firstFighter = null;
+        }
+
+        if (CombatState.CurrentFighter != null)
+        {
+            currentFighter = CombatState.CurrentFighter;
+        }
+        else
+        {
+            currentFighter = null;
+        }
+
+        if (CombatState.Creature != null && CombatState.FirstFighter == null && !dialogShowing)
+        {
+            shouldShowFirstFighterDialog = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (shouldShowFirstFighterDialog)
+        {
+            shouldShowFirstFighterDialog = false;
+            await ShowSelectFirstFighterDialog();
+        }
     }
 
     private async Task ShowSelectFirstFighterDialog()
     {
+        dialogShowing = true;
         var dialog = await DialogService.ShowDialogAsync<SelectFirstFighterDialog>(
             FighterType.Adventurer,
             new DialogParameters()
@@ -163,10 +221,12 @@ else{
             });
 
         var result = await dialog.Result;
+        dialogShowing = false;
 
         if (!result.Cancelled && result.Data is FighterType selectedFighter)
         {
             firstFighter = selectedFighter;
+            CombatState.FirstFighter = selectedFighter;
             SetCurrentFighterToFirstFighter();
 
             if (CombatState.TurnCounter == 0)
@@ -177,6 +237,7 @@ else{
 
             var fighterName = firstFighter == FighterType.Adventurer ? "Adventurer" : "Creature";
             CombatState.CombatActions.Add($"{fighterName} attacks first");
+            await CombatStateChanged.InvokeAsync(CombatState);
 
             StateHasChanged();
         }
@@ -269,6 +330,8 @@ else{
         combatEnded = true;
         CombatState.CombatActions.Add($"💀 {CombatState.Player.Name} has fallen in battle!");
         
+        await OnJournalLog.InvokeAsync($"Adventurer {CombatState.Player.Name} has fallen in battle.");
+
         await DialogService.ShowErrorAsync(
             message: $"Your adventurer has fallen in battle. Game Over!",
             title: "Defeat"
@@ -285,6 +348,8 @@ else{
         
         await CombatStateChanged.InvokeAsync(CombatState);
         
+        await OnJournalLog.InvokeAsync($"Defeated {CombatState.Creature?.name} in combat after {CombatState.TurnCounter} turns.");
+
         await DialogService.ShowSuccessAsync(
             message: $"Victory! You've defeated the {CombatState.Creature?.name}!\n\nIt's time to check for loot and XP rewards.",
             title: "Victory!"
@@ -298,6 +363,10 @@ else{
         // Reset combat state
         CombatState.Creature = null;
         CombatState.TurnCounter = 0;
+        CombatState.FirstFighter = null;
+        CombatState.CurrentFighter = null;
+        firstFighter = null;
+        currentFighter = null;
         CombatState.CombatActions.Clear();
 
         // Reset dice state
@@ -323,6 +392,7 @@ else{
     private void SetCurrentFighterToFirstFighter()
     {
         currentFighter = firstFighter;
+        CombatState.CurrentFighter = currentFighter;
     }
 
     private void ToggleCurrentFighter()
@@ -330,6 +400,7 @@ else{
         currentFighter = currentFighter == FighterType.Adventurer
             ? FighterType.Creature
             : FighterType.Adventurer;
+        CombatState.CurrentFighter = currentFighter;
     }
 
 

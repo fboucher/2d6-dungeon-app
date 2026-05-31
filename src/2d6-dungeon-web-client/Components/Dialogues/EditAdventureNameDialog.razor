@@ -1,0 +1,28 @@
+@implements IDialogContentComponent<EditAdventureNameDialogData>
+@rendermode InteractiveServer
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+    <FluentTextField Label="Adventure Name"
+                     Value="@Content.Name"
+                     ValueChanged="@OnNameChanged"
+                     Placeholder="Type the new adventure name" />
+</FluentStack>
+
+@code {
+    [Parameter]
+    public required EditAdventureNameDialogData Content { get; set; }
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Dialog.TogglePrimaryActionButton(!string.IsNullOrWhiteSpace(Content.Name));
+    }
+
+    private void OnNameChanged(string? value)
+    {
+        Content.Name = value ?? string.Empty;
+        Dialog.TogglePrimaryActionButton(!string.IsNullOrWhiteSpace(Content.Name));
+    }
+}

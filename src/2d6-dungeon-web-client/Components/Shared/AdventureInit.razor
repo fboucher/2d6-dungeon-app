@@ -19,7 +19,10 @@
         }
         else
         {
-            <AdventurerCard @bind-Player="@(selectedAdventurer)"></AdventurerCard>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                <AdventurerCard @bind-Player="@(selectedAdventurer)"></AdventurerCard>
+                <FluentTextField Label="Adventure Name" @bind-Value="adventureName" Style="width: 100%;"></FluentTextField>
+            </FluentStack>
         }
     </FluentCard>
 
@@ -55,7 +58,22 @@
     [Parameter] public int? AutoSelectAdventurerId { get; set; }
 
     private Adventure? betaAdventure;
-    public Game.Adventurer? selectedAdventurer;
+    
+    private Game.Adventurer? _selectedAdventurer;
+    public Game.Adventurer? selectedAdventurer
+    {
+        get => _selectedAdventurer;
+        set
+        {
+            _selectedAdventurer = value;
+            if (_selectedAdventurer != null && string.IsNullOrWhiteSpace(adventureName))
+            {
+                adventureName = $"{_selectedAdventurer.Name} adventure";
+            }
+        }
+    }
+    
+    private string adventureName = "";
     private bool isStartDisable = true;
     //private bool firstRender = true;
     private DiceResult? dResult = null;
@@ -72,7 +90,9 @@
     {
         betaAdventure = new Adventure();
         betaAdventure.Adventurer = selectedAdventurer!;
-        betaAdventure.Name = $"{selectedAdventurer!.Name} adventure";
+        betaAdventure.Name = string.IsNullOrWhiteSpace(adventureName) 
+            ? $"{selectedAdventurer!.Name} adventure" 
+            : adventureName;
 
         // TODO: Improve reposition bottom center
         entryRoom!.CoordX = 14;
@@ -81,6 +101,7 @@
         entryRoom.YouAreHere = true;
 
         betaAdventure.Dungeon.AddRoom(entryRoom);
+        betaAdventure.AppendJournal("Entered the dungeon entrance room (Lobby).");
 
         betaAdventure = await D6Service.AdventureSave(betaAdventure);
         Navigation.NavigateTo($"play/{betaAdventure.Id}");

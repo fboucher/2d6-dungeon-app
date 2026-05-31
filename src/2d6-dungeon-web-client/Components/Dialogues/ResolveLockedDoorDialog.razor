@@ -165,10 +165,13 @@
                     {
                         <div style="margin-top: 10px; text-align: center;">
                             <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@patrolDiceResult.PrimaryDice" Animate="true" />
-                            <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
+                            @if (patrolDiceResult.SecondaryDice > 0)
+                            {
+                                <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
+                            }
                             <div style="margin-top: 8px; text-align: left; padding: 10px; background-color: var(--neutral-fill-subtle-rest); border-radius: 4px;">
                                 <div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-fill-rest);">
-                                    Patrol Roll: @(patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice)
+                                    Patrol Roll: @(patrolDiceResult.SecondaryDice > 0 ? (patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice) : patrolDiceResult.PrimaryDice)
                                 </div>
                                 <div style="font-size: 13px; line-height: 1.4; margin-bottom: 5px;">
                                     @patrolResultText
@@ -326,6 +329,7 @@
             Content.Unlocked = true;
             pickResultText = "Success! The lock clicks open.";
             ToastService.ShowToast(ToastIntent.Success, "Door unlocked successfully!");
+            Content.Adventure.AppendJournal($"Successfully picked the lock of the door to the {Content.Direction}.");
             await SaveAdventure();
         }
         else
@@ -340,6 +344,7 @@
             {
                 DecrementKitUses(selectedKit);
             }
+            Content.Adventure.AppendJournal($"Failed to pick the lock of the door to the {Content.Direction}. The lock was damaged.");
             await SaveAdventure();
         }
     }
@@ -365,9 +370,7 @@
     private async Task RollPatrol()
     {
         patrolAttempted = true;
-        patrolDiceResult = DiceResult.Roll2Dice();
-        int rollTotal = patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice;
-
+        
         var adventurer = Content.Adventure.Adventurer;
         if (rationChoice == "use" && adventurer.Rations >= 1)
         {
@@ -381,20 +384,36 @@
             patrolLog = $"Waited without rations. Suffered {2 * adventurer.Level} HP damage. ";
         }
 
-        var table = await D6Service.GetTableData("enp2");
+        var floorLevel = Content.Adventure.Dungeon.FloorLevel;
+        string tableCode = $"l{floorLevel}p";
+
+        // Patrol tables are 1D6 (1 to 6)
+        patrolDiceResult = DiceResult.Roll1Dice();
+        int rollTotal = patrolDiceResult.PrimaryDice;
+
+        var table = await D6Service.GetTableData(tableCode);
         var row = table?.Rows.FirstOrDefault(r => r.Roll == rollTotal.ToString());
-        string description = row?.Description ?? "A quiet patrol passes, opening the door for you.";
+        string description = row?.Description ?? "Unknown Patrol";
 
         patrolResultText = description;
 
-        // Check hostile
-        bool isHostile = false;
-        string creatureName = "";
-        if (description.Contains("Face a GUARD", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "GUARD"; }
-        else if (description.Contains("Face a THUG", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "THUG"; }
-        else if (description.Contains("Face an ACOLYTE", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "ACOLYTE"; }
-        else if (description.Contains("Face an INFERNAL MONK", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "INFERNAL MONK"; }
-        else if (description.Contains("Face a KNIGHT", StringComparison.OrdinalIgnoreCase)) { isHostile = true; creatureName = "KNIGHT"; }
+        bool isHostile = true; // All patrol encounters are hostile
+        string creatureName = description;
+        string encounterText = description;
+
+        if (description.Equals("GUARD AND GUARD DOG", StringComparison.OrdinalIgnoreCase))
+        {
+            creatureName = "GUARD";
+            encounterText = "GUARD AND GUARD DOG";
+        }
+        else if (description.Equals("Unknown Patrol", StringComparison.OrdinalIgnoreCase))
+        {
+            creatureName = "";
+        }
+
+        string journalLog = (rationChoice == "use" && adventurer.Rations >= 1) 
+            ? $"Waited at locked door to the {Content.Direction} using 1 ration to rest (+2 HP)." 
+            : $"Waited at locked door to the {Content.Direction} without rations (suffered {2 * adventurer.Level} HP damage).";
 
         if (isHostile)
         {
@@ -404,14 +423,15 @@
                 Creature = creature,
                 TurnCounter = 0
             };
-            Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {creatureName} patrol while waiting!");
+            Content.Adventure.CombatState.CombatActions.Add($"Encountered hostile {encounterText} patrol while waiting!");
             
             Content.Exit.IsLocked = false;
             Content.CombatInitiated = true;
             Content.Unlocked = true;
             
-            patrolLog += $"Hostile encounter initiated! Fighting {creatureName}.";
-            ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {creatureName}!");
+            patrolLog += $"Hostile encounter initiated! Fighting {encounterText}.";
+            ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {encounterText}!");
+            journalLog += $" Hostile patrol encountered: {encounterText}!";
         }
         else
         {
@@ -420,17 +440,44 @@
             
             patrolLog += "Non-hostile encounter. The door is now unlocked.";
             ToastService.ShowToast(ToastIntent.Success, "A non-hostile patrol bypassed the door and unlocked it!");
+            journalLog += " Non-hostile patrol passed and unlocked the door.";
         }
 
+        Content.Adventure.AppendJournal(journalLog);
         await SaveAdventure();
         showPatrolFinishedButton = true;
     }
 
-    private async Task<Creature> GetCreatureForPatrol(string name)
+    private async Task<Creature?> GetCreatureForPatrol(string name)
     {
         var creatures = await D6Service.GetCreatures();
-        var match = creatures.First(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        return match;
+        var match = creatures.FirstOrDefault(c => c.name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (match != null)
+        {
+            return match;
+        }
+
+        // Fallback mappings for Level 2 creatures not yet seeded in the database
+        string? fallbackName = null;
+        if (name.Equals("ACOLYTE", StringComparison.OrdinalIgnoreCase))
+        {
+            fallbackName = "CULTIST";
+        }
+        else if (name.Equals("KNIGHT", StringComparison.OrdinalIgnoreCase))
+        {
+            fallbackName = "WARRIOR";
+        }
+
+        if (!string.IsNullOrEmpty(fallbackName))
+        {
+            match = creatures.FirstOrDefault(c => c.name.Equals(fallbackName, StringComparison.OrdinalIgnoreCase));
+            if (match != null)
+            {
+                return match;
+            }
+        }
+
+        return null;
     }
     
 

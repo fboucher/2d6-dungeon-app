@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 
@@ -170,7 +170,9 @@ public class GameTurn
 
         CurrentRoom!.Description = room.description;
         CurrentRoom!.Encounter = room.encounter;
-        CurrentRoom!.ExitsType = room.exits;
+        CurrentRoom!.ExitsType = ResolveDoorType(room.exits, new Random());
+        CurrentRoom!.IsUnique = room.is_unique;
+        CurrentRoom!.RoomType = room.room_type;
         //NextAction = ActionType.RollForExits;
         Message = $"Go to the sumary to see all the details of the room.";
     }
@@ -217,16 +219,24 @@ public class GameTurn
             }
             aDoor.Direction = wall;
             aDoor.PositionOnWall = rnd.Next(1, maxPos);
-            aDoor.Lockable = true;
-            aDoor.IsLocked = IsDoorLocked(doorType, lockRoll);
+            aDoor.Lockable = IsDoorTypeLockable(doorType);
+            aDoor.IsLocked = aDoor.Lockable && IsDoorLocked(doorType, lockRoll);
             aDoor.ExitType = doorType;
             currentRoom.Exits.Add(wall, aDoor); 
         }
     }
 
+    public static bool IsDoorTypeLockable(string? doorType)
+    {
+        if (string.IsNullOrWhiteSpace(doorType)) return false;
+        string normalized = doorType.Trim().ToLowerInvariant();
+        return normalized == "wooden" || normalized == "metal" || normalized == "reinforced";
+    }
+
     private static bool IsDoorLocked(string doorType, int? lockRoll)
     {
         if (lockRoll == null) return false;
+        if (!IsDoorTypeLockable(doorType)) return false;
 
         return lockRoll switch
         {

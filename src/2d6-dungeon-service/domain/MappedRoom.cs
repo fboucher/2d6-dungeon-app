@@ -1,9 +1,11 @@
-﻿namespace c5m._2d6Dungeon;
+namespace c5m._2d6Dungeon;
 
 public class MappedRoom
 {
     public int Id { get; set; }
     public bool IsCorridor { get; set; }
+    public bool IsUnique { get; set; }
+    public string? RoomType { get; set; }
     public int ExitsCount { get; set; }
     public Dictionary<Direction,Exit>? Exits { get; set; }
     public int CoordX { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace c5m._2d6Dungeon;
+namespace c5m._2d6Dungeon;
 using c5m._2d6Dungeon.Game;
 using System.Text.Json;
 
@@ -11,6 +11,7 @@ public class Adventure
     public CombatState? CombatState { get; set; }
     GameTurn? GameTurn { get; set; }
     public string Notes { get; set; } = string.Empty;
+    public string Journal { get; set; } = string.Empty;
 
 
     public Adventure()
@@ -37,6 +38,20 @@ public class Adventure
             Dungeon = aComplete.Dungeon;
             GameTurn = aComplete.GameTurn;
             Notes = aComplete.Notes;
+            Journal = aComplete.Journal;
+        }
+    }
+
+    public void AppendJournal(string logText)
+    {
+        var timestamp = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        if (string.IsNullOrWhiteSpace(Journal))
+        {
+            Journal = $"[{timestamp}] {logText}";
+        }
+        else
+        {
+            Journal += $"\n[{timestamp}] {logText}";
         }
     }
 

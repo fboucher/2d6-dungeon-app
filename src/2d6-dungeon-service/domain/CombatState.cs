@@ -8,6 +8,8 @@ public class CombatState
     public Creature? Creature { get; set; }
     public int TurnCounter { get; set; } = 0;
     public List<string> CombatActions { get; set; }
+    public FighterType? FirstFighter { get; set; }
+    public FighterType? CurrentFighter { get; set; }
 
     public CombatState(Game.Adventurer player)
     {

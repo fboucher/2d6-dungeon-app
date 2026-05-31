@@ -56,7 +56,13 @@
                           Disabled="@(isCorridor)">
             <FluentStack Orientation="Orientation.Vertical">
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
-                <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Gap="10">
+                    <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
+                    @if (isDescriptionSet && gameTurn.CurrentRoom?.IsUnique == true)
+                    {
+                        <FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge>
+                    }
+                </FluentStack>
 
                 <div style="padding:20px;">
                     <span style="@(DescriptionDiceResult.PrimaryDice == 0 ? "display:none" : "")">
@@ -71,11 +77,15 @@
         <FluentWizardStep Label="Locks"
                           Summary="Check for locked doors"
                           OnChange="@OnStepChange"
-                          Disabled="@(isCorridor || hasNoExits)">
+                          Disabled="@(isCorridor || hasNoExits || !GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))">
             <FluentStack Orientation="Orientation.Vertical">
                 @if (hasNoExits)
                 {
                     <p>There are no doors in this room, so there's nothing to lock.</p>
+                }
+                else if (!GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))
+                {
+                    <p>The doors in this room are @(gameTurn.CurrentRoom?.ExitsType?.ToLower() ?? "non-lockable types"), which cannot be locked.</p>
                 }
                 else
                 {
@@ -103,6 +113,10 @@
                     <p>Door(s): @gameTurn.CurrentRoom.ExitsType?.ToLower()</p> 
                 }
                 <p>@gameTurn.CurrentRoom.Description</p>
+                @if (gameTurn.CurrentRoom.IsUnique)
+                {
+                    <p><FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge></p>
+                }
                 <p>@(gameTurn!.Message ?? string.Empty)</p>
             }
             </div>
@@ -150,17 +164,17 @@
     void OnStepChange(FluentWizardStepChangeEventArgs e)
     {
         Console.WriteLine($"Go to step {e.TargetLabel} (#{e.TargetIndex})");
-        switch(e.TargetIndex){
-            case 0:
+        switch(e.TargetLabel){
+            case "Dimensions":
                 gameTurn.Message = "Roll 2D6 to determine the dimension of the room";
                 break;
-            case 1:
+            case "Exits":
                 gameTurn.Message = "Roll 1D6 to determines the number of exits in the room";
                 break;
-            case 2:
+            case "Description":
                 gameTurn.Message = "Roll 2D6 to know what's in that room";
                 break;
-            case 3:
+            case "Locks":
                 if(gameTurn.CurrentRoom!.ExitsCount > 0)
                 {
                     gameTurn.Message = $"This room has {gameTurn.CurrentRoom!.ExitsType?.ToLower() ?? "doors"}. Roll 1D6 to check for locked doors.";
@@ -170,7 +184,7 @@
                     gameTurn.Message = "Roll 1D6 to check for locked doors.";
                 }
                 break;
-            case 4:
+            case "Summary":
                 Dialog!.TogglePrimaryActionButton(true);
                 break;
         }
@@ -228,6 +242,11 @@
         gameTurn.NextAction = ActionType.RollRoomDefinition;
         await gameTurn.ContinueTurn(DescriptionDiceResult, Content.Dungeon);
         isDescriptionSet = true;
+
+        if (!GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))
+        {
+            isLocksSet = true;
+        }
         
         // Celebrate doubles
         if (DescriptionDiceResult.PrimaryDice == DescriptionDiceResult.SecondaryDice && descDiceA != null && descDiceB != null)
