@@ -41,6 +41,7 @@ const MapTheme = {
 window.addEventListener('resize', onResize, false);
 function onResize() {
   canvas = document.getElementById('dotCanvas');
+  if (!canvas) return;
   context = canvas.getContext('2d');
 
   vw = canvas.width;

@@ -217,6 +217,7 @@ else
     bool isRollDiceDisable = false;
     string? activeid = "tab-map";
     FluentTab? changedto;
+    private bool hasInitializedCanvas = false;
 
     private string gameTurnInstructions = String.Empty;
     private GameTurn? gameTurn;
@@ -266,7 +267,6 @@ else
                 {
                     gameTurnInstructions = "You are in the lobby, you can go anywhere!";
                 }
-                await FillCanvas();
             }
         }
         catch (Exception ex)
@@ -277,9 +277,11 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (currentAdventure != null && !hasInitializedCanvas)
         {
+            hasInitializedCanvas = true;
             await MapTools.RefreshCanvas(JSRuntime);
+            await FillCanvas();
         }
     }
 
