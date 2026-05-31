@@ -126,6 +126,8 @@ else{
     private FighterType? currentFighter;
     private FighterType? firstFighter;
     private bool combatEnded = false;
+    private bool shouldShowFirstFighterDialog = false;
+    private bool dialogShowing = false;
 
     private AdventurerCard? adventurerCardRef;
     private CreatureCard? creatureCardRef;
@@ -159,19 +161,52 @@ else{
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        adjustedShift = CombatState.Player.Shift;
+
+        if (CombatState.TurnCounter == 0)
+        {
+            await CombatTurnChanged(1);
+            shiftLeft = adjustedShift;
+        }
+
+        if (CombatState.FirstFighter != null)
+        {
+            firstFighter = CombatState.FirstFighter;
+        }
+        else
+        {
+            firstFighter = null;
+        }
+
+        if (CombatState.CurrentFighter != null)
+        {
+            currentFighter = CombatState.CurrentFighter;
+        }
+        else
+        {
+            currentFighter = null;
+        }
+
+        if (CombatState.Creature != null && CombatState.FirstFighter == null && !dialogShowing)
+        {
+            shouldShowFirstFighterDialog = true;
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (shouldShowFirstFighterDialog)
         {
-            if (CombatState.Creature != null && CombatState.FirstFighter == null)
-            {
-                await ShowSelectFirstFighterDialog();
-            }
+            shouldShowFirstFighterDialog = false;
+            await ShowSelectFirstFighterDialog();
         }
     }
 
     private async Task ShowSelectFirstFighterDialog()
     {
+        dialogShowing = true;
         var dialog = await DialogService.ShowDialogAsync<SelectFirstFighterDialog>(
             FighterType.Adventurer,
             new DialogParameters()
@@ -186,6 +221,7 @@ else{
             });
 
         var result = await dialog.Result;
+        dialogShowing = false;
 
         if (!result.Cancelled && result.Data is FighterType selectedFighter)
         {
