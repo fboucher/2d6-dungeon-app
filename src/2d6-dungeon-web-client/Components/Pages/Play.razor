@@ -12,10 +12,17 @@
 
 <FluentButton @onclick="@( () => SaveAventure())" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Save())" />
 
-<FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
+@if (currentAdventure == null)
+{
+    <FluentProgressRing Style="margin: 20px;" />
+    <p style="margin: 20px;">Loading adventure...</p>
+}
+else
+{
+    <FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
 
 
-    <FluentTab Id="tab-map" Label="Dungeon Map" Icon="@(new Icons.Regular.Size24.Map())">
+        <FluentTab Id="tab-map" Label="Dungeon Map" Icon="@(new Icons.Regular.Size24.Map())">
         <FluentStack Orientation="Orientation.Vertical">
 
             <FluentAccordion  OnAccordionItemChange="HandleOnAccordionItemChange" Style="width: 100%;">
@@ -193,6 +200,7 @@
     </FluentTab>
 
 </FluentTabs>
+}
 
 
 @code {
