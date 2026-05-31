@@ -169,6 +169,9 @@ GetFloorColor = function(youAreHere, isUnique=false){
 }
 
 function DrawRoom(posX, posY, width, height, youAreHere=false, isUnique=false){
+  if (!width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
   // Apply viewport offset
   const pixelX = (posX - viewportOffsetX) * cubeSize;
   const pixelY = (posY - viewportOffsetY) * cubeSize;
@@ -233,6 +236,9 @@ function DrawRoom(posX, posY, width, height, youAreHere=false, isUnique=false){
 
 // Draw stone tile pattern on floor
 function drawStoneTiles(x, y, width, height, youAreHere, isUnique=false) {
+  if (width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
   const tileSize = cubeSize;
   
   if (isUnique) {
@@ -293,20 +299,32 @@ function drawStoneTiles(x, y, width, height, youAreHere, isUnique=false) {
 
 // Glow effect for current room
 function drawRoomGlow(x, y, width, height) {
+  if (!width || !height || width <= 0 || height <= 0 || isNaN(width) || isNaN(height)) {
+    return;
+  }
+  
   const centerX = x + width / 2;
   const centerY = y + height / 2;
   const maxRadius = Math.max(width, height) * 0.8;
 
-  const glowGradient = context.createRadialGradient(
-    centerX, centerY, 0,
-    centerX, centerY, maxRadius
-  );
-  glowGradient.addColorStop(0, MapTheme.CURRENT_ROOM_GLOW);
-  glowGradient.addColorStop(0.5, MapTheme.TORCH_GLOW);
-  glowGradient.addColorStop(1, 'rgba(255, 180, 80, 0)');
+  if (isNaN(centerX) || isNaN(centerY) || isNaN(maxRadius) || maxRadius <= 0) {
+    return;
+  }
 
-  context.fillStyle = glowGradient;
-  context.fillRect(x, y, width, height);
+  try {
+    const glowGradient = context.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, maxRadius
+    );
+    glowGradient.addColorStop(0, MapTheme.CURRENT_ROOM_GLOW);
+    glowGradient.addColorStop(0.5, MapTheme.TORCH_GLOW);
+    glowGradient.addColorStop(1, 'rgba(255, 180, 80, 0)');
+
+    context.fillStyle = glowGradient;
+    context.fillRect(x, y, width, height);
+  } catch (e) {
+    console.error("Failed to draw room glow:", e);
+  }
 }
 
 function DrawDoor(posX, posY, orientation, isMain=false, doorType='archway', isLocked=false, youAreHere= false, isDamaged=false) {
