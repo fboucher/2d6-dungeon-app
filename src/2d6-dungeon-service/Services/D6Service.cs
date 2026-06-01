@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace c5m._2d6Dungeon;
 
-public class D6Service
+public class D6Service : ID6Service
 {
 
     #region == Sercice =====
