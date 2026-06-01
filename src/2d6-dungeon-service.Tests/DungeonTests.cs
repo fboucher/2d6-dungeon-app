@@ -4,6 +4,14 @@ using Xunit;
 
 namespace _2d6_dungeon_service.Tests;
 
+/// <summary>
+/// Tests for Dungeon class, verifying room generation and dimension logic.
+/// 
+/// Verifies that Dungeon.StartDungeonLevel correctly adjusts room dimensions based on area:
+/// - Area > 12: Halves dimensions using ceiling division to keep rooms balanced
+/// - Area < 6: Defaults to 3x2 room (minimum playable size)
+/// - Area 6-12: Uses dimensions as-is
+/// </summary>
 public class DungeonTests
 {
     [Fact]

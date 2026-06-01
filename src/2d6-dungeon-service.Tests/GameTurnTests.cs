@@ -9,6 +9,14 @@ using Xunit;
 
 namespace _2d6_dungeon_service.Tests;
 
+/// <summary>
+/// Tests for GameTurn class, verifying game state transitions and turn mechanics.
+/// 
+/// Mocking Strategy:
+/// - Uses MockD6Service to inject test implementations of ID6Service
+/// - Mocks static DiceResult.RollDie delegate for deterministic dice rolls
+/// - Uses try-finally blocks to reset mocks after each test to prevent side effects
+/// </summary>
 public class GameTurnTests
 {
     [Fact]
@@ -441,6 +449,23 @@ public class GameTurnTests
     }
 }
 
+/// <summary>
+/// Mock implementation of ID6Service for testing GameTurn logic.
+/// 
+/// Purpose:
+/// This mock allows tests to control the behavior of ID6Service without depending on the
+/// actual D6Service implementation, databases, or external services.
+/// 
+/// Design:
+/// - RollRoomFunc can be configured per test to return specific Room data
+/// - All other interface methods throw NotImplementedException because GameTurn tests
+///   only exercise the RollRoom method; extending this mock requires implementing additional methods
+/// 
+/// Usage Example:
+///   var mockService = new MockD6Service();
+///   mockService.RollRoomFunc = (roll, size) => Task.FromResult(new Room { id = 42, ... });
+///   var gameTurn = new GameTurn { d6Service = mockService };
+/// </summary>
 public class MockD6Service : ID6Service
 {
     public Func<int, string, Task<Room>>? RollRoomFunc { get; set; }
@@ -464,6 +489,8 @@ public class MockD6Service : ID6Service
         });
     }
 
+    // NotImplemented methods: These are not tested in GameTurnTests
+    // Add implementations here when tests require them
     public Task<int> GetSaveGameCount() => throw new NotImplementedException();
     public Task<AdventureDTOList?> GetAdventurePreviews() => throw new NotImplementedException();
     public Task<Adventure> GetAdventure(int id) => throw new NotImplementedException();

@@ -7,6 +7,15 @@ using Xunit;
 
 namespace _2d6_dungeon_service.Tests;
 
+/// <summary>
+/// Tests for Adventurer class constructors and initialization logic.
+/// 
+/// Verifies that:
+/// - Default constructor initializes all properties with appropriate defaults
+/// - Named constructor preserves name while using default values for other properties
+/// - AdventurerDTO constructors properly serialize/deserialize adventurer state
+/// - Full serialization roundtrips maintain all character data (stats, inventory, etc.)
+/// </summary>
 public class AdventurerTests
 {
     [Fact]
