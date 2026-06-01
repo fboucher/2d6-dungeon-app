@@ -289,6 +289,156 @@ public class GameTurnTests
         Assert.Equal(ActionType.Encounter, result.NextAction);
         Assert.Equal(expectedMessage, result.Message);
     }
+
+    [Fact]
+    public async Task ContinueTurn_RollRoomDefinition_UniqueRoomNotUsed_ShouldClaimAndMarkAsUsed()
+    {
+        // Arrange
+        var mockD6Service = new MockD6Service();
+        var gameTurn = new GameTurn
+        {
+            d6Service = mockD6Service,
+            NextAction = ActionType.RollRoomDefinition,
+            CurrentRoom = new MappedRoom { Width = 4, Height = 5 } // Area = 20 (regular)
+        };
+
+        var diceResult = new DiceResult { PrimaryDice = 3, SecondaryDice = 4 }; // Roll = 34
+        var dungeon = new Dungeon(); // FloorLevel = 1
+
+        mockD6Service.RollRoomFunc = (roll, size) => Task.FromResult(new Room
+        {
+            id = 100,
+            roll = roll,
+            is_unique = true,
+            description = "Unique Library",
+            room_type = "Library"
+        });
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, dungeon);
+
+        // Assert
+        Assert.True(dungeon.HasUsedUnique(100, 1));
+        Assert.Equal("Unique Library", result.CurrentRoom!.Description);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RollRoomDefinition_UniqueRoomUsed_ShouldReRollAndClaimUnused()
+    {
+        // Arrange
+        var mockD6Service = new MockD6Service();
+        var gameTurn = new GameTurn
+        {
+            d6Service = mockD6Service,
+            NextAction = ActionType.RollRoomDefinition,
+            CurrentRoom = new MappedRoom { Width = 4, Height = 5 } // Area = 20
+        };
+
+        var diceResult = new DiceResult { PrimaryDice = 3, SecondaryDice = 4 }; // Initial Roll = 34
+        var dungeon = new Dungeon();
+        dungeon.MarkUniqueUsed(100, 1); // 100 is already used!
+
+        // Mock RollDie for the re-roll
+        var rollDieCount = 0;
+        DiceResult.RollDie = () =>
+        {
+            rollDieCount++;
+            return rollDieCount == 1 ? 5 : 2; // Re-roll will be 5 and 2 (roll = 52)
+        };
+
+        var rollRoomCalls = new List<(int roll, string size)>();
+        mockD6Service.RollRoomFunc = (roll, size) =>
+        {
+            rollRoomCalls.Add((roll, size));
+            if (roll == 34)
+            {
+                return Task.FromResult(new Room { id = 100, roll = roll, is_unique = true, description = "Used Room" });
+            }
+            else
+            {
+                return Task.FromResult(new Room { id = 101, roll = roll, is_unique = true, description = "Unused Room" });
+            }
+        };
+
+        try
+        {
+            // Act
+            var result = await gameTurn.ContinueTurn(diceResult, dungeon);
+
+            // Assert
+            Assert.True(dungeon.HasUsedUnique(101, 1));
+            Assert.Equal("Unused Room", result.CurrentRoom!.Description);
+            Assert.Equal(2, rollRoomCalls.Count); // Initial 34, then re-roll 52
+            Assert.Equal(34, rollRoomCalls[0].roll);
+            Assert.Equal(52, rollRoomCalls[1].roll);
+        }
+        finally
+        {
+            // Reset the static delegate back to default
+            DiceResult.RollDie = () =>
+            {
+                var die = new System.Collections.Generic.List<int> { 1, 2, 3, 4, 5, 6 };
+                return die.OrderBy(x => Guid.NewGuid()).First<int>();
+            };
+        }
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RollRoomDefinition_AllReRollsUsed_ShouldFallbackGracefully()
+    {
+        // Arrange
+        var mockD6Service = new MockD6Service();
+        var gameTurn = new GameTurn
+        {
+            d6Service = mockD6Service,
+            NextAction = ActionType.RollRoomDefinition,
+            CurrentRoom = new MappedRoom { Width = 4, Height = 5 }
+        };
+
+        var diceResult = new DiceResult { PrimaryDice = 3, SecondaryDice = 4 };
+        var dungeon = new Dungeon();
+        
+        // Mark all rooms as used
+        dungeon.MarkUniqueUsed(100, 1);
+        dungeon.MarkUniqueUsed(200, 1);
+
+        // Setup deterministic re-rolls to return 4 every time (roll = 44)
+        DiceResult.RollDie = () => 4;
+
+        var rollCount = 0;
+        mockD6Service.RollRoomFunc = (roll, size) =>
+        {
+            rollCount++;
+            int roomId = rollCount == 1 ? 100 : 200;
+            return Task.FromResult(new Room
+            {
+                id = roomId,
+                roll = roll,
+                is_unique = true,
+                description = $"Room {roomId}"
+            });
+        };
+
+        try
+        {
+            // Act
+            var result = await gameTurn.ContinueTurn(diceResult, dungeon);
+
+            // Assert
+            Assert.Equal(6, rollCount); // 1 initial + 5 re-rolls
+            Assert.True(dungeon.HasUsedUnique(200, 1));
+            Assert.Equal("Room 200", result.CurrentRoom!.Description);
+        }
+        finally
+        {
+            // Reset the static delegate back to default
+            DiceResult.RollDie = () =>
+            {
+                var die = new System.Collections.Generic.List<int> { 1, 2, 3, 4, 5, 6 };
+                return die.OrderBy(x => Guid.NewGuid()).First<int>();
+            };
+        }
+    }
 }
 
 public class MockD6Service : ID6Service
