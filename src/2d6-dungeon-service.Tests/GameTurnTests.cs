@@ -58,6 +58,237 @@ public class GameTurnTests
         Assert.True(result.CurrentRoom.IsUnique);
         Assert.Equal("Library", result.CurrentRoom.RoomType);
     }
+
+    [Fact]
+    public async Task ContinueTurn_RolledForRoom_DoubleSix_ShouldSetDrawRoom()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForARoom,
+            CurrentRoom = new MappedRoom()
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = 6,
+            SecondaryDice = 6,
+            IsDouble = true,
+            IsDoubleSix = true,
+            IsOneDiceOne = false
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.DrawRoom, result.NextAction);
+        Assert.Equal(6, result.CurrentRoom!.Width);
+        Assert.Equal(6, result.CurrentRoom.Height);
+        Assert.False(result.CurrentRoom.IsCorridor);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RolledForRoom_NonSixDouble_ShouldSetDoubleSizedRoom()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForARoom,
+            CurrentRoom = new MappedRoom()
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = 4,
+            SecondaryDice = 4,
+            IsDouble = true,
+            IsDoubleSix = false,
+            IsOneDiceOne = false
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.DoubleSizedRoom, result.NextAction);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RolledForRoom_OneDiceOne_ShouldSetRollForExitsAndCorridor()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForARoom,
+            CurrentRoom = new MappedRoom()
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = 1,
+            SecondaryDice = 4,
+            IsDouble = false,
+            IsDoubleSix = false,
+            IsOneDiceOne = true
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.RollForExits, result.NextAction);
+        Assert.Equal(1, result.CurrentRoom!.Width);
+        Assert.Equal(4, result.CurrentRoom.Height);
+        Assert.True(result.CurrentRoom.IsCorridor);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RolledForRoom_Standard_ShouldSetDrawRoom()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForARoom,
+            CurrentRoom = new MappedRoom()
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = 2,
+            SecondaryDice = 5,
+            IsDouble = false,
+            IsDoubleSix = false,
+            IsOneDiceOne = false
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.DrawRoom, result.NextAction);
+        Assert.Equal(2, result.CurrentRoom!.Width);
+        Assert.Equal(5, result.CurrentRoom.Height);
+        Assert.False(result.CurrentRoom.IsCorridor);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_FinishDoubleSizedRoom_ShouldSumDiceAndSetDrawRoom()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.DoubleSizedRoom,
+            CurrentRoom = new MappedRoom(),
+            LastDiceResult = new DiceResult
+            {
+                PrimaryDice = 3,
+                SecondaryDice = 3,
+                IsDouble = true
+            }
+        };
+
+        var secondRoll = new DiceResult
+        {
+            PrimaryDice = 4,
+            SecondaryDice = 2
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(secondRoll, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.DrawRoom, result.NextAction);
+        Assert.Equal(7, result.LastDiceResult!.PrimaryDice);
+        Assert.Equal(5, result.LastDiceResult.SecondaryDice);
+        Assert.Equal(7, result.CurrentRoom!.Width);
+        Assert.Equal(5, result.CurrentRoom.Height);
+    }
+
+    [Theory]
+    [InlineData(1, 0)]
+    [InlineData(2, 1)]
+    [InlineData(3, 1)]
+    [InlineData(5, 2)]
+    [InlineData(6, 2)]
+    [InlineData(4, 3)]
+    public async Task ContinueTurn_RollForExits_ShouldSetCorrectExitCounts(int diceValue, int expectedExits)
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForExits,
+            CurrentRoom = new MappedRoom
+            {
+                IsCorridor = false
+            }
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = diceValue
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(expectedExits, result.CurrentRoom!.ExitsCount);
+        Assert.Equal(ActionType.Encounter, result.NextAction);
+    }
+
+    [Fact]
+    public async Task ContinueTurn_RollForExits_Corridor_ShouldTransitionToEndOfTurn()
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForExits,
+            CurrentRoom = new MappedRoom
+            {
+                IsCorridor = true
+            }
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = 3
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(ActionType.EndOfTurn, result.NextAction);
+    }
+
+    [Theory]
+    [InlineData(6, "All doors in this room are locked!")]
+    [InlineData(5, "Reinforced doors are locked.")]
+    [InlineData(4, "Metal doors are locked.")]
+    [InlineData(3, "No doors are locked.")]
+    public async Task ContinueTurn_RollForLocks_ShouldSetLockRollAndMessage(int diceValue, string expectedMessage)
+    {
+        // Arrange
+        var gameTurn = new GameTurn
+        {
+            NextAction = ActionType.RollForLocks,
+            CurrentRoom = new MappedRoom()
+        };
+
+        var diceResult = new DiceResult
+        {
+            PrimaryDice = diceValue
+        };
+
+        // Act
+        var result = await gameTurn.ContinueTurn(diceResult, new Dungeon());
+
+        // Assert
+        Assert.Equal(diceValue, result.CurrentRoom!.LockRoll);
+        Assert.Equal(ActionType.Encounter, result.NextAction);
+        Assert.Equal(expectedMessage, result.Message);
+    }
 }
 
 public class MockD6Service : ID6Service
