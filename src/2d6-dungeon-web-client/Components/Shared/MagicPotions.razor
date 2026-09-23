@@ -16,7 +16,7 @@
                         Sortable="false" 
                         Tooltip="true" />
         <TemplateColumn>
-            <FluentButton @onclick="@(async () => await PotionDelete(context!.Id))"
+            <FluentButton @onclick="@(async () => await PotionDelete(context!))"
                             IconEnd="@(new Icons.Filled.Size16.HandLeft())" 
                             stopPropagation="true"
                             ToolTip="Use this Potion"/>
@@ -34,7 +34,7 @@
     public List<MagicPotion>? magicPotions { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnPotionDeleted { get; set; }
+    public EventCallback<MagicPotion> OnPotionDeleted { get; set; }
 
     [Parameter]
     public EventCallback<MagicPotion> OnPotionAdded { get; set; }
@@ -46,11 +46,11 @@
         potions = magicPotions?.AsQueryable();
     }
     
-    private async Task PotionDelete(int id)
+    private async Task PotionDelete(MagicPotion potion)
     {
-        magicPotions?.Remove(magicPotions.FirstOrDefault(p => p.Id == id)!);
+        magicPotions?.Remove(potion);
         potions = magicPotions?.AsQueryable();
-        await OnPotionDeleted.InvokeAsync(id);
+        await OnPotionDeleted.InvokeAsync(potion);
     }
 
     private async Task PotionShowlist()
