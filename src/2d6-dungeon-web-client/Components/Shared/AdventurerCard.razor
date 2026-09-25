@@ -19,7 +19,7 @@
         {
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
                          HorizontalGap="5">
-                <FluentLabel Typo="Typography.Body"><b>HP:</b> @Player.HealthPoints</FluentLabel>
+                <FluentLabel Typo="Typography.Body"><b>HP:</b> @Player.HealthPoints / @Player.MaxHealthPoints</FluentLabel>
                 <FluentSpacer Width="50" />
                 <FluentLabel Typo="Typography.Body"><b>XP:</b> @Player.XP</FluentLabel>
             </FluentStack>
@@ -44,8 +44,10 @@
 
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                      Width="100%" Wrap="true">
-            <FluentLabel Typo="Typography.Body"><b>Level:</b>HP</FluentLabel>
-            <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" style="width: 80px;" />
+            <FluentLabel Typo="Typography.Body"><b>HP:</b></FluentLabel>
+            <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" Max="@Player.MaxHealthPoints.ToString()" style="width: 80px;" />
+            <FluentLabel Typo="Typography.Body"><b>Max HP:</b></FluentLabel>
+            <FluentNumberField @bind-Value="@Player.MaxHealthPoints" @bind-Value:after="CheckHealth" Min="1" style="width: 80px;" />
         </FluentStack>
 
         <FluentCard MinimalStyle="true" Width="90%">
@@ -359,6 +361,8 @@
 
     private async Task CheckHealth()
     {
+        Player.HealthPoints = Math.Min(Player.HealthPoints, Player.MaxHealthPoints);
+
         if (Player.HealthPoints <= 0 && !healthDepletionHandled)
         {
             healthDepletionHandled = true;
@@ -366,8 +370,9 @@
         }
     }
 
-    private async Task HandlePotionDeleted(int id)
+    private async Task HandlePotionDeleted(MagicPotion potion)
     {
+        Player.Heal(potion.HealAmount);
         await PlayerChanged.InvokeAsync(Player);
     }
 

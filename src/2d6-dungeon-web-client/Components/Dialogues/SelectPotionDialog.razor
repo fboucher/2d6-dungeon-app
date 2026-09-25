@@ -5,7 +5,7 @@
 
 @rendermode InteractiveServer
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="width: 100%;">
     @if (potions == null)
     {
         <FluentProgressRing />
@@ -16,9 +16,10 @@
                        Items="@potions"
                        OptionValue="@(p => p.Id.ToString())"
                        OptionText="@(p => string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} | {p.Modifier}")"
+                       OptionTitle="@(p => $"Modifier: {p.Modifier}\nDuration: {p.Duration}")"
                        SelectedOptionChanged="@OnSelectionChanged"
-                       Height="120px"
-                       style="width: 100%;" />
+                       Width="100%"
+                       Height="400px" />
     }
 </FluentStack>
 

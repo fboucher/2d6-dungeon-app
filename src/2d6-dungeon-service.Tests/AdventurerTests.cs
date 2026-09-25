@@ -122,4 +122,110 @@ public class AdventurerTests
         Assert.Equal(10, adventurer.Coins.GoldCoins);
         Assert.Equal(5, adventurer.Coins.SilverCoins);
     }
+
+    [Fact]
+    public void Constructor_Default_ShouldStartAtMaxHealthPoints()
+    {
+        var adventurer = new Adventurer();
+
+        Assert.Equal(10, adventurer.MaxHealthPoints);
+        Assert.Equal(adventurer.MaxHealthPoints, adventurer.HealthPoints);
+    }
+
+    [Fact]
+    public void Constructor_WithSerializedPreviewDTO_ShouldPreserveMaxHealthPoints()
+    {
+        var original = new Adventurer("Tough One") { MaxHealthPoints = 18, HealthPoints = 7 };
+
+        var adventurer = new Adventurer(new AdventurerDTO(original));
+
+        Assert.Equal(18, adventurer.MaxHealthPoints);
+        Assert.Equal(7, adventurer.HealthPoints);
+    }
+
+    [Theory]
+    [InlineData(8, 10)]
+    [InlineData(14, 14)]
+    public void Constructor_WithLegacySerializedDTO_ShouldDefaultMaxHealthPoints(int healthPoints, int expectedMax)
+    {
+        // Adventurers saved before MaxHealthPoints existed have no such field in their JSON
+        var json = JsonSerializer.Serialize(new { Name = "Old Save", HealthPoints = healthPoints });
+        var preview = new AdventurerDTO
+        {
+            serialiazedObj = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json))
+        };
+
+        var adventurer = new Adventurer(preview);
+
+        Assert.Equal(expectedMax, adventurer.MaxHealthPoints);
+        Assert.Equal(healthPoints, adventurer.HealthPoints);
+    }
+
+    [Fact]
+    public void Heal_WhenAmountExceedsMissingHealth_ShouldCapAtMaxHealthPoints()
+    {
+        var adventurer = new Adventurer { HealthPoints = 8 };
+
+        var healed = adventurer.Heal(4);
+
+        Assert.Equal(10, adventurer.HealthPoints);
+        Assert.Equal(2, healed);
+    }
+
+    [Fact]
+    public void Heal_WhenAmountFitsBelowMax_ShouldHealFully()
+    {
+        var adventurer = new Adventurer { HealthPoints = 3 };
+
+        var healed = adventurer.Heal(4);
+
+        Assert.Equal(7, adventurer.HealthPoints);
+        Assert.Equal(4, healed);
+    }
+
+    [Fact]
+    public void Heal_WhenAlreadyAtMax_ShouldNotIncreaseHealthPoints()
+    {
+        var adventurer = new Adventurer();
+
+        var healed = adventurer.Heal(10);
+
+        Assert.Equal(10, adventurer.HealthPoints);
+        Assert.Equal(0, healed);
+    }
+
+    [Fact]
+    public void Heal_WhenAboveMax_ShouldNotReduceHealthPoints()
+    {
+        var adventurer = new Adventurer { HealthPoints = 25 };
+
+        var healed = adventurer.Heal(5);
+
+        Assert.Equal(25, adventurer.HealthPoints);
+        Assert.Equal(0, healed);
+    }
+
+    [Fact]
+    public void Heal_WithHealingPotion_ShouldCapAtMaxHealthPoints()
+    {
+        var adventurer = new Adventurer { HealthPoints = 4 };
+        var potion = new MagicPotion { PotionType = "HEALING", Modifier = "Heal up to 10 Health Points" };
+
+        adventurer.Heal(potion.HealAmount);
+
+        Assert.Equal(adventurer.MaxHealthPoints, adventurer.HealthPoints);
+    }
+
+    [Theory]
+    [InlineData("Heal up to 10 Health Points", 10)]
+    [InlineData("Heal up to 60 Health Points", 60)]
+    [InlineData("Gain 15 Health Points (can exceed baseline level)", 0)]
+    [InlineData("+2 Shift for 1 whole combat", 0)]
+    [InlineData(null, 0)]
+    public void MagicPotion_HealAmount_ShouldParseModifier(string? modifier, int expected)
+    {
+        var potion = new MagicPotion { PotionType = "ANY", Modifier = modifier };
+
+        Assert.Equal(expected, potion.HealAmount);
+    }
 }

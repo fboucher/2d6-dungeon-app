@@ -9,6 +9,7 @@ public class Adventurer
     public string Name { get; set; }
     public int Level { get; set; }
     public int HealthPoints { get; set; }
+    public int MaxHealthPoints { get; set; }
     public int XP { get; set; }
     public int Shift { get; set; }
     public int Discipline { get; set; }
@@ -36,7 +37,9 @@ public class Adventurer
     public FavorOfTheGods FavorOfTheGods { get; set; }
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int Rations { get; set; }
-    
+
+    public const int DefaultMaxHealthPoints = 10;
+
     public Adventurer()
     {
         Name = string.Empty;
@@ -64,7 +67,8 @@ public class Adventurer
         Shift = 2;
         Discipline = 1;
         Precision = 0;
-        HealthPoints = 10;
+        MaxHealthPoints = DefaultMaxHealthPoints;
+        HealthPoints = MaxHealthPoints;
         Rations = 3;
     }
     
@@ -95,7 +99,8 @@ public class Adventurer
         Shift = 2;
         Discipline = 1;
         Precision = 0;
-        HealthPoints = 10;
+        MaxHealthPoints = DefaultMaxHealthPoints;
+        HealthPoints = MaxHealthPoints;
         Rations = 3;
     }
 
@@ -128,7 +133,8 @@ public class Adventurer
             Shift = 2;
             Discipline = 1;
             Precision = 0;
-            HealthPoints = 10;
+            MaxHealthPoints = DefaultMaxHealthPoints;
+            HealthPoints = MaxHealthPoints;
             Rations = 3;
         }
         else
@@ -161,8 +167,27 @@ public class Adventurer
             Discipline = aComplete.Discipline;
             Precision = aComplete.Precision;
             HealthPoints = aComplete.HealthPoints;
+            // Saves from before MaxHealthPoints existed get the default max, raised if their HP is already higher
+            MaxHealthPoints = Math.Max(aComplete.MaxHealthPoints, aComplete.HealthPoints);
             Rations = aComplete.Rations <= 0 ? 3 : aComplete.Rations;
         }
+    }
+
+    /// <summary>
+    /// Heals the adventurer by up to <paramref name="amount"/> Health Points without going over MaxHealthPoints.
+    /// HP already above the maximum (e.g. from a "can exceed baseline" effect) is left unchanged.
+    /// </summary>
+    /// <returns>The number of Health Points actually recovered.</returns>
+    public int Heal(int amount)
+    {
+        if (amount <= 0 || HealthPoints >= MaxHealthPoints)
+        {
+            return 0;
+        }
+
+        int previous = HealthPoints;
+        HealthPoints = Math.Min(HealthPoints + amount, MaxHealthPoints);
+        return HealthPoints - previous;
     }
 
     private static Adventurer DatabaseDecode(string base64EncodedData) 
