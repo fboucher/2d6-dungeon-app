@@ -1,0 +1,108 @@
+@page "/documentation"
+@using System.Text.RegularExpressions
+@using Markdig
+@inject IWebHostEnvironment Environment
+@rendermode InteractiveServer
+
+<PageTitle>Documentation</PageTitle>
+
+<FluentLabel Typo="Typography.PageTitle">2D6 Dungeon Documentation</FluentLabel>
+
+@if (documents.Count > 0)
+{
+    <nav class="documentation-index" aria-label="Documentation sections">
+        @foreach (var document in documents)
+        {
+            <a href="#@document.Anchor">@document.Title</a>
+        }
+    </nav>
+
+    <div class="documentation">
+        @foreach (var document in documents)
+        {
+            <article id="@document.Anchor" class="documentation-article">
+                @((MarkupString)document.Html)
+            </article>
+        }
+    </div>
+}
+
+@code {
+    private readonly List<DocumentationArticle> documents = [];
+    private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .Build();
+
+    protected override void OnInitialized()
+    {
+        var documentationPath = Path.Combine(Environment.WebRootPath, "documentation");
+        if (!Directory.Exists(documentationPath))
+        {
+            throw new InvalidOperationException($"Documentation content was not found at '{documentationPath}'.");
+        }
+
+        var markdownFiles = Directory.EnumerateFiles(documentationPath, "*.md")
+            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var home = markdownFiles.FirstOrDefault(path =>
+            string.Equals(Path.GetFileName(path), "Home.md", StringComparison.OrdinalIgnoreCase));
+
+        if (home is not null)
+        {
+            markdownFiles.Remove(home);
+            markdownFiles.Insert(0, home);
+        }
+
+        foreach (var markdownFile in markdownFiles)
+        {
+            var anchor = Path.GetFileNameWithoutExtension(markdownFile).ToLowerInvariant();
+            var source = File.ReadAllText(markdownFile);
+            source = RewriteWikiLinks(source);
+
+            var html = Markdown.ToHtml(source, MarkdownPipeline);
+            html = RewriteImages(html);
+            html = AddHeadingAnchor(html, anchor);
+
+            documents.Add(new DocumentationArticle(anchor, GetTitle(html), html));
+        }
+    }
+
+    private static string RewriteWikiLinks(string source)
+    {
+        return Regex.Replace(
+            source,
+            @"\]\((?<page>Home|Getting-Started|Creating-Your-Adventurer|Exploring-the-Dungeon|Combat-System|Settings)(?:\.md)?\)",
+            match => $"](#{match.Groups["page"].Value.ToLowerInvariant()})");
+    }
+
+    private static string RewriteImages(string html)
+    {
+        return Regex.Replace(
+            html,
+            "src=\"(?!https?://|/)(?<image>[^\"]+)\"",
+            "src=\"/documentation/${image}\"");
+    }
+
+    private static string AddHeadingAnchor(string html, string anchor)
+    {
+        const string heading = "<h1>";
+        var headingStart = html.IndexOf(heading, StringComparison.Ordinal);
+        return headingStart < 0
+            ? html
+            : string.Concat(
+                html.AsSpan(0, headingStart),
+                $"<h1 id=\"{anchor}\">",
+                html.AsSpan(headingStart + heading.Length));
+    }
+
+    private static string GetTitle(string html)
+    {
+        var titleMatch = Regex.Match(html, "<h1[^>]*>(?<title>.*?)</h1>");
+        return titleMatch.Success
+            ? Regex.Replace(titleMatch.Groups["title"].Value, "<.*?>", string.Empty)
+            : "Documentation";
+    }
+
+    private sealed record DocumentationArticle(string Anchor, string Title, string Html);
+}

@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+    <PackageReference Include="Markdig" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,12 +7,7 @@
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
             <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.HomePerson())">Home</FluentNavLink>
             @* <FluentNavLink Href="/Combat" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Shield())">Combat</FluentNavLink> *@
-            <FluentNavGroup Title="Tests" Icon="@(new Icons.Regular.Size20.Toolbox())">
-                <FluentNavLink Href="/Counter" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.AppFolder())">Dice Test</FluentNavLink>
-                <FluentNavLink Href="/fetchdata" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Database())">Database Test</FluentNavLink>
-            </FluentNavGroup>
-            
-            @* <FluentNavLink Href="/dungeonmap" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Map())">Map Test</FluentNavLink> *@
+            <FluentNavLink Href="/documentation" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.BookOpen())">Documentation</FluentNavLink>
             <FluentNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.TextBulletListSquareSettings())">Settings</FluentNavLink>
         </FluentNavMenu>
     </nav>

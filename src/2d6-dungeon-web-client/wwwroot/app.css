@@ -61,6 +61,48 @@ footer {
     padding: 5px;
 }
 
+.documentation-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin: 1rem 0 2rem;
+}
+
+.documentation-index a {
+    color: var(--accent-foreground-rest);
+}
+
+.documentation {
+    max-width: 1000px;
+}
+
+.documentation-article {
+    border-bottom: 1px solid var(--neutral-stroke-divider-rest);
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+}
+
+.documentation-article:last-child {
+    border-bottom: 0;
+}
+
+.documentation-article img {
+    display: block;
+    height: auto;
+    margin: 1rem 0;
+    max-width: 100%;
+}
+
+.documentation-article pre {
+    background: var(--neutral-layer-2);
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+.documentation-article code {
+    font-family: Consolas, "Courier New", monospace;
+}
+
 
 #blazor-error-ui {
     background: lightyellow;
