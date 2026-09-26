@@ -60,6 +60,6 @@ Once you are satisfied with your character's layout, scroll to the very bottom o
 Click the green **`Save Adventurer`** button.
 
 ### What Happens Next?
-* The application saves your adventurer's sheet directly to your local MySQL database.
+* The application saves your adventurer's sheet directly to your saved adventure data.
 * You are redirected back to the **Adventure Initialization** screen.
 * Your newly created hero (e.g., *Sir Lancelot*) will now appear inside the Adventurers table, ready to be selected for your upcoming dungeon crawl!

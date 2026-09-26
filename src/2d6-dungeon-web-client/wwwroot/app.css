@@ -61,29 +61,27 @@ footer {
     padding: 5px;
 }
 
-.documentation-index {
+.documentation-shell {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    margin: 1rem 0 2rem;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-top: 1rem;
 }
 
-.documentation-index a {
-    color: var(--accent-foreground-rest);
+.documentation-nav {
+    background: var(--neutral-layer-2);
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    border-radius: var(--control-corner-radius, 4px);
+    flex: 0 0 280px;
+    padding: 0.5rem;
+    position: sticky;
+    top: 1rem;
 }
 
-.documentation {
-    max-width: 1000px;
-}
-
-.documentation-article {
-    border-bottom: 1px solid var(--neutral-stroke-divider-rest);
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-}
-
-.documentation-article:last-child {
-    border-bottom: 0;
+.documentation-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 1.5rem 2rem;
 }
 
 .documentation-article img {
@@ -101,6 +99,18 @@ footer {
 
 .documentation-article code {
     font-family: Consolas, "Courier New", monospace;
+}
+
+@media (max-width: 800px) {
+    .documentation-shell {
+        flex-direction: column;
+    }
+
+    .documentation-nav {
+        flex-basis: auto;
+        position: static;
+        width: 100%;
+    }
 }
 
 
