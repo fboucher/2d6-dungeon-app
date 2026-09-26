@@ -1,5 +1,7 @@
 # Welcome to the 2D6 Dungeon Companion App! 🗡️🎲
 
+![2D6 Dungeon App](/images/logo-with-name-transparent.png)
+
 Welcome to the official documentation for the **2D6 Dungeon App**—a complete digital companion and adaptation of the classic-style print-and-play solo dungeon crawler, **2D6 Dungeon**, designed by Toby Lancaster (DR Games).
 
 This digital adaptation helps you automate the tedious bookkeeping, card/table references, and paper-tracking of your adventures so you can focus entirely on the exploration, tactical combat, and story!
