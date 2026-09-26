@@ -8,8 +8,8 @@ The combat screen displays real-time, interactive status cards for both combatan
 - Tracks your **XP, Level, current HP**, and base attributes (**Shift, Discipline, Precision**).
 - Displays active **Weapon and trained Manoeuvres**.
 - Tracks **Armour Pieces, Magic Scrolls**, and **Magic Potions**.
-- Tracks negative status effects like **Bloodied** ("FEVER -1 HP per room") and **Soaked** ("PNEUMONIA -1 HP per room") via FluentSliders.
-- **Defeat State:** If the adventurer's HP is edited to `0` or lower, the companion triggers the **Defeat/Game Over** error dialog, logging: `💀 [Adventurer Name] has fallen in battle!` to the Combat Journal.
+- Tracks negative status effects like **Bloodied** ("FEVER -1 HP per room") and **Soaked** ("PNEUMONIA -1 HP per room") via status sliders.
+- **Defeat State:** If the adventurer's HP is reduced to 0 or lower, the companion triggers the **Defeat/Game Over** dialog, logging: `💀 [Adventurer Name] has fallen in battle!` to the Combat Journal.
 
 ## Creature Card
 - Displays the selected monster's stats, level, description, and available moves.

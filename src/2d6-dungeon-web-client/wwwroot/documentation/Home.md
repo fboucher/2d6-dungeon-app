@@ -24,7 +24,7 @@ When you first launch the application, you'll be greeted by the clean, retro-sty
 ![Home Screen](01-home.png)
 
 ### Core Elements of the Home Page:
-1. **Dynamic Welcome Message:** The app automatically scans your database to see if you have existing adventures.
+1. **Dynamic Welcome Message:** The app automatically checks your saved games to see if you have existing adventures.
    - **First Run:** If no saved games are detected, the app displays a helpful tip suggesting you begin by creating a new adventure.
    - **Returning Adventurers:** If you have active campaigns, the system detects them and displays options to either continue a saved game or start a fresh quest.
 2. **Navigation Sidebar:** Toggle the sidebar (using the hamburger menu button in the top left) to access the core screens:
@@ -41,7 +41,7 @@ When you first launch the application, you'll be greeted by the clean, retro-sty
 * **🛡️ Hero Customization:** Build and save multiple adventurers. Choose weapons (like Longswords, Greataxes, Heavy Maces), select their starting combat manoeuvres, customize armour pieces, and track magic scrolls.
 * **🧭 Dungeon Exploration:** Generate and map out dungeon rooms dynamically based on your 2D6 rolls. Construct pathways, place doors, and explore deeper into the unknown.
 * **⚔️ Automated Combat Tracker:** Manage encounters with dungeon creatures. Log initiative, execute combat turns, track health (HP), and roll active combat manoeuvres seamlessly.
-* **💾 Campaign Persistence:** Save and load your adventures. Your hero sheets, explored maps, and inventory are saved in a local database so you can pick up your quest exactly where you left off.
+* **💾 Campaign Persistence:** Save and load your adventures. Your hero sheets, explored maps, and inventory are saved automatically so you can pick up your quest exactly where you left off.
 
 ---
 

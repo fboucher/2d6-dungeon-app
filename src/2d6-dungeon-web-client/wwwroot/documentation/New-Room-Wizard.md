@@ -9,7 +9,7 @@ The New Room Wizard (**"Let's see what room you are getting in!"**) walks you st
 * **Special Rules:**
   * **Double Sized Rooms:** Rolling doubles can trigger a massive double-sized room generation.
   * **Corridors:** If your roll generates a corridor, the wizard automatically identifies it, pre-fills the description as *"You found a corridor"*, sets the corridor flags, and automatically **disables and skips** the Room Description step!
-  * **Doubles Celebration:** Rolling any double on your room dimensions triggers a custom Blazor dice celebration, making the dice bounce and glow!
+  * **Doubles Celebration:** Rolling any double on your room dimensions triggers an animated celebration on the dice!
 
 ## Step 2: Exits (Determine Room Doors)
 * Click **`Roll 1D6`** to roll for exits.

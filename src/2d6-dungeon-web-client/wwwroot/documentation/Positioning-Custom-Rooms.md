@@ -11,13 +11,13 @@ Before finalizing, you can adjust the room's exact placement on the grid. Use th
 If a room's doors do not line up with your physical table-rolling preferences, click **`Edit Room`**:
 * This opens the **Edit Room Dialog**, letting you manually **Move a Door**.
 * Select the door you want to move (North, West, East, or South).
-* A responsive **FluentSlider** will appear. The slider automatically adjusts its orientation to match the wall (Horizontal for North/South walls, Vertical for East/West walls).
+* A responsive slider will appear. The slider automatically adjusts its orientation to match the wall (Horizontal for North/South walls, Vertical for East/West walls).
 * Slide the door along the wall to change its grid position. The slider's boundaries are dynamically restricted to the room's exact width or height.
 * Click **Save** to commit your door adjustment.
 
 ## 3. Finalize: Add Room to Map
 * When you are satisfied with the room's placement and door alignments, the **`Add Room to Map`** button will highlight with a glowing border and shadow.
-* Click **`Add Room to Map`** to permanently save the room to your database.
+* Click **`Add Room to Map`** to permanently save the room to your adventure.
 * The adventurer is moved into the new room, and the game automatically prompts you to proceed with the next step of exploration or combat!
 
 ---

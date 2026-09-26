@@ -6,7 +6,7 @@ Combat proceeds in active turns. The active turn is displayed in the main header
 
 During a turn, the attacking fighter executes their attack sequence:
 
-1. **Click `Roll` (`Roll2Dice`):** This rolls the two standard 2D6 combat dice:
+1. **Click `Roll`:** This rolls the two standard 2D6 combat dice:
    - **Red Primary Dice:** Represents the tens/primary value.
    - **Purple Secondary Dice:** Represents the units/secondary value.
 2. **Review Roll Outcomes:**
@@ -14,7 +14,7 @@ During a turn, the attacking fighter executes their attack sequence:
    - The results are instantly outputted to the **Combat Journal** (e.g., *"Rolled 4 and 2"*).
 3. **Shift Adjustment / Shifting the Dice:**
    - If the rolled numbers do not match your trained weapon maneuvers, you can use your adventurer's **Shift points** to nudge the dice up or down.
-   - Use the **Shift Left** and **Shift Right** (`ShiftButtons`) next to each die to increment or decrement the active values.
+   - Use the shift buttons (arrow controls) next to each die to increment or decrement the active values.
    - The interface tracks your remaining shift pool dynamically. Each point used reduces the **Shift Left** counter.
    - If you make a mistake, click the **`Reset`** button to return the dice to their original rolled values.
 4. **Select a Maneuver:**
@@ -24,7 +24,7 @@ During a turn, the attacking fighter executes their attack sequence:
    - The system rolls the damage dice and displays them visually.
 6. **Apply Damage & Update HP:**
    - Manually deduct the damage from the defender's HP in their card.
-7. **Click `End Turn` (`NextTurn`):**
+7. **Click `End Turn`:**
    - Click the prominent **`End Turn`** button to pass the action to the defender.
    - The active fighter toggles.
    - When the action returns to the first fighter, the turn counter increments and fatigue is recalculated.
