@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using c5m._2d6Dungeon
 @inject D6Service D6Service;
 @inject NavigationManager Navigation;
@@ -6,6 +6,13 @@
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
+
+<div class="home-hero" style="margin-top: 16px; margin-bottom: 8px;">
+    <picture>
+        <source srcset="images/logo-with-name-dark-transparent.png" media="(prefers-color-scheme: dark)">
+        <img src="images/logo-with-name-transparent.png" alt="2d6 Dungeon App" style="max-width: 400px; width: 100%; height: auto;" />
+    </picture>
+</div>
 
 <FluentLabel Style="margin:16px 0px; padding: 16px 0px; width: 600px;">
     Welcome to <b>2d6 Dungeon App</b>! This is a digital adaptation of the dice & paper <a href="https://d-r-games.itch.io/2d6-dungeon-demo" target="_blank">2d6 Dungeon</a> game. You still need to buy the game to be able to play.

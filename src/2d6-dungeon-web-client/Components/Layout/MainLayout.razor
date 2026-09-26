@@ -1,10 +1,13 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Microsoft.FluentUI.AspNetCore.Components.Extensions
 
 <FluentLayout>
     <FluentHeader>
-        2d6 Dungeon App
+        <a href="/" style="display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+            <img src="images/icon-1024.png" alt="2d6 Dungeon" style="height: 28px; width: 28px; border-radius: 4px;" />
+            <span>2d6 Dungeon App</span>
+        </a>
     </FluentHeader>
     <FluentStack Class="main" Orientation="Orientation.Horizontal" Width="100%">
         <NavMenu />

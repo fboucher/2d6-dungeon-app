@@ -1,0 +1,210 @@
+@page "/documentation"
+@page "/documentation/{*Slug:nonfile}"
+@using System.Text.RegularExpressions
+@using Markdig
+@inject IWebHostEnvironment Environment
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Documentation@(currentDocument is not null ? $" - {currentDocument.Title}" : string.Empty)</PageTitle>
+
+<FluentLabel Typo="Typography.PageTitle">2D6 Dungeon Documentation</FluentLabel>
+
+@if (sections.Count > 0)
+{
+    <div class="documentation-shell">
+        <nav class="documentation-nav" aria-label="Documentation sections">
+            <FluentTreeView OnSelectedChange="OnTreeItemSelected">
+                @foreach (var section in sections)
+                {
+                    <FluentTreeItem Text="@section.Title"
+                                    IconStart="@section.Icon"
+                                    Expanded="true">
+                        @foreach (var document in section.Documents)
+                        {
+                            <FluentTreeItem Id="@document.Anchor"
+                                            Text="@document.Title"
+                                            Selected="@(document.Anchor == selectedAnchor)"
+                                            IconStart="@(new Icons.Regular.Size16.Document())" />
+                        }
+                    </FluentTreeItem>
+                }
+            </FluentTreeView>
+        </nav>
+
+        <FluentCard class="documentation-content">
+            @if (currentDocument is not null)
+            {
+                <article class="documentation-article">
+                    @((MarkupString)currentDocument.Html)
+                </article>
+            }
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private readonly Dictionary<string, DocumentationArticle> documentsByAnchor = new();
+    private readonly List<DocumentationSection> sections = [];
+    private string? selectedAnchor;
+    private DocumentationArticle? currentDocument;
+
+    private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .Build();
+
+    // Maps a documentation article's anchor to the navigation section it belongs to.
+    // Anchors that are not listed here are grouped under a fallback "More" section.
+    private static readonly (string Title, Icon Icon, string[] Anchors)[] SectionDefinitions =
+    [
+        ("Overview", new Icons.Regular.Size16.Home(), ["home"]),
+        ("Creating Your Adventurer", new Icons.Regular.Size16.PersonAdd(), ["creating-your-adventurer"]),
+        ("Exploring the Dungeon", new Icons.Regular.Size16.Map(), ["dungeon-map-interface", "dungeon-map-navigation", "picking-a-door", "new-room-wizard", "positioning-custom-rooms", "saving-dungeon-progress"]),
+        ("Combat", new Icons.Regular.Size16.Shield(), ["combat-overview", "combat-initiative", "combat-turns", "combat-fatigue-shift", "combat-health-resolution"]),
+    ];
+
+    protected override void OnInitialized()
+    {
+        var documentationPath = Path.Combine(Environment.WebRootPath, "documentation");
+        if (!Directory.Exists(documentationPath))
+        {
+            throw new InvalidOperationException($"Documentation content was not found at '{documentationPath}'.");
+        }
+
+        var markdownFiles = Directory.EnumerateFiles(documentationPath, "*.md")
+            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var home = markdownFiles.FirstOrDefault(path =>
+            string.Equals(Path.GetFileName(path), "Home.md", StringComparison.OrdinalIgnoreCase));
+
+        if (home is not null)
+        {
+            markdownFiles.Remove(home);
+            markdownFiles.Insert(0, home);
+        }
+
+        // First pass: capture the anchors so wiki-style links can be rewritten to routed URLs.
+        var anchorsByFile = markdownFiles.ToDictionary(
+            file => file,
+            file => Path.GetFileNameWithoutExtension(file).ToLowerInvariant());
+
+        foreach (var markdownFile in markdownFiles)
+        {
+            var anchor = anchorsByFile[markdownFile];
+            var source = File.ReadAllText(markdownFile);
+            source = RewriteWikiLinks(source, anchorsByFile.Values);
+
+            var html = Markdown.ToHtml(source, MarkdownPipeline);
+            html = RewriteImages(html);
+
+            documentsByAnchor[anchor] = new DocumentationArticle(anchor, GetTitle(html), html);
+        }
+
+        BuildSections();
+    }
+
+    protected override void OnParametersSet()
+    {
+        var anchor = string.IsNullOrWhiteSpace(Slug) ? null : Slug.ToLowerInvariant();
+
+        if (anchor is null || !documentsByAnchor.ContainsKey(anchor))
+        {
+            anchor = documentsByAnchor.Keys.FirstOrDefault();
+        }
+
+        selectedAnchor = anchor;
+        currentDocument = anchor is not null && documentsByAnchor.TryGetValue(anchor, out var document)
+            ? document
+            : null;
+    }
+
+    private void BuildSections()
+    {
+        var assignedAnchors = new HashSet<string>();
+
+        foreach (var (title, icon, anchors) in SectionDefinitions)
+        {
+            var documents = anchors
+                .Where(documentsByAnchor.ContainsKey)
+                .Select(a => documentsByAnchor[a])
+                .ToList();
+
+            if (documents.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var anchor in anchors)
+            {
+                assignedAnchors.Add(anchor);
+            }
+
+            sections.Add(new DocumentationSection(title, icon, documents));
+        }
+
+        var remaining = documentsByAnchor.Keys
+            .Where(anchor => !assignedAnchors.Contains(anchor))
+            .Select(anchor => documentsByAnchor[anchor])
+            .ToList();
+
+        if (remaining.Count > 0)
+        {
+            sections.Add(new DocumentationSection("More", new Icons.Regular.Size16.Folder(), remaining));
+        }
+    }
+
+    private void OnTreeItemSelected(FluentTreeItem item)
+    {
+        if (item.Id is null || !documentsByAnchor.ContainsKey(item.Id))
+        {
+            return;
+        }
+
+        Navigation.NavigateTo($"/documentation/{item.Id}");
+    }
+
+    private static string RewriteWikiLinks(string source, IEnumerable<string> knownAnchors)
+    {
+        var anchorSet = new HashSet<string>(knownAnchors, StringComparer.OrdinalIgnoreCase);
+
+        return Regex.Replace(
+            source,
+            @"\]\((?<page>[A-Za-z][A-Za-z-]*)(?:\.md)?\)",
+            match =>
+            {
+                var page = match.Groups["page"].Value.ToLowerInvariant();
+                return anchorSet.Contains(page) ? $"](/documentation/{page})" : match.Value;
+            });
+    }
+
+    private static string RewriteImages(string html)
+    {
+        return Regex.Replace(
+            html,
+            "src=\"(?!https?://|/)(?<image>[^\"]+)\"",
+            "src=\"/documentation/${image}\"");
+    }
+
+    private static string GetTitle(string html)
+    {
+        var titleMatch = Regex.Match(html, "<h1[^>]*>(?<title>.*?)</h1>");
+        if (!titleMatch.Success)
+        {
+            return "Documentation";
+        }
+
+        var title = Regex.Replace(titleMatch.Groups["title"].Value, "<.*?>", string.Empty);
+
+        // Markdig HTML-encodes characters like '&' in the heading; decode them here so the
+        // title renders correctly when placed back into Razor components such as FluentTreeItem.
+        return System.Net.WebUtility.HtmlDecode(title);
+    }
+
+    private sealed record DocumentationArticle(string Anchor, string Title, string Html);
+
+    private sealed record DocumentationSection(string Title, Icon Icon, List<DocumentationArticle> Documents);
+}
