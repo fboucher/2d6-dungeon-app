@@ -1,4 +1,4 @@
-# Welcome to the 2D6 Dungeon Companion App Wiki! 🗡️🎲
+# Welcome to the 2D6 Dungeon Companion App! 🗡️🎲
 
 Welcome to the official documentation for the **2D6 Dungeon App**—a complete digital companion and adaptation of the classic-style print-and-play solo dungeon crawler, **2D6 Dungeon**, designed by Toby Lancaster (DR Games).
 
@@ -43,13 +43,10 @@ When you first launch the application, you'll be greeted by the clean, retro-sty
 
 ---
 
-## 📖 Wiki Navigation Index
+## 📖 Documentation Index
 
-To dive deeper into specific systems and guides, follow the articles below:
+To dive deeper into how to play, follow the guides below:
 
-1. **[Getting Started](Getting-Started)** — How to run the app locally using Docker, customize database properties, and launch your first campaign.
-2. **[Creating Your Adventurer](Creating-Your-Adventurer)** — A step-by-step guide to rolling stats, selecting starting weapons, and training your manoeuvres.
-3. **[Exploring the Dungeon](Exploring-the-Dungeon)** — Mastering the map viewer, room placement, door interactions, and dungeon exploration.
-4. **[Combat System](Combat-System)** — Detailed breakdown of how to wage battles, resolve manoeuvres, and log turns.
-5. **[Saving & Loading](Saving-and-Loading)** — Managing multiple adventurers and campaigns safely.
-6. **[Settings](Settings)** — Customizing preferences, debugging logs, and developer options.
+1. **[Creating Your Adventurer](Creating-Your-Adventurer)** — A step-by-step guide to rolling stats, selecting starting weapons, and training your manoeuvres.
+2. **[Exploring the Dungeon](Dungeon-Map-Interface)** — Mastering the map viewer, room placement, door interactions, and dungeon exploration.
+3. **[Combat System](Combat-Overview)** — Detailed breakdown of how to wage battles, resolve manoeuvres, and log turns.

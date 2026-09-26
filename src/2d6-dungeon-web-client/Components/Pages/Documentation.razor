@@ -60,8 +60,9 @@
     private static readonly (string Title, Icon Icon, string[] Anchors)[] SectionDefinitions =
     [
         ("Overview", new Icons.Regular.Size16.Home(), ["home"]),
-        ("Playing the Game", new Icons.Regular.Size16.BookOpen(), ["getting-started", "creating-your-adventurer", "exploring-the-dungeon", "combat-system"]),
-        ("Configuration", new Icons.Regular.Size16.Settings(), ["settings"]),
+        ("Creating Your Adventurer", new Icons.Regular.Size16.PersonAdd(), ["creating-your-adventurer"]),
+        ("Exploring the Dungeon", new Icons.Regular.Size16.Map(), ["dungeon-map-interface", "dungeon-map-navigation", "picking-a-door", "new-room-wizard", "positioning-custom-rooms", "saving-dungeon-progress"]),
+        ("Combat", new Icons.Regular.Size16.Shield(), ["combat-overview", "combat-initiative", "combat-turns", "combat-fatigue-shift", "combat-health-resolution"]),
     ];
 
     protected override void OnInitialized()
