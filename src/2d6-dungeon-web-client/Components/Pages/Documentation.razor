@@ -1,5 +1,5 @@
 @page "/documentation"
-@page "/documentation/{Slug}"
+@page "/documentation/{*Slug:nonfile}"
 @using System.Text.RegularExpressions
 @using Markdig
 @inject IWebHostEnvironment Environment
@@ -14,7 +14,7 @@
 {
     <div class="documentation-shell">
         <nav class="documentation-nav" aria-label="Documentation sections">
-            <FluentTreeView SelectedId="@selectedAnchor" OnSelectedChanged="OnTreeItemSelected">
+            <FluentTreeView OnSelectedChange="OnTreeItemSelected">
                 @foreach (var section in sections)
                 {
                     <FluentTreeItem Text="@section.Title"
@@ -24,6 +24,7 @@
                         {
                             <FluentTreeItem Id="@document.Anchor"
                                             Text="@document.Title"
+                                            Selected="@(document.Anchor == selectedAnchor)"
                                             IconStart="@(new Icons.Regular.Size16.Document())" />
                         }
                     </FluentTreeItem>
