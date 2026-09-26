@@ -192,9 +192,16 @@
     private static string GetTitle(string html)
     {
         var titleMatch = Regex.Match(html, "<h1[^>]*>(?<title>.*?)</h1>");
-        return titleMatch.Success
-            ? Regex.Replace(titleMatch.Groups["title"].Value, "<.*?>", string.Empty)
-            : "Documentation";
+        if (!titleMatch.Success)
+        {
+            return "Documentation";
+        }
+
+        var title = Regex.Replace(titleMatch.Groups["title"].Value, "<.*?>", string.Empty);
+
+        // Markdig HTML-encodes characters like '&' in the heading; decode them here so the
+        // title renders correctly when placed back into Razor components such as FluentTreeItem.
+        return System.Net.WebUtility.HtmlDecode(title);
     }
 
     private sealed record DocumentationArticle(string Anchor, string Title, string Html);
