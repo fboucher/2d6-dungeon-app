@@ -70,6 +70,7 @@ public Task<WeaponList> GetWeapons()
 | **AdventurerTests** | Character initialization | Constructor overloads, serialization roundtrips |
 | **DungeonTests** | Room generation logic | Area threshold calculations |
 | **GameTurnTests** | Game state machine | ID6Service mocking, deterministic re-roll scenarios |
+| **AdventureTests** | Room naming and journal formatting | Precedence rules, formatting assertions |
 
 ## Best Practices
 

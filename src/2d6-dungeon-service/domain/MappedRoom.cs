@@ -19,6 +19,23 @@ public class MappedRoom
     public int? LockRoll { get; set; }
     public bool YouAreHere { get; set; } = false;
 
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string DisplayName
+    {
+        get
+        {
+            if (IsLobby)
+            {
+                return "Lobby";
+            }
+            if (IsCorridor)
+            {
+                return $"Corridor {Id}";
+            }
+            return string.IsNullOrWhiteSpace(RoomType) ? $"Room {Id}" : RoomType;
+        }
+    }
+
 
     public static MappedRoom DraftCurrentRoom(DiceResult dResult){
         return new MappedRoom{

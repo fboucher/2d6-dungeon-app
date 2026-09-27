@@ -344,7 +344,7 @@ else
                     return;
                 }
                 currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom);
-                currentAdventure.AppendJournal($"Entered room: {(string.IsNullOrEmpty(destinationRoom.RoomType) ? "Room " + destinationRoom.Id : destinationRoom.RoomType)}");
+                currentAdventure.AppendRoomEntryJournal(destinationRoom);
                 currentRoom = destinationRoom;
                 gameTurnInstructions = "You already visited that room, Pick another door!";
                 await RefreshCanvas();
@@ -532,7 +532,7 @@ else
         
         currentAdventure!.Dungeon.AddRoom(nextRoom);
         currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom);
-        currentAdventure.AppendJournal($"Entered room: {(string.IsNullOrEmpty(nextRoom.RoomType) ? "Room " + nextRoom.Id : nextRoom.RoomType)}");
+        currentAdventure.AppendRoomEntryJournal(nextRoom);
         currentRoom = nextRoom;
 
         await SaveAventure();
