@@ -1,6 +1,6 @@
 # 2d6 Dungeon App
 
-![.NET](https://img.shields.io/badge/10.0-512BD4?logo=dotnet&logoColor=fff)   [![.NET](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/dotnet.yml)  [![Publish Docker images](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml/badge.svg)](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-images.yml)  ![Docker Image Version](https://img.shields.io/docker/v/fboucher/2d6-dungeon-app?style=flat&labelColor=brown&color=beige&link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Ffboucher%2F2d6-dungeon-app%2F)
+![.NET](https://img.shields.io/badge/10.0-512BD4?logo=dotnet&logoColor=fff)   [![.NET](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/build-dotnet.yml/badge.svg)](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/build-dotnet.yml)  [![Publish Docker images](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-docker-images.yml/badge.svg)](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-docker-images.yml)  ![Docker Image Version](https://img.shields.io/docker/v/fboucher/2d6-dungeon-app?style=flat&labelColor=brown&color=beige&link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Ffboucher%2F2d6-dungeon-app%2F)
 
 ![2d6 Dungeon App](medias/logos/logo-with-name.png)
 
