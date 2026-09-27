@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+
+@* Layout for pages that must work for visitors who are not signed in (e.g. /about).
+   It has no interactive components, so it never opens a Blazor circuit. *@
+
+<FluentLayout>
+    <FluentHeader>
+        <a href="/" style="display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+            <img src="images/icon-1024.png" alt="2d6 Dungeon" style="height: 28px; width: 28px; border-radius: 4px;" />
+            <span>2d6 Dungeon App</span>
+        </a>
+    </FluentHeader>
+    <FluentBodyContent Class="body-content">
+        <div class="content">
+            @Body
+        </div>
+    </FluentBodyContent>
+    <FluentFooter>
+        <a href="https://github.com/fboucher/2d6-dungeon-app" target="_blank">See the code</a>
+        <FluentSpacer />
+        <a href="https://fboucheros.com" target="_blank">About Frank</a>
+        &nbsp;&nbsp;·&nbsp;&nbsp;@AppVersion.Display
+    </FluentFooter>
+</FluentLayout>

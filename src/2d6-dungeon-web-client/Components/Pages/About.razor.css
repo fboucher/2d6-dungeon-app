@@ -1,0 +1,27 @@
+.about-page {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.about-logo {
+    max-width: 360px;
+    width: 100%;
+    height: auto;
+    align-self: center;
+}
+
+::deep .about-card {
+    padding: 16px 20px;
+}
+
+.about-page h2 {
+    margin-top: 0;
+}
+
+.about-links {
+    padding-left: 20px;
+    line-height: 1.8;
+}
