@@ -10,7 +10,14 @@ This project is a digital version of the game, with creator's approval. It's a w
 
 ![Adventure Initialization](medias/2d6_app_game.png)
 
-📅 Details on the progress of the project can be found on the [project's board](https://github.com/users/FBoucher/projects/13).
+### 🎲 Try the live demo
+
+A hosted beta of the app is available at **[2d6.c5m-demo.com](https://2d6.c5m-demo.com/about)**.
+
+The demo is **invite-only** for now. To get access, ask on [Discord](https://discord.gg/6zA3jKw) or [open an issue](https://github.com/fboucher/2d6-dungeon-app/issues) and I'll send you an invite. You'll log in with a one-time code sent to your email, so there's no password or account to create.
+
+> ⚠️ This is a beta: things may break, and saved adventurers and adventures may be reset from time to time.
+
 
 ### Features
 
@@ -22,6 +29,8 @@ This project is a digital version of the game, with creator's approval. It's a w
 - [X] digital map.
 - [X] Help with battle rules  
 - [X] Character sheet
+
+📅 Details on the progress of the project can be found on the [project's board](https://github.com/users/FBoucher/projects/13).
 
 
 ### Related Content
