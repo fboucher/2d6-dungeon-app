@@ -55,6 +55,16 @@ public class Adventure
         }
     }
 
+    public static string FormatRoomEntryJournal(MappedRoom room)
+    {
+        return $"Entered room: {room.DisplayName}";
+    }
+
+    public void AppendRoomEntryJournal(MappedRoom room)
+    {
+        AppendJournal(FormatRoomEntryJournal(room));
+    }
+
     private static Adventure DatabaseDecode(string base64EncodedData) 
     {
         var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
