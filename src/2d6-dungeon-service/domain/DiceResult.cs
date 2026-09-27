@@ -1,4 +1,4 @@
-﻿namespace c5m._2d6Dungeon;
+namespace c5m._2d6Dungeon;
 
 public class DiceResult
 {
@@ -11,10 +11,15 @@ public class DiceResult
 
 
 
-    private static int RollDice()
+    public static Func<int> RollDie { get; set; } = () =>
     {
         var die = new List<int> { 1,2,3,4,5,6 };
         return die.OrderBy(x => Guid.NewGuid()).First<int>(); 
+    };
+
+    private static int RollDice()
+    {
+        return RollDie();
     }
     public static DiceResult Roll2Dice ()
     {

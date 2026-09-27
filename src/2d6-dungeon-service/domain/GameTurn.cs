@@ -12,7 +12,7 @@ public class GameTurn
     public DiceResult? LastDiceResult { get; set; }
     public string? Message { get; set; }
 
-    public D6Service? d6Service;
+    public ID6Service? d6Service;
 
     public async Task<GameTurn> ContinueTurn(DiceResult dResult, Dungeon dungeon)
     {

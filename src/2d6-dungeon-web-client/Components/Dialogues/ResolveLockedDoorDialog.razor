@@ -375,8 +375,8 @@
         if (rationChoice == "use" && adventurer.Rations >= 1)
         {
             adventurer.Rations--;
-            adventurer.HealthPoints += 2;
-            patrolLog = $"Used 1 ration to rest (+2 HP). Rations left: {adventurer.Rations}. ";
+            int healed = adventurer.Heal(2);
+            patrolLog = $"Used 1 ration to rest (+{healed} HP). Rations left: {adventurer.Rations}. ";
         }
         else
         {

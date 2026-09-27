@@ -61,6 +61,58 @@ footer {
     padding: 5px;
 }
 
+.documentation-shell {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.documentation-nav {
+    background: var(--neutral-layer-2);
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    border-radius: var(--control-corner-radius, 4px);
+    flex: 0 0 280px;
+    padding: 0.5rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.documentation-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 1.5rem 2rem;
+}
+
+.documentation-article img {
+    display: block;
+    height: auto;
+    margin: 1rem 0;
+    max-width: 100%;
+}
+
+.documentation-article pre {
+    background: var(--neutral-layer-2);
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+.documentation-article code {
+    font-family: Consolas, "Courier New", monospace;
+}
+
+@media (max-width: 800px) {
+    .documentation-shell {
+        flex-direction: column;
+    }
+
+    .documentation-nav {
+        flex-basis: auto;
+        position: static;
+        width: 100%;
+    }
+}
+
 
 #blazor-error-ui {
     background: lightyellow;

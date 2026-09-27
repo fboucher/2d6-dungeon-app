@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace c5m._2d6Dungeon;
 
@@ -73,25 +73,35 @@ public class Dungeon
     /// </summary>
     /// <param name="dResult">The dice result.</param>
     /// <returns>The starting room of the dungeon level.</returns>
-    public static MappedRoom StartDungeonLevel(ref DiceResult dResult)
+    public static (MappedRoom Room, DiceResult Dice) StartDungeonLevel(DiceResult dResult)
     {
-        int area = dResult.PrimaryDice * dResult.SecondaryDice;
+        var resultDice = new DiceResult
+        {
+            DiceRolled = dResult.DiceRolled,
+            PrimaryDice = dResult.PrimaryDice,
+            SecondaryDice = dResult.SecondaryDice,
+            IsOneDiceOne = dResult.IsOneDiceOne,
+            IsDouble = dResult.IsDouble,
+            IsDoubleSix = dResult.IsDoubleSix
+        };
+
+        int area = resultDice.PrimaryDice * resultDice.SecondaryDice;
         if (area > 12)
         {
-            dResult.PrimaryDice = (int)Math.Ceiling((decimal)dResult.PrimaryDice / 2);
-            dResult.SecondaryDice = (int)Math.Ceiling((decimal)dResult.SecondaryDice / 2);
-            area = dResult.PrimaryDice * dResult.SecondaryDice;
+            resultDice.PrimaryDice = (int)Math.Ceiling((decimal)resultDice.PrimaryDice / 2);
+            resultDice.SecondaryDice = (int)Math.Ceiling((decimal)resultDice.SecondaryDice / 2);
+            area = resultDice.PrimaryDice * resultDice.SecondaryDice;
         }
         if (area < 6)
         {
-            dResult.PrimaryDice = 3;
-            dResult.SecondaryDice = 2;
+            resultDice.PrimaryDice = 3;
+            resultDice.SecondaryDice = 2;
         }
-        var entryRoom = MappedRoom.DraftCurrentRoom(dResult);
+        var entryRoom = MappedRoom.DraftCurrentRoom(resultDice);
         entryRoom.Id = 1;
         entryRoom.ExitsCount = 3;
         entryRoom.Description = "This is the entrance of the dungeon. The room is empty.";
-        return entryRoom;
+        return (entryRoom, resultDice);
     }
 
 

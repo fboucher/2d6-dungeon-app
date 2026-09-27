@@ -16,6 +16,7 @@ builder.Services.AddHttpClient<D6Service>(client =>
 {
     client.BaseAddress = new("https+http://dab");
 });
+builder.Services.AddScoped<ID6Service>(sp => sp.GetRequiredService<D6Service>());
 
 var app = builder.Build();
 

@@ -121,7 +121,9 @@
         await MapTools.RefreshCanvas(JSRuntime);
         dResult = DiceResult.Roll2Dice();
 
-        entryRoom = Dungeon.StartDungeonLevel(ref dResult);
+        var startResult = Dungeon.StartDungeonLevel(dResult);
+        entryRoom = startResult.Room;
+        dResult = startResult.Dice;
         entryRoom.IsLobby = true;
         entryRoom.YouAreHere = true;
 
