@@ -16,4 +16,14 @@ public class CombatState
         Player = player;
         CombatActions = new List<string>();
     }
+
+    public int GetShiftPointsFor(FighterType? fighter)
+    {
+        if (fighter == FighterType.Creature)
+        {
+            return Creature?.shift_points ?? 0;
+        }
+
+        return Player.Shift;
+    }
 }

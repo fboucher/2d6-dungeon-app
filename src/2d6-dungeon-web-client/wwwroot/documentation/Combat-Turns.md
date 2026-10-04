@@ -13,9 +13,10 @@ During a turn, the attacking fighter executes their attack sequence:
    - Rolling doubles triggers a visual dice celebration (the dice bounce and glow)!
    - The results are instantly outputted to the **Combat Journal** (e.g., *"Rolled 4 and 2"*).
 3. **Shift Adjustment / Shifting the Dice:**
-   - If the rolled numbers do not match your trained weapon maneuvers, you can use your adventurer's **Shift points** to nudge the dice up or down.
+   - If the rolled numbers do not match your trained weapon maneuvers, you can use the **Shift points** of the fighter whose turn it is to nudge the dice up or down.
    - Use the shift buttons (arrow controls) next to each die to increment or decrement the active values.
    - The interface tracks your remaining shift pool dynamically. Each point used reduces the **Shift Left** counter.
+   - The **Shift Left** counter follows the active fighter: the adventurer's **Shift** on their turn, the creature's **SH** on its turn. Ending a turn replenishes the pool to the incoming fighter's own allowance.
    - If you make a mistake, click the **`Reset`** button to return the dice to their original rolled values.
 4. **Select a Maneuver:**
    - Compare the final adjusted primary and secondary dice results to the active fighter's list of maneuvers to see what attack hits.
@@ -27,6 +28,7 @@ During a turn, the attacking fighter executes their attack sequence:
 7. **Click `End Turn`:**
    - Click the prominent **`End Turn`** button to pass the action to the defender.
    - The active fighter toggles.
+   - The **Shift Left** counter is replenished to the incoming fighter's own Shift allowance.
    - When the action returns to the first fighter, the turn counter increments and fatigue is recalculated.
 
 ---

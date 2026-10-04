@@ -110,7 +110,6 @@ else{
     public EventCallback<string> OnJournalLog { get; set; }
 
     private int adjustmentShift = 0;
-    private int adjustedShift = 0;
     private DiceResult? originalDice;
     private int shiftLeft = 0;
     private int primaryDice = 0;
@@ -143,14 +142,6 @@ else{
 
     protected override async Task OnInitializedAsync()
     {
-        adjustedShift = CombatState.Player.Shift;
-
-        if (CombatState.TurnCounter == 0)
-        {
-            await CombatTurnChanged(1);
-            shiftLeft = adjustedShift;
-        }
-
         if (CombatState.FirstFighter != null)
         {
             firstFighter = CombatState.FirstFighter;
@@ -159,18 +150,16 @@ else{
         {
             currentFighter = CombatState.CurrentFighter;
         }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        adjustedShift = CombatState.Player.Shift;
 
         if (CombatState.TurnCounter == 0)
         {
             await CombatTurnChanged(1);
             shiftLeft = adjustedShift;
         }
+    }
 
+    protected override async Task OnParametersSetAsync()
+    {
         if (CombatState.FirstFighter != null)
         {
             firstFighter = CombatState.FirstFighter;
@@ -187,6 +176,12 @@ else{
         else
         {
             currentFighter = null;
+        }
+
+        if (CombatState.TurnCounter == 0)
+        {
+            await CombatTurnChanged(1);
+            shiftLeft = adjustedShift;
         }
 
         if (CombatState.Creature != null && CombatState.FirstFighter == null && !dialogShowing)
@@ -263,8 +258,6 @@ else{
 
             if (adjustmentShift > 0)
                 CombatState.CombatActions.Add($"Shift as been ajusted by {adjustmentShift} due to fatigue reaching {turn}");
-
-            adjustedShift = CombatState.Player.Shift + adjustmentShift;
         }
         await CombatStateChanged.InvokeAsync(CombatState);
     }
@@ -298,9 +291,10 @@ else{
         {
             CombatState.TurnCounter++;
             await CombatTurnChanged(CombatState.TurnCounter);
-            shiftLeft = adjustedShift;
             await CombatStateChanged.InvokeAsync(CombatState);
         }
+
+        shiftLeft = adjustedShift;
 
         primaryDice = primaryShiftedDice = 0;
         secondaryDice = secondaryShiftedDice = 0;
@@ -376,8 +370,7 @@ else{
 
         // Reset adjustments
         adjustmentShift = 0;
-        adjustedShift = CombatState.Player.Shift;
-        shiftLeft = 0;
+        shiftLeft = adjustedShift;
         combatEnded = false;
 
         // Reset health depletion flags
@@ -437,6 +430,8 @@ else{
         shiftLeft = GetShiftLeftValue();
         StateHasChanged();
     }
+
+    private int adjustedShift => CombatState.GetShiftPointsFor(currentFighter) + adjustmentShift;
 
     private int GetShiftLeftValue(){
         var pDiceMovs = Math.Abs(primaryDice - primaryShiftedDice);
