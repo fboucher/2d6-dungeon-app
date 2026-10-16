@@ -441,6 +441,13 @@ else
                 return null;
             }
 
+            if (!nextRoom.HasDimensions)
+            {
+                ToastService.ShowToast(ToastIntent.Warning, "The room dimensions were not rolled, so the room was not added.");
+                nextRoom = null;
+                return null;
+            }
+
             // Define the entrance door, then place the room so its entrance door
             // is drawn on top of the selected exit door from the current room.
 

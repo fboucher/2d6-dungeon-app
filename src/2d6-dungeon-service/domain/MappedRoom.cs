@@ -19,6 +19,12 @@ public class MappedRoom
     public int? LockRoll { get; set; }
     public bool YouAreHere { get; set; } = false;
 
+    /// <summary>
+    /// True once the room's dimensions have been rolled (Width and Height are both positive).
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool HasDimensions => Width > 0 && Height > 0;
+
     [System.Text.Json.Serialization.JsonIgnore]
     public string DisplayName
     {
