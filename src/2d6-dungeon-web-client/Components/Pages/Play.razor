@@ -123,7 +123,7 @@ else
                 <div id="maps-menu" style="position: sticky; top: 20px; align-self: flex-start;">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
 
-                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent">Refresh Canvas</FluentButton>
+                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom != null)">Refresh Canvas</FluentButton>
 
                         <!-- Viewport Pan Controls -->
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Pan Map View</FluentLabel>
@@ -169,7 +169,7 @@ else
                         {
                             <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Click Edit Room to reposition the current room or adjust its doors.</FluentLabel>
                         }
-                        <FluentButton   @onclick=ToggleEditRoom 
+                        <FluentButton   @onclick=EditRoom 
                                         Appearance="Appearance.Accent" 
                                         IconStart="@(isEditingRoom ? new Icons.Regular.Size16.Checkmark() : new Icons.Regular.Size16.TargetEdit())" 
                                         disabled="@(currentRoom == null)">@(isEditingRoom ? "Done Editing" : "Edit Room")</FluentButton> 
@@ -217,6 +217,7 @@ else
     public int AdventureId { get => _adventureId; set => _adventureId = value; }
     private Adventure? currentAdventure;
     MappedRoom? currentRoom = new MappedRoom();
+    MappedRoom? nextRoom = null;
     private bool isEditingRoom = false;
     DiceResult diceResult = new DiceResult();
 
@@ -302,9 +303,7 @@ else
     {
         if (isEditingRoom)
         {
-            isEditingRoom = false;
-            await SaveAventure();
-            await RefreshCanvas();
+            await StopEditingRoom();
         }
 
         Direction? directionTo = await OpenSelectDoorDialogDialogAsync();
@@ -368,17 +367,12 @@ else
 
             Direction directionFrom = GameTurn.GetOppositeDirection(directionTo.Value);
             var (doorX, doorY) = MapTools.GetDoorGridPosition(currentRoom!, directionTo.Value);
-            var newRoom = await OpenNewRoomDialog(directionFrom, doorX, doorY);
-            if (newRoom is not null)
+            var newRoomId = await OpenNewRoomDialog(directionFrom, doorX, doorY);
+            if (newRoomId is not null && newRoomId > 0)
             {
-                exit.TargetRoomId = newRoom.Id;
-                currentAdventure!.Dungeon.AddRoom(newRoom);
-                currentAdventure!.Dungeon.ChangeRoom(currentRoom!, newRoom);
-                currentAdventure.AppendRoomEntryJournal(newRoom);
-                currentRoom = newRoom;
+                exit.TargetRoomId = newRoomId;
                 gameTurnInstructions = "Proceed with the encounter";
-                await SaveAventure();
-                await RefreshCanvas();
+                await AddRoomToDungeon();
             }
         }
             
@@ -413,7 +407,7 @@ else
             return null;            
     }
 
-    private async Task<MappedRoom?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
+    private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
     {
         DialogParameters parameters = new()
             {
@@ -426,11 +420,11 @@ else
                 Modal = true
             };
 
-        var newRoom = currentAdventure!.Dungeon.GetNewRoom();
+        nextRoom = currentAdventure!.Dungeon.GetNewRoom();
 
         var dialogData = new NewRoomDialogData 
         { 
-            Room = newRoom, 
+            Room = nextRoom, 
             Dungeon = currentAdventure!.Dungeon 
         };
 
@@ -440,9 +434,9 @@ else
         if (!result.Cancelled)
         {
             var resultData = result.Data as NewRoomDialogData;
-            var room = resultData?.Room;
+            nextRoom = resultData?.Room;
 
-            if (room is null)
+            if (nextRoom is null)
             {
                 return null;
             }
@@ -450,14 +444,21 @@ else
             // Define the entrance door, then place the room so its entrance door
             // is drawn on top of the selected exit door from the current room.
 
-            GameTurn.SetDungeonEntranceDoor(room, directionFrom, currentRoom!.Id);
-            GameTurn.AssignExits(room, directionFrom, room.LockRoll);
+            @* Char entranceWall = directionFrom.ToString()[0]; *@
+            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
+            GameTurn.AssignExits(nextRoom!, directionFrom, nextRoom.LockRoll);
 
-            var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(room, directionFrom, entranceDoorX, entranceDoorY);
-            room.CoordX = originX;
-            room.CoordY = originY;
+            var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(nextRoom!, directionFrom, entranceDoorX, entranceDoorY);
+            nextRoom.CoordX = originX;
+            nextRoom.CoordY = originY;
+            
+            var roomIdTest = nextRoom!.Id;
 
-            return room;
+            await MapTools.DrawRoom(JSRuntime, nextRoom);
+            return roomIdTest;
+        }
+        else{
+            nextRoom = null;
         }
         return null;
     }
@@ -477,6 +478,10 @@ else
     {
         await MapTools.PanViewport(JSRuntime, direction);
         await RefreshCanvas();
+        if (nextRoom != null)
+        {
+            await MapTools.DrawRoom(JSRuntime, nextRoom);
+        }
     }
 
     private async Task CenterOnCurrentRoom()
@@ -488,6 +493,10 @@ else
             int centerY = currentRoom.CoordY + (currentRoom.Height / 2);
             await MapTools.CenterViewportOn(JSRuntime, centerX, centerY);
             await RefreshCanvas();
+            if (nextRoom != null)
+            {
+                await MapTools.DrawRoom(JSRuntime, nextRoom);
+            }
         }
     }
 
@@ -495,6 +504,10 @@ else
     {
         await MapTools.ResetViewport(JSRuntime);
         await RefreshCanvas();
+        if (nextRoom != null)
+        {
+            await MapTools.DrawRoom(JSRuntime, nextRoom);
+        }
     }
 
     private async Task MoveRoom(string direction)
@@ -520,15 +533,29 @@ else
         await RefreshCanvas();
     }
 
-    private async Task ToggleEditRoom()
+
+    private async Task AddRoomToDungeon()
+    {
+        if (nextRoom == null) return;
+        
+        currentAdventure!.Dungeon.AddRoom(nextRoom);
+        currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom);
+        currentAdventure.AppendRoomEntryJournal(nextRoom);
+        currentRoom = nextRoom;
+
+        await SaveAventure();
+
+        nextRoom = null;
+        await RefreshCanvas();
+    }
+
+    private async Task EditRoom()
     {
         if (currentRoom == null) return;
 
         if (isEditingRoom)
         {
-            isEditingRoom = false;
-            await SaveAventure();
-            await RefreshCanvas();
+            await StopEditingRoom();
         }
         else
         {
@@ -536,11 +563,18 @@ else
         }
     }
 
+    private async Task StopEditingRoom()
+    {
+        isEditingRoom = false;
+        await SaveAventure();
+        await RefreshCanvas();
+    }
+
     private async Task EditDoors()
     {
-        if (currentRoom != null && currentRoom.Exits != null && currentRoom.Exits.Count > 0)
-        {     
-            DialogParameters parameters = new()
+        if (currentRoom == null || currentRoom.Exits == null || currentRoom.Exits.Count == 0) return;
+
+        DialogParameters parameters = new()
             {
                 Title = $"Edit Room",
                 PrimaryAction = "Save",
@@ -551,14 +585,13 @@ else
                 Modal = false
             };
 
-            IDialogReference dialog = await DialogService.ShowDialogAsync<EditRoomDialog>(currentRoom, parameters);
-            DialogResult? result = await dialog.Result;
+        IDialogReference dialog = await DialogService.ShowDialogAsync<EditRoomDialog>(currentRoom, parameters);
+        DialogResult? result = await dialog.Result;
 
-            if (!result.Cancelled && result.Data is MappedRoom editedRoom)
-            {
-                currentRoom = editedRoom;
-                await RefreshCanvas();
-            }
+        if (!result.Cancelled && result.Data is MappedRoom editedRoom)
+        {
+            currentRoom = editedRoom;
+            await RefreshCanvas();
         }
     }
 
