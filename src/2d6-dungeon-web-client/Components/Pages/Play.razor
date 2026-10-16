@@ -123,7 +123,7 @@ else
                 <div id="maps-menu" style="position: sticky; top: 20px; align-self: flex-start;">
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
 
-                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom != null)">Refresh Canvas</FluentButton>
+                        <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent">Refresh Canvas</FluentButton>
 
                         <!-- Viewport Pan Controls -->
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Pan Map View</FluentLabel>
@@ -145,28 +145,34 @@ else
                         
                         <FluentDivider Style="margin: 10px 0;" />
 
-                        <!-- Move Room Controls (existing) -->
-                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Position New Room</FluentLabel>
+                        <!-- Move Room Controls -->
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Room Controls</FluentLabel>
                         <div style="width: 100px;">
                             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(nextRoom == null)" />
+                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(!isEditingRoom)" Title="Move room left" />
                                 <FluentStack Orientation="Orientation.Vertical">
-                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(nextRoom == null)" />
-                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(nextRoom == null)" />
+                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(!isEditingRoom)" Title="Move room up" />
+                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(!isEditingRoom)" Title="Move room down" />
                                 </FluentStack>
-                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(nextRoom == null)" />
+                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(!isEditingRoom)" Title="Move room right" />
                             </FluentStack> 
                         </div>
-                        <FluentLabel Color="@Color.Disabled">Once you have a new room, position it using the arrows above, then pin it to the map with the button below.</FluentLabel>
-                        <FluentButton   @onclick=AddRoomToDungeon 
+                        @if (isEditingRoom)
+                        {
+                            <FluentLabel Color="@Color.Info" Style="font-size: 11px;">Room is in edit mode. Use the arrows above to reposition the room, or click Edit Doors to adjust door positions.</FluentLabel>
+                            <FluentButton @onclick=EditDoors 
+                                          Appearance="Appearance.Neutral" 
+                                          IconStart="@(new Icons.Regular.Size16.Door())" 
+                                          disabled="@(currentRoom == null || currentRoom.Exits == null || currentRoom.Exits.Count == 0)">Edit Doors</FluentButton>
+                        }
+                        else
+                        {
+                            <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Click Edit Room to reposition the current room or adjust its doors.</FluentLabel>
+                        }
+                        <FluentButton   @onclick=ToggleEditRoom 
                                         Appearance="Appearance.Accent" 
-                                        IconStart="@(new Icons.Regular.Size16.LocationAdd())" 
-                                        Style="@AddRoomToMapStyle"
-                                        disabled="@(nextRoom == null)" >Add Room to Map</FluentButton> 
-                        <FluentButton   @onclick=EditRoom 
-                                        Appearance="Appearance.Accent" 
-                                        IconStart="@(new Icons.Regular.Size16.TargetEdit())" 
-                                        disabled="@(nextRoom == null)" >Edit Room</FluentButton> 
+                                        IconStart="@(isEditingRoom ? new Icons.Regular.Size16.Checkmark() : new Icons.Regular.Size16.TargetEdit())" 
+                                        disabled="@(currentRoom == null)">@(isEditingRoom ? "Done Editing" : "Edit Room")</FluentButton> 
                     </FluentStack>
                 </div>
             </FluentStack>
@@ -211,7 +217,7 @@ else
     public int AdventureId { get => _adventureId; set => _adventureId = value; }
     private Adventure? currentAdventure;
     MappedRoom? currentRoom = new MappedRoom();
-    MappedRoom? nextRoom = null;
+    private bool isEditingRoom = false;
     DiceResult diceResult = new DiceResult();
 
     bool isRollDiceDisable = false;
@@ -221,10 +227,6 @@ else
 
     private string gameTurnInstructions = String.Empty;
     private GameTurn? gameTurn;
-
-    private string? AddRoomToMapStyle => nextRoom != null
-        ? "border:3px solid var(--accent-fill-rest); box-shadow:0 0 8px var(--accent-fill-rest);"
-        : null;
 
     private bool isLegendVisible = false;
 
@@ -298,6 +300,13 @@ else
 
     private async Task PickADoor()
     {
+        if (isEditingRoom)
+        {
+            isEditingRoom = false;
+            await SaveAventure();
+            await RefreshCanvas();
+        }
+
         Direction? directionTo = await OpenSelectDoorDialogDialogAsync();
         if(directionTo is not null){
             var exit = currentRoom!.Exits![directionTo.Value];
@@ -340,7 +349,7 @@ else
                 var destinationRoom = currentAdventure!.Dungeon.GetRoom(exit.TargetRoomId.Value);
                 if (destinationRoom is null)
                 {
-                    ToastService.ShowToast(ToastIntent.Warning, "That room hasn't been added to the dungeon yet. Position it and click Add Room to Map first.");
+                    ToastService.ShowToast(ToastIntent.Warning, "Destination room could not be found.");
                     return;
                 }
                 currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom);
@@ -359,11 +368,17 @@ else
 
             Direction directionFrom = GameTurn.GetOppositeDirection(directionTo.Value);
             var (doorX, doorY) = MapTools.GetDoorGridPosition(currentRoom!, directionTo.Value);
-            var newRoomId = await OpenNewRoomDialog(directionFrom, doorX, doorY);
-            if (newRoomId is not null && newRoomId > 0)
+            var newRoom = await OpenNewRoomDialog(directionFrom, doorX, doorY);
+            if (newRoom is not null)
             {
-                exit.TargetRoomId = newRoomId;
+                exit.TargetRoomId = newRoom.Id;
+                currentAdventure!.Dungeon.AddRoom(newRoom);
+                currentAdventure!.Dungeon.ChangeRoom(currentRoom!, newRoom);
+                currentAdventure.AppendRoomEntryJournal(newRoom);
+                currentRoom = newRoom;
                 gameTurnInstructions = "Proceed with the encounter";
+                await SaveAventure();
+                await RefreshCanvas();
             }
         }
             
@@ -398,7 +413,7 @@ else
             return null;            
     }
 
-    private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
+    private async Task<MappedRoom?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
     {
         DialogParameters parameters = new()
             {
@@ -411,11 +426,11 @@ else
                 Modal = true
             };
 
-        nextRoom = currentAdventure!.Dungeon.GetNewRoom();
+        var newRoom = currentAdventure!.Dungeon.GetNewRoom();
 
         var dialogData = new NewRoomDialogData 
         { 
-            Room = nextRoom, 
+            Room = newRoom, 
             Dungeon = currentAdventure!.Dungeon 
         };
 
@@ -425,9 +440,9 @@ else
         if (!result.Cancelled)
         {
             var resultData = result.Data as NewRoomDialogData;
-            nextRoom = resultData?.Room;
+            var room = resultData?.Room;
 
-            if (nextRoom is null)
+            if (room is null)
             {
                 return null;
             }
@@ -435,21 +450,14 @@ else
             // Define the entrance door, then place the room so its entrance door
             // is drawn on top of the selected exit door from the current room.
 
-            @* Char entranceWall = directionFrom.ToString()[0]; *@
-            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
-            GameTurn.AssignExits(nextRoom!, directionFrom, nextRoom.LockRoll);
+            GameTurn.SetDungeonEntranceDoor(room, directionFrom, currentRoom!.Id);
+            GameTurn.AssignExits(room, directionFrom, room.LockRoll);
 
-            var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(nextRoom!, directionFrom, entranceDoorX, entranceDoorY);
-            nextRoom.CoordX = originX;
-            nextRoom.CoordY = originY;
-            
-            var roomIdTest = nextRoom!.Id;
+            var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(room, directionFrom, entranceDoorX, entranceDoorY);
+            room.CoordX = originX;
+            room.CoordY = originY;
 
-            await MapTools.DrawRoom(JSRuntime, nextRoom);
-            return roomIdTest;
-        }
-        else{
-            nextRoom = null;
+            return room;
         }
         return null;
     }
@@ -469,10 +477,6 @@ else
     {
         await MapTools.PanViewport(JSRuntime, direction);
         await RefreshCanvas();
-        if (nextRoom != null)
-        {
-            await MapTools.DrawRoom(JSRuntime, nextRoom);
-        }
     }
 
     private async Task CenterOnCurrentRoom()
@@ -484,10 +488,6 @@ else
             int centerY = currentRoom.CoordY + (currentRoom.Height / 2);
             await MapTools.CenterViewportOn(JSRuntime, centerX, centerY);
             await RefreshCanvas();
-            if (nextRoom != null)
-            {
-                await MapTools.DrawRoom(JSRuntime, nextRoom);
-            }
         }
     }
 
@@ -495,88 +495,71 @@ else
     {
         await MapTools.ResetViewport(JSRuntime);
         await RefreshCanvas();
-        if (nextRoom != null)
-        {
-            await MapTools.DrawRoom(JSRuntime, nextRoom);
-        }
     }
 
     private async Task MoveRoom(string direction)
     {
-        if (nextRoom == null) return;
+        if (currentRoom == null || !isEditingRoom) return;
         
         switch (direction)
         {
             case "UP":
-                nextRoom.CoordY -= 1;
+                currentRoom.CoordY -= 1;
                 break;
             case "DOWN":
-                nextRoom.CoordY += 1;
+                currentRoom.CoordY += 1;
                 break;
             case "LEFT":
-                nextRoom.CoordX -= 1;
+                currentRoom.CoordX -= 1;
                 break;
             case "RIGHT":
-                nextRoom.CoordX += 1;
+                currentRoom.CoordX += 1;
                 break;
         }
 
         await RefreshCanvas();
-        await MapTools.DrawRoom(JSRuntime, nextRoom);
     }
 
-
-    private async Task AddRoomToDungeon()
+    private async Task ToggleEditRoom()
     {
-        if (nextRoom == null) return;
-        
-        currentAdventure!.Dungeon.AddRoom(nextRoom);
-        currentAdventure!.Dungeon.ChangeRoom(currentRoom!, nextRoom);
-        currentAdventure.AppendRoomEntryJournal(nextRoom);
-        currentRoom = nextRoom;
+        if (currentRoom == null) return;
 
-        await SaveAventure();
-
-        nextRoom = null;
-        await RefreshCanvas();
-    }
-
-    private async Task EditRoom()
-    {
-        var editedRoom = await OpenEditRoomDialog();
-        if (editedRoom != null)
+        if (isEditingRoom)
         {
-            nextRoom = editedRoom;
+            isEditingRoom = false;
+            await SaveAventure();
             await RefreshCanvas();
-            await MapTools.DrawRoom(JSRuntime, nextRoom!);
+        }
+        else
+        {
+            isEditingRoom = true;
         }
     }
 
-    private async Task<MappedRoom?> OpenEditRoomDialog()
+    private async Task EditDoors()
     {
-        if (nextRoom != null)
+        if (currentRoom != null && currentRoom.Exits != null && currentRoom.Exits.Count > 0)
         {     
             DialogParameters parameters = new()
-                {
-                    Title = $"Edit Room",
-                    PrimaryAction = "Save",
-                    PrimaryActionEnabled = false,
-                    SecondaryAction = "Cancel", 
-                    Width = "800px",
-                    TrapFocus = true,
-                    Modal = false
-                };
+            {
+                Title = $"Edit Room",
+                PrimaryAction = "Save",
+                PrimaryActionEnabled = false,
+                SecondaryAction = "Cancel", 
+                Width = "800px",
+                TrapFocus = true,
+                Modal = false
+            };
 
-            IDialogReference dialog = await DialogService.ShowDialogAsync<EditRoomDialog>(nextRoom, parameters);
+            IDialogReference dialog = await DialogService.ShowDialogAsync<EditRoomDialog>(currentRoom, parameters);
             DialogResult? result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Cancelled && result.Data is MappedRoom editedRoom)
             {
-                nextRoom = result.Data as MappedRoom;
-                return nextRoom!;
+                currentRoom = editedRoom;
+                await RefreshCanvas();
             }
         }
-        return null;
     }
 
 
