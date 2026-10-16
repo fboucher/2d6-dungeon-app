@@ -447,6 +447,50 @@ public class GameTurnTests
             };
         }
     }
+
+    [Fact]
+    public void SetDungeonEntranceDoor_EnteredThroughCurtain_EntranceShouldBeCurtain()
+    {
+        // Arrange: the current room has a curtain on its East wall
+        var fromRoom = new MappedRoom { Id = 1, Width = 4, Height = 3 };
+        var fromExit = new Exit { Direction = Direction.East, ExitType = "curtain" };
+        fromRoom.Exits = new Dictionary<Direction, Exit> { { Direction.East, fromExit } };
+        var newRoom = new MappedRoom { Id = 2, Width = 3, Height = 3 };
+        var entranceWall = GameTurn.GetOppositeDirection(fromExit.Direction);
+
+        // Act
+        GameTurn.SetDungeonEntranceDoor(newRoom, entranceWall, fromRoom.Id, fromExit.ExitType);
+
+        // Assert: the entrance on the West wall is the same curtain, not an untyped door
+        var entrance = newRoom.Exits![Direction.West];
+        Assert.NotNull(entrance.ExitType);
+        Assert.Equal("curtain", entrance.ExitType);
+        Assert.Equal(fromRoom.Id, entrance.TargetRoomId);
+    }
+
+    [Theory]
+    [InlineData("archway")]
+    [InlineData("wooden")]
+    [InlineData("metal")]
+    [InlineData("reinforced")]
+    [InlineData("curtain")]
+    [InlineData("portcullis")]
+    [InlineData("stone_slab")]
+    public void SetDungeonEntranceDoor_ShouldMatchTypeOfDoorEnteredThrough(string doorType)
+    {
+        // Arrange
+        var fromExit = new Exit { Direction = Direction.North, ExitType = doorType };
+        var newRoom = new MappedRoom { Id = 2, Width = 5, Height = 4 };
+        var entranceWall = GameTurn.GetOppositeDirection(fromExit.Direction);
+
+        // Act
+        GameTurn.SetDungeonEntranceDoor(newRoom, entranceWall, 1, fromExit.ExitType);
+
+        // Assert
+        var entrance = newRoom.Exits![entranceWall];
+        Assert.Equal(fromExit.ExitType, entrance.ExitType);
+        Assert.False(entrance.IsLocked); // the adventurer just came through it
+    }
 }
 
 /// <summary>
