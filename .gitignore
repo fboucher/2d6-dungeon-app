@@ -494,3 +494,4 @@ REPOSITORY_DESIGN.md
 
 # New C# Dev Kit extension related files
 */*.lscache
+*.lscache
