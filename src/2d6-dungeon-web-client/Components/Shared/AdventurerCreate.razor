@@ -8,13 +8,13 @@
 <h3>Create an Adventurer</h3>
 
 <EditForm Model="@ParentAdventurer">
-@* TODO: Add Validation  *@
 
 <FluentStack Orientation="Orientation.Vertical">
     <FluentCard>
         <FluentHeader Height="18">Adventurer Details</FluentHeader>
         <FluentTextField    Label="Name"
                             Required
+                            Immediate="true"
                             @bind-Value="ParentAdventurer!.Name"></FluentTextField>
     </FluentCard>
 
@@ -91,7 +91,18 @@
     </FluentCard>
 
 
-    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="Appearance.Accent">Save Adventurer</FluentButton> 
+    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="Appearance.Accent">Save Adventurer</FluentButton>
+
+    @if (saveAttempted && creationErrors.Count > 0)
+    {
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+            <FluentLabel Color="Color.Error">Before saving:</FluentLabel>
+            @foreach (var error in creationErrors)
+            {
+                <FluentLabel Color="Color.Error">@error</FluentLabel>
+            }
+        </FluentStack>
+    }
 
 </FluentStack>
 
@@ -105,8 +116,9 @@
 
     private WeaponList? weapons = new WeaponList();
     private int selectedWeaponId = 1;
+    private Weapon? selectedWeapon;
     protected string? selectedArmourId;
-    protected ArmourPiece selectedArmour = default!;
+    protected ArmourPiece? selectedArmour;
     private int selectedMagicScrollId = 0;
     private string weaponName = string.Empty;
     private IQueryable<WeaponManoeuvre>? manoeuvresQueryable = new List<WeaponManoeuvre>().AsQueryable();
@@ -117,6 +129,10 @@
     private bool isSwitchWeaponPossible = false;
 
     private bool warningShowed = false;
+
+    // Shown under the Save button once the user has tried to save, then kept live as they fix things
+    private List<string> creationErrors => BuildCandidate().GetCreationErrors();
+    private bool saveAttempted = false;
 
     private string manoeuvrePlaceholder = "Select a weapon first";
 
@@ -144,6 +160,7 @@
         }
         try{
             selectedWeaponId = weapon.Id;
+            selectedWeapon = weapons?.value?.FirstOrDefault(w => w.Id == selectedWeaponId);
             if(selectedWeaponId > 0){
                 weaponName = weapons?.value?.Where(w => w!.Id == selectedWeaponId).Select(w => w.Name).FirstOrDefault()! ;
                 var manoeuvres = await D6Service.GetWeaponManoeuvreList(selectedWeaponId, 1);
@@ -197,21 +214,46 @@
            selectedMagicScrollId = magicScroll.Id;
         }
     }
+    // The adventurer as it would be saved from the current selections; nothing null is ever added
+    private Game.Adventurer BuildCandidate()
+    {
+        var scroll = magicScollsQueryable?.FirstOrDefault(s => s.Id == selectedMagicScrollId);
+        return new Game.Adventurer(ParentAdventurer?.Name ?? string.Empty)
+        {
+            Weapon = selectedWeapon,
+            WeaponManoeuvres = selectedManoeuvres?.Where(m => m is not null).ToList() ?? new List<WeaponManoeuvre>(),
+            ArmourPieces = selectedArmour is null ? new List<ArmourPiece>() : new List<ArmourPiece> { selectedArmour },
+            MagicScrolls = scroll is null ? new List<MagicScroll>() : new List<MagicScroll> { scroll },
+        };
+    }
+
     private async Task CreateAndSaveAdventurer()
     {
+        saveAttempted = true;
+        var candidate = BuildCandidate();
+        if (candidate.GetCreationErrors().Count > 0)
+        {
+            return;
+        }
+
         MagicPotion InitialPotion = await D6Service.GetInitialMagicPotion();
-        
-        ParentAdventurer!.Weapon = weapons!.value!.Single<Weapon>(w => w.Id == selectedWeaponId);
-        
-        ParentAdventurer!.WeaponManoeuvres!.AddRange(selectedManoeuvres!);
 
-        ParentAdventurer!.ArmourPieces!.Add(selectedArmour);
+        ParentAdventurer!.Weapon = candidate.Weapon;
+        ParentAdventurer.WeaponManoeuvres = candidate.WeaponManoeuvres;
+        ParentAdventurer.ArmourPieces = candidate.ArmourPieces;
+        ParentAdventurer.MagicScrolls = candidate.MagicScrolls;
+        ParentAdventurer.MagicPotions = new List<MagicPotion> { InitialPotion };
 
-        ParentAdventurer!.MagicScrolls!.Add(magicScollsQueryable!.Where<MagicScroll>(s => s.Id == selectedMagicScrollId).First<MagicScroll>());
-
-        ParentAdventurer!.MagicPotions!.Add(InitialPotion);
-
-        var createdAdventurerId = await D6Service.AdventurerCreate(ParentAdventurer);
+        int createdAdventurerId;
+        try
+        {
+            createdAdventurerId = await D6Service.AdventurerCreate(ParentAdventurer);
+        }
+        catch (ArgumentException ex)
+        {
+            await DialogService.ShowErrorAsync(ex.Message);
+            return;
+        }
 
         if (createdAdventurerId > 0){
             Navigation.NavigateTo($"theadventure/new/{createdAdventurerId}");

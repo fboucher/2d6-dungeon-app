@@ -146,7 +146,8 @@ public class Adventurer
             XP = aComplete.XP;
             Discipline = aComplete.Discipline;
             WeaponManoeuvres = aComplete.WeaponManoeuvres;
-            ArmourPieces = aComplete.ArmourPieces;
+            // Older saves can hold null armour entries (#246); drop them so the sheet can render
+            ArmourPieces = aComplete.ArmourPieces?.Where(a => a is not null).ToList() ?? new List<ArmourPiece>();
             MagicScrolls = aComplete.MagicScrolls;
             MagicPotions = aComplete.MagicPotions;
             LegendStatusLevelTracker = aComplete.LegendStatusLevelTracker;
@@ -188,6 +189,35 @@ public class Adventurer
         int previous = HealthPoints;
         HealthPoints = Math.Min(HealthPoints + amount, MaxHealthPoints);
         return HealthPoints - previous;
+    }
+
+    /// <summary>
+    /// Checks that a new adventurer has everything the Core Rules require before it is saved:
+    /// a name, a weapon, one or two manoeuvres, an armour piece and a magic scroll, with no empty entries.
+    /// </summary>
+    /// <returns>One message per problem found; empty when the adventurer is valid.</returns>
+    public List<string> GetCreationErrors()
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(Name))
+            errors.Add("Name is required.");
+
+        if (Weapon is null)
+            errors.Add("A weapon is required.");
+
+        if (WeaponManoeuvres is null || WeaponManoeuvres.Count == 0 || WeaponManoeuvres.Any(m => m is null))
+            errors.Add("Select one or two weapon manoeuvres.");
+        else if (WeaponManoeuvres.Count > 2)
+            errors.Add("A maximum of two weapon manoeuvres is allowed.");
+
+        if (ArmourPieces is null || ArmourPieces.Count == 0 || ArmourPieces.Any(a => a is null))
+            errors.Add("An armour piece is required.");
+
+        if (MagicScrolls is null || MagicScrolls.Count == 0 || MagicScrolls.Any(s => s is null))
+            errors.Add("A magic scroll is required.");
+
+        return errors;
     }
 
     private static Adventurer DatabaseDecode(string base64EncodedData) 

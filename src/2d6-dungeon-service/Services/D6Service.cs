@@ -126,6 +126,10 @@ public class D6Service : ID6Service
 
     public async Task<int> AdventurerCreate(Adventurer player)
     {
+        var errors = player.GetCreationErrors();
+        if (errors.Count > 0)
+            throw new ArgumentException("Adventurer is not valid: " + string.Join(" ", errors), nameof(player));
+
         var dbPlayer = new AdventurerDTO(player);
 
         var response = await httpClient.PostAsJsonAsync<AdventurerDTO>($"api/adventurer", dbPlayer);

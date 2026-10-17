@@ -37,12 +37,12 @@
     
     protected override void OnInitialized()
     {
-        pieces = armourPiece?.AsQueryable();
+        pieces = armourPiece?.Where(a => a is not null).AsQueryable();
     }
 
     private async Task OpenEditArmourPiecesDialog()
     {
-        var currentPieces = armourPiece != null ? new List<ArmourPiece>(armourPiece) : new List<ArmourPiece>();
+        var currentPieces = armourPiece?.Where(a => a is not null).ToList() ?? new List<ArmourPiece>();
         
         var dialog = await DialogService.ShowDialogAsync<SelectArmourPiecesDialog>(
             currentPieces,
@@ -64,7 +64,7 @@
                 armourPiece.Clear();
                 armourPiece.AddRange(selectedPieces);
             }
-            pieces = armourPiece?.AsQueryable();
+            pieces = armourPiece?.Where(a => a is not null).AsQueryable();
             await OnArmourPiecesChanged.InvokeAsync(armourPiece);
         }
     }
