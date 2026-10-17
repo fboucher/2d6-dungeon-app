@@ -47,9 +47,10 @@ During a turn, the attacking fighter executes their attack sequence:
    - Rolling doubles triggers a visual dice celebration (the dice bounce and glow)!
    - The results are instantly outputted to the **Combat Journal** (e.g., *"Rolled 4 and 2"*).
 3. **Shift Adjustment / Shifting the Dice:**
-   - If the rolled numbers do not match your trained weapon maneuvers, you can use your adventurer's **Shift points** to nudge the dice up or down.
+   - If the rolled numbers do not match your trained weapon maneuvers, you can use the **Shift points** of the fighter whose turn it is to nudge the dice up or down.
    - Use the **Shift Left** and **Shift Right** (`ShiftButtons`) next to each die to increment or decrement the active values.
    - The interface tracks your remaining shift pool dynamically. Each point used reduces the **Shift Left** counter.
+   - The **Shift Left** counter follows the active fighter: the adventurer's **Shift** on their turn, the creature's **SH** on its turn. Ending a turn replenishes the pool to the incoming fighter's own allowance.
    - If you make a mistake, click the **`Reset`** button to return the dice to their original rolled values.
 4. **Select a Maneuver:**
    - Compare the final adjusted primary and secondary dice results to the active fighter's list of maneuvers to see what attack hits.
@@ -75,6 +76,7 @@ As battles drag on, fatigue sets in, making maneuvers more frantic and giving bo
   - **Turn 5:** Fatigue reaches 5, triggering a **+2 Shift** adjustment.
   - **Turn 6+:** Fatigue reaches 6, triggering a **+3 Shift** adjustment (which remains active until combat ends).
 * **Shared Benefit:** This fatigue shift modifier applies to **both** the adventurer and the creature, allowing both fighters to shift their dice more drastically in late-combat rounds! The adjusted shift is automatically computed and displayed in your card.
+* **Per-Fighter Base:** Before fatigue is applied, each fighter shifts against their own allowance — the adventurer's **Shift** stat on their turn, the creature's **SH** stat on its turn. The fatigue bonus is then added on top of whichever fighter is active, so the two combatants can have different limits.
 
 ---
 

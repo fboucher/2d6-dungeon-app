@@ -10,6 +10,7 @@ As battles drag on, fatigue sets in, making maneuvers more frantic and giving bo
   - **Turn 5:** Fatigue reaches 5, triggering a **+2 Shift** adjustment.
   - **Turn 6+:** Fatigue reaches 6, triggering a **+3 Shift** adjustment (which remains active until combat ends).
 * **Shared Benefit:** This fatigue shift modifier applies to **both** the adventurer and the creature, allowing both fighters to shift their dice more drastically in late-combat rounds! The adjusted shift is automatically computed and displayed in your card.
+* **Per-Fighter Base:** Before fatigue is applied, each fighter shifts against their own allowance — the adventurer's **Shift** stat on their turn, the creature's **SH** stat on its turn. The fatigue bonus is then added on top of whichever fighter is active, so the two combatants can have different limits.
 
 ---
 

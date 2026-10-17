@@ -69,31 +69,33 @@ The New Room Wizard (**"Let's see what room you are getting in!"**) walks you st
 
 ---
 
-## 📐 Positioning & Customizing the New Room
+## 📐 Positioning & Customizing Rooms
 
-Once the room is generated, the app calculates its initial alignment based on the door you used to enter. However, you have complete freedom to reposition or adjust the room before permanently pinning it to your map:
+Once a new room is generated, the app automatically places it aligned to your entrance door, adds it directly to your dungeon map, and saves your progress. You have complete freedom to reposition or adjust the current room and its doors using **Edit Room**:
 
-### 1. Position New Room Controls
-Before finalizing, you can adjust the room's exact placement on the grid. Use the arrow buttons under **"Position New Room"** in your sidebar to shift the room left, right, up, or down in 1-square increments.
+### 1. Edit Room Mode
+To adjust the active room's position or doors:
+* Click **`Edit Room`** in the sidebar's **Room Controls**.
+* The button toggles to **`Done Editing`**, indicating the room is now in edit mode.
+* Use the directional arrow buttons (←, ↑, ↓, →) to nudge the room across the grid in 1-square increments.
 
-### 2. Manual Customization: Edit Room
-If a room's doors do not line up with your physical table-rolling preferences, click **`Edit Room`**:
+### 2. Manual Customization: Edit Doors
+If a room's doors do not line up with your physical table-rolling preferences, click **`Edit Doors`** while in edit mode:
 * This opens the **Edit Room Dialog**, letting you manually **Move a Door**.
 * Select the door you want to move (North, West, East, or South).
 * A responsive **FluentSlider** will appear. The slider automatically adjusts its orientation to match the wall (Horizontal for North/South walls, Vertical for East/West walls).
 * Slide the door along the wall to change its grid position. The slider's boundaries are dynamically restricted to the room's exact width or height.
 * Click **Save** to commit your door adjustment.
 
-### 3. Finalize: Add Room to Map
-* When you are satisfied with the room's placement and door alignments, the **`Add Room to Map`** button will highlight with a glowing border and shadow.
-* Click **`Add Room to Map`** to permanently save the room to your database.
-* The adventurer is moved into the new room, and the game automatically prompts you to proceed with the next step of exploration or combat!
+### 3. Finalize: Done Editing
+* When you are satisfied with the room's placement and door alignments, click **`Done Editing`**.
+* This exits edit mode and saves the updated room coordinates and door positions to your adventure state.
 
 ---
 
 ## 💾 Saving Your Progress
 
 Dungeon exploration is fully persistent:
-* Clicking **`Add Room to Map`** automatically executes an background save of your active adventure state.
+* Adding a new room or clicking **`Done Editing`** automatically executes a background save of your active adventure state.
 * You can also manually save your campaign at any point during your session by clicking the **Save Icon** (💾) in the top-left action header of the page.
 * This stores your entire explored map grid, adventurer statistics, inventory, and notes safely in your local MySQL database, letting you pick up your quest anytime!
