@@ -177,11 +177,16 @@ public class GameTurn
         Message = $"Go to the sumary to see all the details of the room.";
     }
 
-    public static void SetDungeonEntranceDoor(MappedRoom currentRoom, Direction entranceWall = Direction.South, int fromRoomId = 0)
+    /// <summary>
+    /// Adds the entrance door to a room. When the room is entered through an existing exit,
+    /// pass that exit's type so both sides of the doorway are the same kind of door.
+    /// </summary>
+    public static void SetDungeonEntranceDoor(MappedRoom currentRoom, Direction entranceWall = Direction.South, int fromRoomId = 0, string? exitType = null)
     {
         var mainDoor = new Exit();
         mainDoor.Direction = entranceWall;
         mainDoor.TargetRoomId = fromRoomId;
+        mainDoor.ExitType = exitType;
         mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.Width/2 );
         mainDoor.Lockable = false;
 

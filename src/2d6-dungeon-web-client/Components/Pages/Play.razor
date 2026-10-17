@@ -367,7 +367,7 @@ else
 
             Direction directionFrom = GameTurn.GetOppositeDirection(directionTo.Value);
             var (doorX, doorY) = MapTools.GetDoorGridPosition(currentRoom!, directionTo.Value);
-            var newRoomId = await OpenNewRoomDialog(directionFrom, doorX, doorY);
+            var newRoomId = await OpenNewRoomDialog(directionFrom, doorX, doorY, exit.ExitType);
             if (newRoomId is not null && newRoomId > 0)
             {
                 exit.TargetRoomId = newRoomId;
@@ -407,7 +407,7 @@ else
             return null;            
     }
 
-    private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY)
+    private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY, string? entranceDoorType)
     {
         DialogParameters parameters = new()
             {
@@ -445,7 +445,7 @@ else
             // is drawn on top of the selected exit door from the current room.
 
             @* Char entranceWall = directionFrom.ToString()[0]; *@
-            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id);
+            GameTurn.SetDungeonEntranceDoor(nextRoom!, directionFrom, currentRoom!.Id, entranceDoorType);
             GameTurn.AssignExits(nextRoom!, directionFrom, nextRoom.LockRoll);
 
             var (originX, originY) = MapTools.GetRoomOriginForDoorGridPosition(nextRoom!, directionFrom, entranceDoorX, entranceDoorY);
