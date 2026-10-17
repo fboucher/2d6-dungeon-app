@@ -91,9 +91,9 @@
     </FluentCard>
 
 
-    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="Appearance.Accent" Disabled="@(creationErrors.Count > 0)">Save Adventurer</FluentButton> 
+    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="Appearance.Accent">Save Adventurer</FluentButton>
 
-    @if (creationErrors.Count > 0)
+    @if (saveAttempted && creationErrors.Count > 0)
     {
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
             <FluentLabel Color="Color.Error">Before saving:</FluentLabel>
@@ -130,8 +130,9 @@
 
     private bool warningShowed = false;
 
-    // Shown under the Save button, which stays disabled until this is empty
+    // Shown under the Save button once the user has tried to save, then kept live as they fix things
     private List<string> creationErrors => BuildCandidate().GetCreationErrors();
+    private bool saveAttempted = false;
 
     private string manoeuvrePlaceholder = "Select a weapon first";
 
@@ -228,6 +229,7 @@
 
     private async Task CreateAndSaveAdventurer()
     {
+        saveAttempted = true;
         var candidate = BuildCandidate();
         if (candidate.GetCreationErrors().Count > 0)
         {
