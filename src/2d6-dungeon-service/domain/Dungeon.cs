@@ -47,8 +47,11 @@ public class Dungeon
     /// Adds a room to the dungeon.
     /// </summary>
     /// <param name="room">The room to add.</param>
+    /// <exception cref="ArgumentException">The room's dimensions are not set.</exception>
     public void AddRoom(MappedRoom room)
     {
+        if (!room.HasDimensions)
+            throw new ArgumentException($"Cannot add a room of {room.Width} by {room.Height}. Its dimensions must be rolled first.", nameof(room));
         if(room.Id == 0)
             room.Id = MappedRooms.Count + 1;
         MappedRooms.Add(room);

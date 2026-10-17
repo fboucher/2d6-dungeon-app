@@ -164,6 +164,17 @@
     void OnStepChange(FluentWizardStepChangeEventArgs e)
     {
         Console.WriteLine($"Go to step {e.TargetLabel} (#{e.TargetIndex})");
+
+        // The room needs its dimensions (including the second roll of a double) before anything else.
+        if(!isSizeSet && e.TargetLabel != "Dimensions")
+        {
+            e.IsCancelled = true;
+            gameTurn.Message = gameTurn.NextAction == ActionType.DoubleSizedRoom
+                ? "It's a double size room. Roll 2D6 again before moving on!"
+                : "Roll 2D6 to determine the dimension of the room before moving on.";
+            return;
+        }
+
         switch(e.TargetLabel){
             case "Dimensions":
                 gameTurn.Message = "Roll 2D6 to determine the dimension of the room";
@@ -185,13 +196,17 @@
                 }
                 break;
             case "Summary":
-                Dialog!.TogglePrimaryActionButton(true);
+                Dialog!.TogglePrimaryActionButton(isSizeSet);
                 break;
         }
     }
 
     private async Task OnFinishedAsync()
     {
+        if(!isSizeSet)
+        {
+            return;
+        }
         Content.Room = gameTurn.CurrentRoom!;
         await Dialog!.CloseAsync(Content);
     }
