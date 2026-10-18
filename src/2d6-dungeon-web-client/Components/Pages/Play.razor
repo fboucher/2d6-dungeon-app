@@ -159,11 +159,26 @@ else
                                     <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" Title="Move room right" />
                                 </FluentStack> 
                             </div>
-                            <FluentLabel Color="@Color.Info" Style="font-size: 11px;">Room is in edit mode. Use the arrows above to reposition the room, or click Edit Doors to adjust door positions.</FluentLabel>
-                            <FluentButton @onclick=EditDoors 
-                                          Appearance="Appearance.Neutral" 
-                                          IconStart="@(new Icons.Regular.Size16.Door())" 
-                                          disabled="@(currentRoom == null || currentRoom.Exits == null || currentRoom.Exits.Count == 0)">Edit Doors</FluentButton>
+                            <FluentLabel Color="@Color.Info" Style="font-size: 11px;">Room is in edit mode. Use the arrows above to reposition the room, and the door rows below to slide each door along its wall.</FluentLabel>
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Doors</FluentLabel>
+                            @foreach (var wall in doorWalls)
+                            {
+                                var aWall = wall;
+                                bool hasDoor = currentRoom?.Exits != null && currentRoom.Exits.ContainsKey(aWall);
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+                                    <span style="width: 45px;">@aWall</span>
+                                    @if (hasDoor)
+                                    {
+                                        <FluentButton @onclick="@( () => MoveDoor(aWall, -1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="@($"Move {aWall} door back")" />
+                                        <span>@currentRoom!.Exits![aWall].PositionOnWall / @GetWallLength(aWall)</span>
+                                        <FluentButton @onclick="@( () => MoveDoor(aWall, 1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="@($"Move {aWall} door forward")" />
+                                    }
+                                    else
+                                    {
+                                        <FluentLabel Color="@Color.Disabled">no door</FluentLabel>
+                                    }
+                                </FluentStack>
+                            }
                             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                                 <FluentButton @onclick=EditRoom Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Checkmark())">Done Editing</FluentButton>
                                 <FluentButton @onclick=CancelEditingRoom Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Dismiss())">Cancel</FluentButton>
@@ -602,29 +617,20 @@ else
         await RefreshCanvas();
     }
 
-    private async Task EditDoors()
+    private static readonly Direction[] doorWalls = { Direction.North, Direction.East, Direction.South, Direction.West };
+
+    private int GetWallLength(Direction wall) =>
+        wall == Direction.North || wall == Direction.South ? currentRoom!.Width : currentRoom!.Height;
+
+    private async Task MoveDoor(Direction wall, int step)
     {
-        if (currentRoom == null || currentRoom.Exits == null || currentRoom.Exits.Count == 0) return;
+        if (currentRoom?.Exits == null || !currentRoom.Exits.TryGetValue(wall, out var exit)) return;
 
-        DialogParameters parameters = new()
-            {
-                Title = $"Edit Room",
-                PrimaryAction = "Save",
-                PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel", 
-                Width = "800px",
-                TrapFocus = true,
-                Modal = false
-            };
+        var newPosition = Math.Clamp(exit.PositionOnWall + step, 1, GetWallLength(wall));
+        if (newPosition == exit.PositionOnWall) return;
 
-        IDialogReference dialog = await DialogService.ShowDialogAsync<EditRoomDialog>(currentRoom, parameters);
-        DialogResult? result = await dialog.Result;
-
-        if (!result.Cancelled && result.Data is MappedRoom editedRoom)
-        {
-            currentRoom = editedRoom;
-            await RefreshCanvas();
-        }
+        exit.PositionOnWall = newPosition;
+        await RefreshCanvas();
     }
 
 
