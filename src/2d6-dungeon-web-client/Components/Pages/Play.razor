@@ -145,34 +145,38 @@ else
                         
                         <FluentDivider Style="margin: 10px 0;" />
 
-                        <!-- Move Room Controls -->
+                        <!-- Room Edit Controls -->
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Room Controls</FluentLabel>
-                        <div style="width: 100px;">
-                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" disabled="@(!isEditingRoom)" Title="Move room left" />
-                                <FluentStack Orientation="Orientation.Vertical">
-                                    <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" disabled="@(!isEditingRoom)" Title="Move room up" />
-                                    <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" disabled="@(!isEditingRoom)" Title="Move room down" />
-                                </FluentStack>
-                                <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" disabled="@(!isEditingRoom)" Title="Move room right" />
-                            </FluentStack> 
-                        </div>
                         @if (isEditingRoom)
                         {
+                            <div style="width: 100px;">
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                                    <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" Title="Move room left" />
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" Title="Move room up" />
+                                        <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" Title="Move room down" />
+                                    </FluentStack>
+                                    <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" Title="Move room right" />
+                                </FluentStack> 
+                            </div>
                             <FluentLabel Color="@Color.Info" Style="font-size: 11px;">Room is in edit mode. Use the arrows above to reposition the room, or click Edit Doors to adjust door positions.</FluentLabel>
                             <FluentButton @onclick=EditDoors 
                                           Appearance="Appearance.Neutral" 
                                           IconStart="@(new Icons.Regular.Size16.Door())" 
                                           disabled="@(currentRoom == null || currentRoom.Exits == null || currentRoom.Exits.Count == 0)">Edit Doors</FluentButton>
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                                <FluentButton @onclick=EditRoom Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Checkmark())">Done Editing</FluentButton>
+                                <FluentButton @onclick=CancelEditingRoom Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Dismiss())">Cancel</FluentButton>
+                            </FluentStack>
                         }
                         else
                         {
                             <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Click Edit Room to reposition the current room or adjust its doors.</FluentLabel>
+                            <FluentButton @onclick=EditRoom 
+                                          Appearance="Appearance.Accent" 
+                                          IconStart="@(new Icons.Regular.Size16.TargetEdit())" 
+                                          disabled="@(currentRoom == null)">Edit Room</FluentButton>
                         }
-                        <FluentButton   @onclick=EditRoom 
-                                        Appearance="Appearance.Accent" 
-                                        IconStart="@(isEditingRoom ? new Icons.Regular.Size16.Checkmark() : new Icons.Regular.Size16.TargetEdit())" 
-                                        disabled="@(currentRoom == null)">@(isEditingRoom ? "Done Editing" : "Edit Room")</FluentButton> 
                     </FluentStack>
                 </div>
             </FluentStack>
@@ -219,6 +223,7 @@ else
     MappedRoom? currentRoom = new MappedRoom();
     MappedRoom? nextRoom = null;
     private bool isEditingRoom = false;
+    private MappedRoom? roomSnapshot = null;
     DiceResult diceResult = new DiceResult();
 
     bool isRollDiceDisable = false;
@@ -566,13 +571,33 @@ else
         }
         else
         {
+            roomSnapshot = System.Text.Json.JsonSerializer.Deserialize<MappedRoom>(
+                System.Text.Json.JsonSerializer.Serialize(currentRoom));
             isEditingRoom = true;
         }
+    }
+
+    private async Task CancelEditingRoom()
+    {
+        if (currentRoom != null && roomSnapshot != null)
+        {
+            currentRoom.CoordX = roomSnapshot.CoordX;
+            currentRoom.CoordY = roomSnapshot.CoordY;
+            currentRoom.Width = roomSnapshot.Width;
+            currentRoom.Height = roomSnapshot.Height;
+            currentRoom.ExitsCount = roomSnapshot.ExitsCount;
+            currentRoom.Exits = roomSnapshot.Exits;
+        }
+
+        roomSnapshot = null;
+        isEditingRoom = false;
+        await RefreshCanvas();
     }
 
     private async Task StopEditingRoom()
     {
         isEditingRoom = false;
+        roomSnapshot = null;
         await SaveAventure();
         await RefreshCanvas();
     }
