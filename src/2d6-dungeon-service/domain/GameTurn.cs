@@ -189,6 +189,7 @@ public class GameTurn
         mainDoor.ExitType = exitType;
         mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.Width/2 );
         mainDoor.Lockable = false;
+        mainDoor.IsEntrance = true;
 
         if(currentRoom.Exits == null)
             currentRoom.Exits = new Dictionary<Direction,Exit>();
