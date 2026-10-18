@@ -197,8 +197,7 @@ public class GameTurn
 
     public static void AssignExits(MappedRoom currentRoom, Direction entrance, int? lockRoll = null)
     {
-        int seed = DateTime.UtcNow.Millisecond;
-        Random rnd = new Random(seed);
+        Random rnd = Random.Shared;
         
         var walls = new List<Direction>(){Direction.North,Direction.East, Direction.South, Direction.West};
         walls.Remove(entrance);
