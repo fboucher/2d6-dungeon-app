@@ -108,6 +108,105 @@ public class Dungeon
     }
 
 
+    /// <summary>
+    /// Checks the doors of a room: each must sit within its wall and, when connected to a
+    /// visited room, on the same grid cell as that room's door on the opposite wall.
+    /// </summary>
+    public List<DoorIssue> ValidateDoors(MappedRoom room)
+    {
+        var issues = new List<DoorIssue>();
+        if (room.Exits == null) return issues;
+
+        foreach (var (wall, exit) in room.Exits)
+        {
+            if (exit.PositionOnWall < 1 || exit.PositionOnWall > room.GetWallLength(wall))
+            {
+                issues.Add(new DoorIssue(wall, $"The {wall} door is outside the wall."));
+                continue;
+            }
+
+            if (exit.TargetRoomId is not > 0) continue;
+
+            var target = GetRoom(exit.TargetRoomId.Value);
+            var opposite = GameTurn.GetOppositeDirection(wall);
+            if (target?.Exits == null || !target.Exits.ContainsKey(opposite)) continue;
+
+            if (room.GetDoorCell(wall) != target.GetDoorCell(opposite))
+                issues.Add(new DoorIssue(wall, $"The {wall} door doesn't line up with {target.DisplayName}."));
+        }
+
+        return issues;
+    }
+
+    /// <summary>
+    /// Finds the unexplored door of another room that faces the unexplored door on <paramref name="wall"/>
+    /// of <paramref name="room"/> from the very same grid cell, if any.
+    /// </summary>
+    public (MappedRoom Room, Direction Wall)? FindConnectCandidate(MappedRoom room, Direction wall)
+    {
+        if (room.Exits == null || !room.Exits.TryGetValue(wall, out var exit) || exit.TargetRoomId != null)
+            return null;
+
+        var facing = GameTurn.GetOppositeDirection(wall);
+        var cell = room.GetDoorCell(wall);
+
+        foreach (var other in MappedRooms)
+        {
+            if (other.Id == room.Id) continue;
+            if (other.Exits == null || !other.Exits.TryGetValue(facing, out var otherExit)) continue;
+            if (otherExit.TargetRoomId != null) continue;
+            if (other.GetDoorCell(facing) == cell) return (other, facing);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Links the unexplored door on <paramref name="wall"/> to the facing candidate door; our door takes
+    /// the other door's type and lock state. Returns false when there is no candidate.
+    /// </summary>
+    public bool ConnectDoor(MappedRoom room, Direction wall)
+    {
+        var candidate = FindConnectCandidate(room, wall);
+        if (candidate == null) return false;
+
+        var ours = room.Exits![wall];
+        var theirs = candidate.Value.Room.Exits![candidate.Value.Wall];
+
+        ours.ExitType = theirs.ExitType;
+        ours.Lockable = theirs.Lockable;
+        ours.IsLocked = theirs.IsLocked;
+        ours.LockModifier = theirs.LockModifier;
+        ours.LockQuality = theirs.LockQuality;
+        ours.IsDamaged = theirs.IsDamaged;
+
+        ours.TargetRoomId = candidate.Value.Room.Id;
+        theirs.TargetRoomId = room.Id;
+        return true;
+    }
+
+    /// <summary>A door can be disconnected when it leads to a visited room and is not an entrance.</summary>
+    public bool CanDisconnectDoor(MappedRoom room, Direction wall)
+    {
+        if (room.Exits == null || !room.Exits.TryGetValue(wall, out var exit)) return false;
+        if (exit.IsEntrance || exit.TargetRoomId is not > 0) return false;
+        return GetRoom(exit.TargetRoomId.Value) != null;
+    }
+
+    /// <summary>Makes both ends of the connection unexplored again; type and lock state are kept.</summary>
+    public bool DisconnectDoor(MappedRoom room, Direction wall)
+    {
+        if (!CanDisconnectDoor(room, wall)) return false;
+
+        var ours = room.Exits![wall];
+        var other = GetRoom(ours.TargetRoomId!.Value)!;
+        var back = other.Exits?.Values.FirstOrDefault(e => e.TargetRoomId == room.Id);
+
+        ours.TargetRoomId = null;
+        if (back != null) back.TargetRoomId = null;
+        return true;
+    }
+
     public void ChangeRoom(MappedRoom roomFrom, MappedRoom roomTo)
     {
         var from = MappedRooms.FirstOrDefault(r => r.Id == roomFrom.Id);

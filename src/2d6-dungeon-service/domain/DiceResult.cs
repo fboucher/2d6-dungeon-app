@@ -11,11 +11,14 @@ public class DiceResult
 
 
 
-    public static Func<int> RollDie { get; set; } = () =>
+    /// <summary>The real die: one uniform roll from 1 to 6.</summary>
+    public static int DefaultRollDie()
     {
         var die = new List<int> { 1,2,3,4,5,6 };
         return die.OrderBy(x => Guid.NewGuid()).First<int>(); 
-    };
+    }
+
+    public static Func<int> RollDie { get; set; } = DefaultRollDie;
 
     private static int RollDice()
     {

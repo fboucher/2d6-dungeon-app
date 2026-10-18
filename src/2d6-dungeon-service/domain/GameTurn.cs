@@ -187,8 +187,10 @@ public class GameTurn
         mainDoor.Direction = entranceWall;
         mainDoor.TargetRoomId = fromRoomId;
         mainDoor.ExitType = exitType;
-        mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.Width/2 );
+        // Middle of the entrance wall: Width for North/South, Height for East/West.
+        mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.GetWallLength(entranceWall)/2 );
         mainDoor.Lockable = false;
+        mainDoor.IsEntrance = true;
 
         if(currentRoom.Exits == null)
             currentRoom.Exits = new Dictionary<Direction,Exit>();
@@ -197,8 +199,7 @@ public class GameTurn
 
     public static void AssignExits(MappedRoom currentRoom, Direction entrance, int? lockRoll = null)
     {
-        int seed = DateTime.UtcNow.Millisecond;
-        Random rnd = new Random(seed);
+        Random rnd = Random.Shared;
         
         var walls = new List<Direction>(){Direction.North,Direction.East, Direction.South, Direction.West};
         walls.Remove(entrance);
