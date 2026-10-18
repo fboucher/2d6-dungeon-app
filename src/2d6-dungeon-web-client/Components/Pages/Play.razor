@@ -160,6 +160,24 @@ else
                                 </FluentStack> 
                             </div>
                             <FluentLabel Color="@Color.Info" Style="font-size: 11px;">Room is in edit mode. Use the arrows above to reposition the room, and the door rows below to slide each door along its wall.</FluentLabel>
+                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Size</FluentLabel>
+                            @if (currentRoom != null)
+                            {
+                                var widthRange = currentRoom.GetWidthRange();
+                                var heightRange = currentRoom.GetHeightRange();
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+                                    <span style="width: 45px;">Width</span>
+                                    <FluentButton @onclick="@( () => ResizeRoom(-1, 0))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Narrower" disabled="@(currentRoom.Width <= widthRange.Min)" />
+                                    <span>@currentRoom.Width</span>
+                                    <FluentButton @onclick="@( () => ResizeRoom(1, 0))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="Wider" disabled="@(currentRoom.Width >= widthRange.Max)" />
+                                </FluentStack>
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
+                                    <span style="width: 45px;">Height</span>
+                                    <FluentButton @onclick="@( () => ResizeRoom(0, -1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Shorter" disabled="@(currentRoom.Height <= heightRange.Min)" />
+                                    <span>@currentRoom.Height</span>
+                                    <FluentButton @onclick="@( () => ResizeRoom(0, 1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="Taller" disabled="@(currentRoom.Height >= heightRange.Max)" />
+                                </FluentStack>
+                            }
                             <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Doors</FluentLabel>
                             @foreach (var wall in doorWalls)
                             {
@@ -621,6 +639,18 @@ else
 
     private int GetWallLength(Direction wall) =>
         wall == Direction.North || wall == Direction.South ? currentRoom!.Width : currentRoom!.Height;
+
+    private async Task ResizeRoom(int deltaWidth, int deltaHeight)
+    {
+        if (currentRoom == null || !isEditingRoom) return;
+
+        var (minW, maxW) = currentRoom.GetWidthRange();
+        var (minH, maxH) = currentRoom.GetHeightRange();
+        currentRoom.Width = Math.Clamp(currentRoom.Width + deltaWidth, minW, maxW);
+        currentRoom.Height = Math.Clamp(currentRoom.Height + deltaHeight, minH, maxH);
+
+        await RefreshCanvas();
+    }
 
     private async Task MoveDoor(Direction wall, int step)
     {
