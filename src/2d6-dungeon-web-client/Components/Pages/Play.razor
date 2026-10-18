@@ -523,9 +523,10 @@ else
         DialogParameters parameters = new()
             {
                 Title = $"Let's see what room you are getting in!",
-                PrimaryAction = "Save",
-                PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel", 
+                // The wizard has its own Previous/Next/Finish buttons; the dialog's close button cancels.
+                PrimaryAction = null,
+                SecondaryAction = null,
+                ShowDismiss = true,
                 Width = "800px",
                 TrapFocus = true,
                 Modal = true
