@@ -13,6 +13,8 @@ public class Exit
     public int LockModifier { get; set; } = 0;
     public int? LockQuality { get; set; }
     public bool IsDamaged { get; set; } = false;
+    /// <summary>The door the room was entered through (or the dungeon exit of the Lobby). Never disconnected.</summary>
+    public bool IsEntrance { get; set; } = false;
 
     public static string GetDirection(Direction value)
     {
