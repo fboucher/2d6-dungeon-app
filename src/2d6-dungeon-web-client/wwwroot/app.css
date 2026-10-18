@@ -552,3 +552,14 @@ body.dungeon-theme fluent-button {
         right: unset;
     }
 }
+
+/* New room wizard: keep the step content inside the wizard and scroll it when it is long,
+   so it never spills over the Previous/Next/Finish buttons. */
+fluent-dialog .fluent-wizard.new-room-wizard[position="left"] {
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.fluent-wizard.new-room-wizard .fluent-wizard-content {
+    min-height: 0;
+    overflow-y: auto;
+}

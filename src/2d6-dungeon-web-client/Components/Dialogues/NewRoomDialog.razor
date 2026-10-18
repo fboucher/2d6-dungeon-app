@@ -12,6 +12,7 @@
               Border="WizardBorder.Outside"
               StepTitleHiddenWhen="@GridItemHidden.XsAndDown"
               Height="300px"
+              Class="new-room-wizard"
               OnFinish="@OnFinishedAsync">
 
     <Steps>
@@ -23,11 +24,12 @@
                 <FluentButton @onclick=RollDiceForRoomDimensions Appearance="Appearance.Accent" disabled="@(isSizeSet)">Roll 2D6 </FluentButton>
 
                 <div style="padding:20px;">
+                    @* Keyed on the roll count so both dice roll again on a second roll, even when a die lands on the same face. *@
                     <span style="@(sizeDiceResult.PrimaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="sizeDiceA" face="@sizeDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        <Dice @ref="sizeDiceA" @key="sizeRollCount" face="@sizeDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
                     </span>
                     <span style="@(sizeDiceResult.SecondaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="sizeDiceB" face="@sizeDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
+                        <Dice @ref="sizeDiceB" @key="sizeRollCount" face="@sizeDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
                     </span>
                 </div>
             </FluentStack>
@@ -145,6 +147,7 @@
     private bool isLocksSet = false;
     private bool isCorridor = false;
     private bool hasNoExits = false;
+    private int sizeRollCount = 0;
     
     // Dice refs for doubles celebration
     private Dice? sizeDiceA;
@@ -195,9 +198,6 @@
                     gameTurn.Message = "Roll 1D6 to check for locked doors.";
                 }
                 break;
-            case "Summary":
-                Dialog!.TogglePrimaryActionButton(isSizeSet);
-                break;
         }
     }
 
@@ -214,6 +214,7 @@
     private async Task RollDiceForRoomDimensions()
     {
         sizeDiceResult = DiceResult.Roll2Dice();
+        sizeRollCount++;
         
         await gameTurn.ContinueTurn(sizeDiceResult, Content.Dungeon);
         if(gameTurn.NextAction != ActionType.DoubleSizedRoom)
@@ -277,11 +278,6 @@
         gameTurn.NextAction = ActionType.RollForLocks;
         await gameTurn.ContinueTurn(locksDiceResult, Content.Dungeon);
         isLocksSet = true;
-    }
-
-    private async Task SaveAsync()
-    {
-        await Dialog!.CloseAsync(Content);
     }
 
 }
