@@ -43,6 +43,23 @@ public class MappedRoom
     }
 
 
+    public const int MinSide = 2;
+    public const int MaxSide = 12;
+    public const int MaxCorridorSide = 6;
+
+    /// <summary>Allowed Width when editing. A corridor's 1-wide side is locked; its other side is 2-6.</summary>
+    public (int Min, int Max) GetWidthRange() => GetSideRange(Width, Height);
+
+    /// <summary>Allowed Height when editing. A corridor's 1-wide side is locked; its other side is 2-6.</summary>
+    public (int Min, int Max) GetHeightRange() => GetSideRange(Height, Width);
+
+    private (int Min, int Max) GetSideRange(int side, int otherSide)
+    {
+        if (IsCorridor && side == 1) return (1, 1);
+        if (IsCorridor && otherSide == 1) return (MinSide, MaxCorridorSide);
+        return (MinSide, MaxSide);
+    }
+
     public static MappedRoom DraftCurrentRoom(DiceResult dResult){
         return new MappedRoom{
             Width = dResult.PrimaryDice,
