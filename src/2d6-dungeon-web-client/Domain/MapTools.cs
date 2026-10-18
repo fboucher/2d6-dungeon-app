@@ -92,21 +92,6 @@ public static class MapTools
     public static (int X, int Y) GetDoorGridPosition(MappedRoom room, Direction wall) => room.GetDoorCell(wall);
 
     public static (int X, int Y) GetRoomOriginForDoorGridPosition(MappedRoom room, Direction wall, int doorX, int doorY)
-    {
-        if (room.Exits == null || !room.Exits.TryGetValue(wall, out var exit))
-        {
-            throw new InvalidOperationException($"Room {room.Id} has no exit on wall '{wall}'.");
-        }
-
-        var pos = exit.PositionOnWall;
-        return wall switch
-        {
-            Direction.North => (doorX + 1 - pos, doorY + 1),
-            Direction.East => (doorX - room.Width, doorY + 1 - pos),
-            Direction.South => (doorX + 1 - pos, doorY - room.Height),
-            Direction.West => (doorX + 1, doorY + 1 - pos),
-            _ => throw new ArgumentOutOfRangeException(nameof(wall), wall, "Unknown wall direction")
-        };
-    }
+        => room.GetOriginForDoorCell(wall, doorX, doorY);
 
 }
