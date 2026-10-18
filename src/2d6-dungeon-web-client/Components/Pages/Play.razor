@@ -224,6 +224,10 @@ else
                                                 {
                                                     <FluentButton @onclick="@( () => RemoveDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Delete())" Title="@($"Remove {aWall} door")" />
                                                 }
+                                                else if (currentAdventure!.Dungeon.CanDisconnectDoor(currentRoom, aWall))
+                                                {
+                                                    <FluentButton @onclick="@( () => DisconnectDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.LinkDismiss())" Title="@($"Disconnect the {aWall} door")" />
+                                                }
                                                 else
                                                 {
                                                     <FluentIcon Value="@(new Icons.Regular.Size16.Link())" Title="Connected door" />
@@ -239,6 +243,11 @@ else
                                                 <FluentIcon Value="@(new Icons.Filled.Size16.Warning())" Color="@Color.Warning" Title="@wallIssue.Message" />
                                             }
                                         </FluentStack>
+                                        var candidate = hasDoor ? currentAdventure!.Dungeon.FindConnectCandidate(currentRoom, aWall) : null;
+                                        @if (candidate != null)
+                                        {
+                                            <FluentButton @onclick="@( () => ConnectDoor(aWall))" Appearance="Appearance.Lightweight" IconStart="@(new Icons.Regular.Size16.Link())">Connect to @candidate.Value.Room.DisplayName</FluentButton>
+                                        }
                                     }
                                     @if (!string.IsNullOrEmpty(doorErrorMessage))
                                     {
@@ -319,6 +328,7 @@ else
     MappedRoom? nextRoom = null;
     private bool isEditingRoom = false;
     private MappedRoom? roomSnapshot = null;
+    private Dictionary<int, Dictionary<Direction, Exit>?>? doorsSnapshot = null;
     private string? doorErrorMessage = null;
     DiceResult diceResult = new DiceResult();
 
@@ -669,6 +679,10 @@ else
         {
             roomSnapshot = System.Text.Json.JsonSerializer.Deserialize<MappedRoom>(
                 System.Text.Json.JsonSerializer.Serialize(currentRoom));
+            // Connect/Disconnect also change the other room's door, so remember every room's doors.
+            doorsSnapshot = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, Dictionary<Direction, Exit>?>>(
+                System.Text.Json.JsonSerializer.Serialize(
+                    currentAdventure!.Dungeon.GetRooms().ToDictionary(r => r.Id, r => r.Exits)));
             isEditingRoom = true;
         }
     }
@@ -685,7 +699,17 @@ else
             currentRoom.Exits = roomSnapshot.Exits;
         }
 
+        if (doorsSnapshot != null)
+        {
+            foreach (var room in currentAdventure!.Dungeon.GetRooms())
+            {
+                if (room.Id != currentRoom?.Id && doorsSnapshot.TryGetValue(room.Id, out var doors))
+                    room.Exits = doors;
+            }
+        }
+
         roomSnapshot = null;
+        doorsSnapshot = null;
         doorErrorMessage = null;
         isEditingRoom = false;
         await RefreshCanvas();
@@ -707,6 +731,7 @@ else
         doorErrorMessage = null;
         isEditingRoom = false;
         roomSnapshot = null;
+        doorsSnapshot = null;
         await SaveAventure();
         await RefreshCanvas();
         return true;
@@ -733,6 +758,20 @@ else
         if (currentRoom == null || !isEditingRoom || !currentRoom.CanAddDoor(wall)) return;
 
         currentRoom.AddDoor(wall);
+        await RefreshCanvas();
+    }
+
+    private async Task ConnectDoor(Direction wall)
+    {
+        if (currentRoom == null || !isEditingRoom || !currentAdventure!.Dungeon.ConnectDoor(currentRoom, wall)) return;
+
+        await RefreshCanvas();
+    }
+
+    private async Task DisconnectDoor(Direction wall)
+    {
+        if (currentRoom == null || !isEditingRoom || !currentAdventure!.Dungeon.DisconnectDoor(currentRoom, wall)) return;
+
         await RefreshCanvas();
     }
 
