@@ -60,6 +60,26 @@ public class MappedRoom
         return (MinSide, MaxSide);
     }
 
+    /// <summary>Number of cells along the given wall.</summary>
+    public int GetWallLength(Direction wall) =>
+        wall == Direction.North || wall == Direction.South ? Width : Height;
+
+    /// <summary>Grid cell occupied by the door on the given wall.</summary>
+    public (int X, int Y) GetDoorCell(Direction wall)
+    {
+        if (Exits == null || !Exits.TryGetValue(wall, out var exit))
+            throw new InvalidOperationException($"Room {Id} has no exit on wall '{wall}'.");
+
+        return wall switch
+        {
+            Direction.North => (CoordX - 1 + exit.PositionOnWall, CoordY - 1),
+            Direction.East => (CoordX + Width, CoordY - 1 + exit.PositionOnWall),
+            Direction.South => (CoordX - 1 + exit.PositionOnWall, CoordY + Height),
+            Direction.West => (CoordX - 1, CoordY - 1 + exit.PositionOnWall),
+            _ => throw new ArgumentOutOfRangeException(nameof(wall), wall, "Unknown wall direction")
+        };
+    }
+
     /// <summary>A wall can take a new door when it has none.</summary>
     public bool CanAddDoor(Direction wall) => Exits == null || !Exits.ContainsKey(wall);
 

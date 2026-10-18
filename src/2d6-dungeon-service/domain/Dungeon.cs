@@ -108,6 +108,36 @@ public class Dungeon
     }
 
 
+    /// <summary>
+    /// Checks the doors of a room: each must sit within its wall and, when connected to a
+    /// visited room, on the same grid cell as that room's door on the opposite wall.
+    /// </summary>
+    public List<DoorIssue> ValidateDoors(MappedRoom room)
+    {
+        var issues = new List<DoorIssue>();
+        if (room.Exits == null) return issues;
+
+        foreach (var (wall, exit) in room.Exits)
+        {
+            if (exit.PositionOnWall < 1 || exit.PositionOnWall > room.GetWallLength(wall))
+            {
+                issues.Add(new DoorIssue(wall, $"The {wall} door is outside the wall."));
+                continue;
+            }
+
+            if (exit.TargetRoomId is not > 0) continue;
+
+            var target = GetRoom(exit.TargetRoomId.Value);
+            var opposite = GameTurn.GetOppositeDirection(wall);
+            if (target?.Exits == null || !target.Exits.ContainsKey(opposite)) continue;
+
+            if (room.GetDoorCell(wall) != target.GetDoorCell(opposite))
+                issues.Add(new DoorIssue(wall, $"The {wall} door doesn't line up with {target.DisplayName}."));
+        }
+
+        return issues;
+    }
+
     public void ChangeRoom(MappedRoom roomFrom, MappedRoom roomTo)
     {
         var from = MappedRooms.FirstOrDefault(r => r.Id == roomFrom.Id);

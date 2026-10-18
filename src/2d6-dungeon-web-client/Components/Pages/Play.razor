@@ -181,8 +181,10 @@ else
                             <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Doors</FluentLabel>
                             @foreach (var wall in doorWalls)
                             {
+                                var doorIssues = GetDoorIssues();
                                 var aWall = wall;
                                 bool hasDoor = currentRoom?.Exits != null && currentRoom.Exits.ContainsKey(aWall);
+                                var wallIssue = doorIssues.FirstOrDefault(i => i.Wall == aWall);
                                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
                                     <span style="width: 45px;">@aWall</span>
                                     @if (hasDoor)
@@ -204,7 +206,15 @@ else
                                         <FluentLabel Color="@Color.Disabled">no door</FluentLabel>
                                         <FluentButton @onclick="@( () => AddDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="@($"Add a door on the {aWall} wall")" />
                                     }
+                                    @if (wallIssue != null)
+                                    {
+                                        <FluentIcon Value="@(new Icons.Filled.Size16.Warning())" Color="@Color.Warning" Title="@wallIssue.Message" />
+                                    }
                                 </FluentStack>
+                            }
+                            @if (!string.IsNullOrEmpty(doorErrorMessage))
+                            {
+                                <FluentLabel Color="@Color.Error" Style="font-size: 11px; white-space: pre-line;">@doorErrorMessage</FluentLabel>
                             }
                             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                                 <FluentButton @onclick=EditRoom Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Checkmark())">Done Editing</FluentButton>
@@ -266,6 +276,7 @@ else
     MappedRoom? nextRoom = null;
     private bool isEditingRoom = false;
     private MappedRoom? roomSnapshot = null;
+    private string? doorErrorMessage = null;
     DiceResult diceResult = new DiceResult();
 
     bool isRollDiceDisable = false;
@@ -348,9 +359,9 @@ else
 
     private async Task PickADoor()
     {
-        if (isEditingRoom)
+        if (isEditingRoom && !await StopEditingRoom())
         {
-            await StopEditingRoom();
+            return;
         }
 
         Direction? directionTo = await OpenSelectDoorDialogDialogAsync();
@@ -632,22 +643,35 @@ else
         }
 
         roomSnapshot = null;
+        doorErrorMessage = null;
         isEditingRoom = false;
         await RefreshCanvas();
     }
 
-    private async Task StopEditingRoom()
+    private List<DoorIssue> GetDoorIssues() =>
+        currentRoom == null ? new List<DoorIssue>() : currentAdventure!.Dungeon.ValidateDoors(currentRoom);
+
+    /// <summary>Saves and leaves edit mode, unless a door is invalid; returns whether editing stopped.</summary>
+    private async Task<bool> StopEditingRoom()
     {
+        var issues = GetDoorIssues();
+        if (issues.Count > 0)
+        {
+            doorErrorMessage = "Fix these doors before finishing, or Cancel:\n" + string.Join("\n", issues.Select(i => i.Message));
+            return false;
+        }
+
+        doorErrorMessage = null;
         isEditingRoom = false;
         roomSnapshot = null;
         await SaveAventure();
         await RefreshCanvas();
+        return true;
     }
 
     private static readonly Direction[] doorWalls = { Direction.North, Direction.East, Direction.South, Direction.West };
 
-    private int GetWallLength(Direction wall) =>
-        wall == Direction.North || wall == Direction.South ? currentRoom!.Width : currentRoom!.Height;
+    private int GetWallLength(Direction wall) => currentRoom!.GetWallLength(wall);
 
     private async Task ResizeRoom(int deltaWidth, int deltaHeight)
     {
