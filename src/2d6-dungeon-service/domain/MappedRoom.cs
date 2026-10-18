@@ -60,6 +60,58 @@ public class MappedRoom
         return (MinSide, MaxSide);
     }
 
+    /// <summary>A wall can take a new door when it has none.</summary>
+    public bool CanAddDoor(Direction wall) => Exits == null || !Exits.ContainsKey(wall);
+
+    /// <summary>
+    /// Only unexplored doors can be removed; connected doors and the Lobby's south door stay.
+    /// </summary>
+    public bool CanRemoveDoor(Direction wall)
+    {
+        if (Exits == null || !Exits.TryGetValue(wall, out var exit)) return false;
+        if (IsLobby && wall == Direction.South) return false;
+        return exit.TargetRoomId == null;
+    }
+
+    /// <summary>
+    /// Adds an unexplored door at position 1. Type and lock state are copied from another
+    /// unexplored door of the room, falling back to <see cref="ExitsType"/> and unlocked.
+    /// </summary>
+    public Exit AddDoor(Direction wall)
+    {
+        if (!CanAddDoor(wall))
+            throw new InvalidOperationException($"Room {Id} already has a door on wall '{wall}'.");
+
+        Exits ??= new Dictionary<Direction, Exit>();
+        var template = Exits.Values.FirstOrDefault(e => e.TargetRoomId == null);
+
+        var door = new Exit { Direction = wall, PositionOnWall = 1 };
+        if (template != null)
+        {
+            door.ExitType = template.ExitType;
+            door.Lockable = template.Lockable;
+            door.IsLocked = template.IsLocked;
+        }
+        else
+        {
+            door.ExitType = ExitsType;
+            door.Lockable = GameTurn.IsDoorTypeLockable(ExitsType);
+        }
+
+        Exits.Add(wall, door);
+        ExitsCount++;
+        return door;
+    }
+
+    public bool RemoveDoor(Direction wall)
+    {
+        if (!CanRemoveDoor(wall)) return false;
+
+        Exits!.Remove(wall);
+        ExitsCount = Math.Max(0, ExitsCount - 1);
+        return true;
+    }
+
     public static MappedRoom DraftCurrentRoom(DiceResult dResult){
         return new MappedRoom{
             Width = dResult.PrimaryDice,

@@ -190,10 +190,19 @@ else
                                         <FluentButton @onclick="@( () => MoveDoor(aWall, -1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="@($"Move {aWall} door back")" />
                                         <span>@currentRoom!.Exits![aWall].PositionOnWall / @GetWallLength(aWall)</span>
                                         <FluentButton @onclick="@( () => MoveDoor(aWall, 1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="@($"Move {aWall} door forward")" />
+                                        @if (currentRoom!.CanRemoveDoor(aWall))
+                                        {
+                                            <FluentButton @onclick="@( () => RemoveDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Delete())" Title="@($"Remove {aWall} door")" />
+                                        }
+                                        else
+                                        {
+                                            <FluentIcon Value="@(new Icons.Regular.Size16.Link())" Title="Connected door" />
+                                        }
                                     }
                                     else
                                     {
                                         <FluentLabel Color="@Color.Disabled">no door</FluentLabel>
+                                        <FluentButton @onclick="@( () => AddDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="@($"Add a door on the {aWall} wall")" />
                                     }
                                 </FluentStack>
                             }
@@ -648,6 +657,21 @@ else
         var (minH, maxH) = currentRoom.GetHeightRange();
         currentRoom.Width = Math.Clamp(currentRoom.Width + deltaWidth, minW, maxW);
         currentRoom.Height = Math.Clamp(currentRoom.Height + deltaHeight, minH, maxH);
+
+        await RefreshCanvas();
+    }
+
+    private async Task AddDoor(Direction wall)
+    {
+        if (currentRoom == null || !isEditingRoom || !currentRoom.CanAddDoor(wall)) return;
+
+        currentRoom.AddDoor(wall);
+        await RefreshCanvas();
+    }
+
+    private async Task RemoveDoor(Direction wall)
+    {
+        if (currentRoom == null || !isEditingRoom || !currentRoom.RemoveDoor(wall)) return;
 
         await RefreshCanvas();
     }
