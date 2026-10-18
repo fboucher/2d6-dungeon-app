@@ -187,7 +187,8 @@ public class GameTurn
         mainDoor.Direction = entranceWall;
         mainDoor.TargetRoomId = fromRoomId;
         mainDoor.ExitType = exitType;
-        mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.Width/2 );
+        // Middle of the entrance wall: Width for North/South, Height for East/West.
+        mainDoor.PositionOnWall = (int) Math.Ceiling( (double)currentRoom.GetWallLength(entranceWall)/2 );
         mainDoor.Lockable = false;
         mainDoor.IsEntrance = true;
 

@@ -80,6 +80,26 @@ public class MappedRoom
         };
     }
 
+    /// <summary>
+    /// Room origin (CoordX, CoordY) that puts the door on the given wall on the grid cell (doorX, doorY).
+    /// Inverse of <see cref="GetDoorCell"/>.
+    /// </summary>
+    public (int X, int Y) GetOriginForDoorCell(Direction wall, int doorX, int doorY)
+    {
+        if (Exits == null || !Exits.TryGetValue(wall, out var exit))
+            throw new InvalidOperationException($"Room {Id} has no exit on wall '{wall}'.");
+
+        var pos = exit.PositionOnWall;
+        return wall switch
+        {
+            Direction.North => (doorX + 1 - pos, doorY + 1),
+            Direction.East => (doorX - Width, doorY + 1 - pos),
+            Direction.South => (doorX + 1 - pos, doorY - Height),
+            Direction.West => (doorX + 1, doorY + 1 - pos),
+            _ => throw new ArgumentOutOfRangeException(nameof(wall), wall, "Unknown wall direction")
+        };
+    }
+
     /// <summary>A wall can take a new door when it has none.</summary>
     public bool CanAddDoor(Direction wall) => Exits == null || !Exits.ContainsKey(wall);
 
