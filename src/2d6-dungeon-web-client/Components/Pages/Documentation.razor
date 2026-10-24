@@ -15,12 +15,12 @@
     <div class="documentation-shell">
         <nav class="documentation-nav" aria-label="Documentation sections">
             <FluentTreeView OnSelectedChange="OnTreeItemSelected">
-                @foreach (var section in sections)
+                @foreach (var docSection in sections)
                 {
-                    <FluentTreeItem Text="@section.Title"
-                                    IconStart="@section.Icon"
+                    <FluentTreeItem Text="@docSection.Title"
+                                    IconStart="@docSection.Icon"
                                     Expanded="true">
-                        @foreach (var document in section.Documents)
+                        @foreach (var document in docSection.Documents)
                         {
                             <FluentTreeItem Id="@document.Anchor"
                                             Text="@document.Title"
