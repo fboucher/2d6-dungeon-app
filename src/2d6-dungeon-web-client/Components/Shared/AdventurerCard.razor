@@ -54,7 +54,7 @@
             <FluentNumberInput @bind-Value="@Player.MaxHealthPoints" @bind-Value:after="CheckHealth" Min="1" style="width: 80px;" />
         </FluentStack>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                          Width="100%" Wrap="true">
                 <FluentText Block="true"><b>SHIFT </b></FluentText> @Player.Shift.ToString()
@@ -67,7 +67,7 @@
             </FluentStack>
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                          Width="100%" Wrap="true">
                 <FluentText Block="true"><b>WEAPON</b></FluentText>
@@ -83,7 +83,7 @@
 
 
         
-        <FluentCard Appearance="CardAppearance.Subtle"  Width="90%">
+        <FluentCard  Width="90%">
             <div class="sheetTitle"><b>MANOEUVRES</b></div>
             @if (Player.WeaponManoeuvres != null && Player.WeaponManoeuvres.Count > 0)
             {
@@ -96,19 +96,19 @@
             }
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <ArmourPieces armourPiece="@Player.ArmourPieces" OnArmourPiecesChanged="@HandleArmourPiecesChanged" />
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%" >
+        <FluentCard Width="90%" >
             <MagicScrolls magicScrolls="@Player.MagicScrolls" OnScrollDeleted="@HandleScrollDeleted" OnScrollAdded="@HandleScrollAdded" />
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <MagicPotions magicPotions="@Player.MagicPotions" OnPotionDeleted="@HandlePotionDeleted" OnPotionAdded="@HandlePotionAdded" />
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="1">
                 <FluentText Block="true">LEGEND STATUS LEVEL TRACKER</FluentText>
                 <div class="slider-with-ticks" style="width: 200px;">
@@ -118,7 +118,7 @@
             </FluentStack>
         </FluentCard>
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
                 <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
                     <FluentText Block="true" Style="width: 90px;"><b>BLOODIED</b></FluentText>
@@ -141,15 +141,15 @@
         </FluentCard>
 
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
 
             <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                     <div class="sheetTitle"><b>COINS</b></div>
                     @* <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5" Wrap="true"> *@
-                    <FluentNumberInput Label="Gold" @bind-Value="@Player.Coins.GoldCoins" />
-                    <FluentNumberInput Label="Silver" @bind-Value="@Player.Coins.SilverCoins" />
-                    <FluentNumberInput Label="Copper" @bind-Value="@Player.Coins.CupperCoins" />
+                    <FluentNumberInput Label="Gold" @bind-Value="@Player.Coins.GoldCoins" Width="100%" />
+                    <FluentNumberInput Label="Silver" @bind-Value="@Player.Coins.SilverCoins" Width="100%" />
+                    <FluentNumberInput Label="Copper" @bind-Value="@Player.Coins.CupperCoins" Width="100%" />
                     @* </FluentStack> *@
                 </FluentStack>
 
@@ -172,7 +172,7 @@
         </FluentCard>
 
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                     <FluentText Block="true" Style="Width: 50%;"><b>FAVOUR OF THE GODS</b></FluentText>
@@ -230,7 +230,7 @@
         </FluentCard>
 
 
-        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
+        <FluentCard Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                     <FluentText Block="true"><b>LARGE AND HEAVY ITEMS</b></FluentText>

@@ -3,7 +3,7 @@
 
 @if(magicScrolls != null){
 
-    <FluentDataGrid Items="@scrolls" MultiLine="true" ResizableColumns="true" AutoFit="true">
+    <FluentDataGrid Items="@scrolls" MultiLine="true" ResizableColumns="true">
         <PropertyColumn Title="Magic scrolls" 
                         Property="@(a => a.ScrollType)" 
                         Sortable="false"

@@ -15,6 +15,9 @@
 
 <body>
     <Routes />
+    @* Fluent UI v5's FluentNumberInput loads IMask from unpkg.com at runtime and the circuit crashes if that fails.
+       Serving it locally sets window.IMask first, so the CDN is never called. *@
+    <script src="lib/imask/imask.min.js"></script>
     <script src="_framework/blazor.web.js"></script>
     <script src="/scripts/canvasTools.js"></script>
     <script src="/scripts/diceAnimation.js"></script>

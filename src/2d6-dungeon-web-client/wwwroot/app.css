@@ -610,10 +610,24 @@ fluent-dialog .fluent-wizard.new-room-wizard[position="left"] {
     height: 100%;
 }
 
-    .navmenu.collapsed .fluent-nav-item .fluent-nav-text,
-    .navmenu.collapsed fluent-nav-item span:not(:has(svg)) {
-        display: none;
+    .navmenu .fluent-nav {
+        background-color: var(--colorNeutralBackground1);
     }
+
+    .navmenu .fluent-navitem:not(.active) {
+        background-color: transparent;
+    }
+
+    /* The item label is a bare text node: clip it so only the icon is left. */
+    .navmenu.collapsed .fluent-navitem {
+        overflow: hidden;
+        white-space: nowrap;
+        padding-inline: 10px;
+    }
+
+        .navmenu .fluent-navitem svg {
+            flex-shrink: 0;
+        }
 
 /* Tick labels under the adventurer sheet sliders (replaces v4 FluentSliderLabel). */
 .slider-with-ticks {
@@ -631,9 +645,8 @@ fluent-dialog .fluent-wizard.new-room-wizard[position="left"] {
 
 /* Replaces v4 FluentPersona on the adventurer card. */
 .adventurer-persona {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 16px;
-    width: 100%;
     cursor: pointer;
 }
