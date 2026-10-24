@@ -6,13 +6,13 @@
 
 @rendermode InteractiveServer
 
-<FluentLabel Typo="Typography.PageTitle">Adventure Initialization</FluentLabel>
+<FluentText As="TextTag.H1" Size="TextSize.Size800">Adventure Initialization</FluentText>
 
-<FluentLabel>To create a new adventure you will need: </FluentLabel>
+<FluentText Block="true">To create a new adventure you will need: </FluentText>
 
 <FluentStack Orientation="Orientation.Vertical">
     <FluentCard>
-        <FluentHeader>Select or Create an Adventurer</FluentHeader>
+        <div class="card-header">Select or Create an Adventurer</div>
         @if (selectedAdventurer == null)
         {
             <AdventurerPicker @bind-ParentPlayer="selectedAdventurer" AutoSelectAdventurerId="@autoSelectAdventurerId"></AdventurerPicker>
@@ -21,16 +21,16 @@
         {
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
                 <AdventurerCard @bind-Player="@(selectedAdventurer)"></AdventurerCard>
-                <FluentTextField Label="Adventure Name" @bind-Value="adventureName" Style="width: 100%;"></FluentTextField>
+                <FluentTextInput Label="Adventure Name" @bind-Value="adventureName" Style="width: 100%;"></FluentTextInput>
             </FluentStack>
         }
     </FluentCard>
 
     <FluentCard>
-        <FluentHeader>Create a new Dungeon</FluentHeader>
+        <div class="card-header">Create a new Dungeon</div>
         <FluentStack Orientation="Orientation.Vertical">
             <p id="message"></p>
-            <FluentButton @onclick=RollDice Appearance="Appearance.Accent" disabled="@(!isStartDisable)">@actionLabel
+            <FluentButton @onclick=RollDice Appearance="ButtonAppearance.Primary" disabled="@(!isStartDisable)">@actionLabel
             </FluentButton>
         </FluentStack>
         <div style="padding:20px;">
@@ -46,7 +46,7 @@
 
 
 <FluentStack Orientation="Orientation.Horizontal">
-    <FluentButton Appearance="Appearance.Accent" @onclick="StarGame" disabled="@isStartDisable">Start</FluentButton>
+    <FluentButton Appearance="ButtonAppearance.Primary" @onclick="StarGame" disabled="@isStartDisable">Start</FluentButton>
 </FluentStack>
 
 @code {

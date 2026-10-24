@@ -8,13 +8,13 @@
 
 <PageTitle>Documentation@(currentDocument is not null ? $" - {currentDocument.Title}" : string.Empty)</PageTitle>
 
-<FluentLabel Typo="Typography.PageTitle">2D6 Dungeon Documentation</FluentLabel>
+<FluentText As="TextTag.H1" Size="TextSize.Size800">2D6 Dungeon Documentation</FluentText>
 
 @if (sections.Count > 0)
 {
     <div class="documentation-shell">
         <nav class="documentation-nav" aria-label="Documentation sections">
-            <FluentTreeView OnSelectedChange="OnTreeItemSelected">
+            <FluentTreeView OnSelectedChanged="OnTreeItemSelected" SelectedId="@selectedAnchor">
                 @foreach (var docSection in sections)
                 {
                     <FluentTreeItem Text="@docSection.Title"
@@ -24,7 +24,6 @@
                         {
                             <FluentTreeItem Id="@document.Anchor"
                                             Text="@document.Title"
-                                            Selected="@(document.Anchor == selectedAnchor)"
                                             IconStart="@(new Icons.Regular.Size16.Document())" />
                         }
                     </FluentTreeItem>

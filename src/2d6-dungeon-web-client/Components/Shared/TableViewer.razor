@@ -1,4 +1,4 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @using c5m._2d6Dungeon.domain;
 @inject D6Service D6Service;
 
@@ -9,18 +9,18 @@
 <FluentStack Orientation="Orientation.Vertical">
     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom">
         <div>
-            <FluentCombobox Items=@metatablesQueryable 
+            <FluentCombobox TOption="MetaTables" TValue="MetaTables"
+                Items=@metatablesQueryable 
                 Label="Select Table" 
                 Multiple="false"
-                OptionText="@(t => string.Concat(t!.Code, " - ", t!.Name))"
-                Autocomplete="ComboboxAutocomplete.Both"
-                SelectedOptionChanged="@((MetaTables? t) => TableSelected(t))"
+                OptionText="@(t => t == null ? string.Empty : string.Concat(t.Code, " - ", t.Name))"
+                ValueChanged="@((MetaTables? t) => TableSelected(t))"
                 Placeholder="Select a Table" />
         </div>
 
         <div>
-            <FluentButton OnClick="@(() => RollDice(1))" Appearance="Appearance.Accent">Roll 1D6</FluentButton>
-            <FluentButton OnClick="@(() => RollDice(2))" Appearance="Appearance.Accent">Roll 2D6</FluentButton>
+            <FluentButton OnClick="@(() => RollDice(1))" Appearance="ButtonAppearance.Primary">Roll 1D6</FluentButton>
+            <FluentButton OnClick="@(() => RollDice(2))" Appearance="ButtonAppearance.Primary">Roll 2D6</FluentButton>
         </div>
 
         <div style="padding-left:20px;">
@@ -44,7 +44,7 @@
                 <PropertyColumn Title="@secondColTitle" Property="@(t => t.Description)" Sortable="true" />
             </ChildContent>
             <EmptyContent>
-                <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Accent" />&nbsp; Select a table first
+                <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Primary" />&nbsp; Select a table first
             </EmptyContent>
         </FluentDataGrid>
     </div>

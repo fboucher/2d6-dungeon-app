@@ -1,43 +1,40 @@
 @using c5m._2d6Dungeon
 @inject D6Service D6Service
 
-@implements IDialogContentComponent<List<ArmourPiece>>
+@inherits AppDialogBase<List<ArmourPiece>>
 
 @rendermode InteractiveServer
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 400px;">
-    @if (allPieces == null)
-    {
-        <FluentProgressRing />
-    }
-    else
-    {
-        <FluentLabel Typo="Typography.Body">
-            Select up to 3 armour pieces 
-            <span style="color: @(Content.Count > 3 ? "red" : "inherit")">
-                (@(Content.Count)/3 selected)
-            </span>
-        </FluentLabel>
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 400px;">
+        @if (allPieces == null)
+        {
+            <FluentSpinner />
+        }
+        else
+        {
+            <FluentText Block="true">
+                Select up to 3 armour pieces 
+                <span style="color: @(Content.Count > 3 ? "red" : "inherit")">
+                    (@(Content.Count)/3 selected)
+                </span>
+            </FluentText>
         
-        <FluentListbox TOption="ArmourPiece"
-                       Items="@allPieces"
-                       Multiple="true"
-                       SelectedOptions="@Content"
-                       SelectedOptionsChanged="@OnSelectionChanged"
-                       OptionValue="@(p => p.Id.ToString())"
-                       OptionText="@(p => $"{p.Name} | {p.Modifier} | {p.DiceSet}")"
-                       Height="200px"
-                       style="width: 100%;" />
-    }
-</FluentStack>
+            <FluentListbox TOption="ArmourPiece" TValue="int"
+                           Items="@allPieces"
+                           Multiple="true"
+                           SelectedItems="@Content"
+                           SelectedItemsChanged="@OnSelectionChanged"
+                           OptionValue="@(p => p?.Id ?? 0)"
+                           OptionSelectedComparer="@ArmourPieceById.Instance"
+                           OptionText="@(p => p == null ? string.Empty : $"{p.Name} | {p.Modifier} | {p.DiceSet}")"
+                           Height="200px"
+                           style="width: 100%;" />
+        }
+    </FluentStack>
+</FluentDialogBody>
 
 @code {
-    [Parameter]
-    public List<ArmourPiece> Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
-
     private List<ArmourPiece>? allPieces;
 
     protected override async Task OnInitializedAsync()
@@ -54,11 +51,16 @@
         UpdateDialogButtonState();
     }
 
+    // The pieces already worn come from the saved adventurer, so they are matched to the list by id.
+    private sealed class ArmourPieceById : IEqualityComparer<ArmourPiece>
+    {
+        public static readonly ArmourPieceById Instance = new();
+        public bool Equals(ArmourPiece? x, ArmourPiece? y) => x?.Id == y?.Id;
+        public int GetHashCode(ArmourPiece obj) => obj.Id.GetHashCode();
+    }
+
     private void UpdateDialogButtonState()
     {
-        if (Dialog != null)
-        {
-            Dialog.TogglePrimaryActionButton(Content.Count <= 3);
-        }
+        TogglePrimaryActionButton(Content.Count <= 3);
     }
 }

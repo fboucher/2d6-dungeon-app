@@ -1,207 +1,203 @@
-@implements IDialogContentComponent<ResolveLockedDoorDialogData>
+@inherits AppDialogBase<ResolveLockedDoorDialogData>
 @using c5m._2d6Dungeon
 @using c5m._2d6Dungeon.Game
 @using System.Text.RegularExpressions
 @inject D6Service D6Service
-@inject IToastService ToastService
+@inject INotificationService ToastService
 
 @rendermode InteractiveServer
 
-<div style="min-width: 600px; padding: 10px;">
-    <!-- Header -->
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="margin-bottom: 20px;">
-        <FluentLabel Typo="Typography.H3">Resolve Locked Door (@Content.Direction)</FluentLabel>
-        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-            @if (Content.Exit.IsLocked)
-            {
-                <FluentBadge Appearance="Appearance.Accent">LOCKED</FluentBadge>
-            }
-            else
-            {
-                <FluentBadge Style="background-color: #2E5A2E; color: white;">UNLOCKED</FluentBadge>
-            }
+<FluentDialogBody>
+    <div style="min-width: 600px; padding: 10px;">
+        <!-- Header -->
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center" Style="margin-bottom: 20px;">
+            <FluentText As="TextTag.H3">Resolve Locked Door (@Content.Direction)</FluentText>
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                @if (Content.Exit.IsLocked)
+                {
+                    <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand" Content="LOCKED" />
+                }
+                else
+                {
+                    <FluentBadge Style="background-color: #2E5A2E; color: white;" Content="UNLOCKED" />
+                }
 
-            @if (Content.Exit.IsDamaged)
-            {
-                <FluentBadge Style="background-color: #7C3AED; color: white;">LOCK DAMAGED</FluentBadge>
-            }
+                @if (Content.Exit.IsDamaged)
+                {
+                    <FluentBadge Style="background-color: #7C3AED; color: white;" Content="LOCK DAMAGED" />
+                }
+            </FluentStack>
         </FluentStack>
-    </FluentStack>
 
-    <FluentGrid Spacing="3">
-        <!-- Column 1: Lockpicking -->
-        <FluentGridItem XS="12" SM="6">
-            <FluentCard Style="height: 100%; min-height: 380px;">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
-                    <FluentLabel Typo="Typography.H4">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.LockClosed())" Color="@Color.Accent" Slot="start" />
-                        Lockpicking
-                    </FluentLabel>
+        <FluentGrid Spacing="3">
+            <!-- Column 1: Lockpicking -->
+            <FluentGridItem Xs="12" Sm="6">
+                <FluentCard Style="height: 100%; min-height: 380px;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+                        <FluentText As="TextTag.H4">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.LockClosed())" Color="@Color.Primary" Slot="start" />
+                            Lockpicking
+                        </FluentText>
 
-                    @if (Content.Exit.IsDamaged)
-                    {
-                        <div style="background-color: rgba(124, 58, 237, 0.1); border-left: 4px solid #7C3AED; padding: 12px; border-radius: 4px; margin-bottom: 10px;">
-                            <FluentLabel Color="@Color.Custom" CustomColor="#7C3AED" Weight="FontWeight.Bold">Lock is Damaged</FluentLabel>
-                            <FluentLabel Typo="Typography.Body">The lock mechanism is permanently jammed and cannot be picked. You must wait for a patrol to bypass the door.</FluentLabel>
+                        @if (Content.Exit.IsDamaged)
+                        {
+                            <div style="background-color: rgba(124, 58, 237, 0.1); border-left: 4px solid #7C3AED; padding: 12px; border-radius: 4px; margin-bottom: 10px;">
+                                <FluentText Block="true" Color="@Color.Custom" CustomColor="#7C3AED" Weight="TextWeight.Bold">Lock is Damaged</FluentText>
+                                <FluentText Block="true">The lock mechanism is permanently jammed and cannot be picked. You must wait for a patrol to bypass the door.</FluentText>
+                            </div>
+                        }
+                        else if (Content.Exit.LockQuality == null)
+                        {
+                            <!-- Step 1: Define Lock Quality -->
+                            <FluentText Block="true">Roll to define the door's lock quality before picking it.</FluentText>
+                        
+                            <FluentNumberInput @bind-Value="Content.Exit.LockModifier" Label="Lock Modifier:" Style="width: 120px;" />
+                        
+                            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RollLockQuality" IconStart="@(new Icons.Regular.Size16.Cube())">
+                                Roll Lock Quality
+                            </FluentButton>
+
+                            @if (qualityDiceResult.PrimaryDice > 0)
+                            {
+                                <div style="margin-top: 10px; text-align: center;">
+                                    <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@qualityDiceResult.PrimaryDice" Animate="true" />
+                                    <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@qualityDiceResult.SecondaryDice" Animate="true" />
+                                    <div style="margin-top: 8px;">
+                                        <FluentText Block="true" Weight="TextWeight.Bold">
+                                            Quality: @qualityDiceResult.PrimaryDice + @qualityDiceResult.SecondaryDice @(Content.Exit.LockModifier != 0 ? $"{(Content.Exit.LockModifier > 0 ? "+" : "")}{Content.Exit.LockModifier}" : "") = @Content.Exit.LockQuality
+                                        </FluentText>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Step 2: Perform Lockpicking -->
+                            <div style="background-color: var(--colorSubtleBackgroundHover); padding: 10px; border-radius: 4px;">
+                                <FluentText Block="true" Weight="TextWeight.Bold">Lock Quality: @Content.Exit.LockQuality</FluentText>
+                                <FluentText Block="true" Size="TextSize.Size200">Beat this number to unlock the door.</FluentText>
+                            </div>
+
+                            <FluentSelect TOption="string" TValue="string"
+                                          Value="@selectedKitId"
+                                          ValueChanged="@OnKitSelectedIdChanged"
+                                          Label="Select Lockpick Kit:"
+                                          Style="width: 100%;">
+                                <FluentOption Value="@("no-kit")">No Kit (+0)</FluentOption>
+                                <FluentOption Value="@("custom")">Custom Kit...</FluentOption>
+                                @for (int i = 0; i < parsedKits.Count; i++)
+                                {
+                                    <FluentOption Value="@i.ToString()">@parsedKits[i].DisplayText</FluentOption>
+                                }
+                            </FluentSelect>
+
+                            @if (showCustomModifier)
+                            {
+                                <FluentNumberInput @bind-Value="customModifier" 
+                                                   @bind-Value:after="OnCustomModifierChanged"
+                                                   Label="Custom Kit Modifier:" 
+                                                   Style="width: 120px;" />
+                            }
+
+                            <div style="background-color: var(--colorSubtleBackgroundHover); padding: 10px; border-radius: 4px; font-size: 13px;">
+                                <div><strong>Precision Modifier:</strong> +@Content.Adventure.Adventurer.Precision</div>
+                                <div><strong>Kit Modifier:</strong> +@kitModifier</div>
+                                <div><strong>Total Modifier:</strong> +@(Content.Adventure.Adventurer.Precision + kitModifier)</div>
+                            </div>
+
+                            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RollToPick" IconStart="@(new Icons.Regular.Size16.Key())" Disabled="lockpickingAttempted">
+                                Roll to Pick
+                            </FluentButton>
+
+                            @if (pickDiceResult.PrimaryDice > 0)
+                            {
+                                <div style="margin-top: 10px; text-align: center;">
+                                    <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@pickDiceResult.PrimaryDice" Animate="true" />
+                                    <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@pickDiceResult.SecondaryDice" Animate="true" />
+                                    <div style="margin-top: 8px;">
+                                        <FluentText Block="true" Weight="TextWeight.Bold" Color="@(pickSuccess ? Color.Success : Color.Error)">
+                                            @pickResultText
+                                        </FluentText>
+                                        <FluentText Block="true" Size="TextSize.Size200">
+                                            Roll: @pickDiceResult.PrimaryDice + @pickDiceResult.SecondaryDice + @Content.Adventure.Adventurer.Precision (Precision) + @kitModifier (Kit) = @pickTotal
+                                        </FluentText>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (pickSuccess)
+                            {
+                                <FluentButton Appearance="ButtonAppearance.Transparent" OnClick="CloseDialog" Style="margin-top: 10px;">Proceed</FluentButton>
+                            }
+                        }
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+
+            <!-- Column 2: Wait for Patrol -->
+            <FluentGridItem Xs="12" Sm="6">
+                <FluentCard Style="height: 100%; min-height: 380px;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+                        <FluentText As="TextTag.H4">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Clock())" Color="@Color.Primary" Slot="start" />
+                            Wait for Patrol
+                        </FluentText>
+
+                        <FluentText Block="true">Waiting costs resources but allows you to bypass the door by waiting for a patrol to open it.</FluentText>
+
+                        <div style="background-color: var(--colorSubtleBackgroundHover); padding: 12px; border-radius: 4px;">
+                            <FluentText Block="true" Weight="TextWeight.Bold">Select Rest Option:</FluentText>
+                            <FluentRadioGroup Name="rations" @bind-Value="rationChoice">
+                                <FluentRadio Value="@("use")" Disabled="@(!canUseRations)">
+                                    Use 1 Ration (Consumes 1 ration, heals +2 HP)
+                                    <FluentBadge Style="margin-left: 5px;" Content="@($"Rations: {Content.Adventure.Adventurer.Rations}")" />
+                                </FluentRadio>
+                                <FluentRadio Value="@("none")">
+                                    Suffer damage (No ration used, suffer -@(2 * Content.Adventure.Adventurer.Level) HP)
+                                </FluentRadio>
+                            </FluentRadioGroup>
                         </div>
-                    }
-                    else if (Content.Exit.LockQuality == null)
-                    {
-                        <!-- Step 1: Define Lock Quality -->
-                        <FluentLabel Typo="Typography.Body">Roll to define the door's lock quality before picking it.</FluentLabel>
-                        
-                        <FluentNumberField @bind-Value="Content.Exit.LockModifier" Label="Lock Modifier:" Style="width: 120px;" />
-                        
-                        <FluentButton Appearance="Appearance.Accent" OnClick="RollLockQuality" IconStart="@(new Icons.Regular.Size16.Cube())">
-                            Roll Lock Quality
+
+                        <FluentButton Appearance="ButtonAppearance.Primary" OnClick="RollPatrol" IconStart="@(new Icons.Regular.Size16.Clock())" Disabled="patrolAttempted">
+                            Wait for Patrol
                         </FluentButton>
 
-                        @if (qualityDiceResult.PrimaryDice > 0)
+                        @if (patrolDiceResult.PrimaryDice > 0)
                         {
                             <div style="margin-top: 10px; text-align: center;">
-                                <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@qualityDiceResult.PrimaryDice" Animate="true" />
-                                <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@qualityDiceResult.SecondaryDice" Animate="true" />
-                                <div style="margin-top: 8px;">
-                                    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
-                                        Quality: @qualityDiceResult.PrimaryDice + @qualityDiceResult.SecondaryDice @(Content.Exit.LockModifier != 0 ? $"{(Content.Exit.LockModifier > 0 ? "+" : "")}{Content.Exit.LockModifier}" : "") = @Content.Exit.LockQuality
-                                    </FluentLabel>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <!-- Step 2: Perform Lockpicking -->
-                        <div style="background-color: var(--neutral-fill-subtle-rest); padding: 10px; border-radius: 4px;">
-                            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Lock Quality: @Content.Exit.LockQuality</FluentLabel>
-                            <FluentLabel Typo="Typography.Body" Size="DesignTokenSize.Small">Beat this number to unlock the door.</FluentLabel>
-                        </div>
-
-                        <FluentSelect TOption="string"
-                                      Value="@selectedKitId"
-                                      ValueChanged="@OnKitSelectedIdChanged"
-                                      Label="Select Lockpick Kit:"
-                                      Style="width: 100%;">
-                            <FluentOption Value="no-kit">No Kit (+0)</FluentOption>
-                            <FluentOption Value="custom">Custom Kit...</FluentOption>
-                            @for (int i = 0; i < parsedKits.Count; i++)
-                            {
-                                <FluentOption Value="@i.ToString()">@parsedKits[i].DisplayText</FluentOption>
-                            }
-                        </FluentSelect>
-
-                        @if (showCustomModifier)
-                        {
-                            <FluentNumberField @bind-Value="customModifier" 
-                                               @bind-Value:after="OnCustomModifierChanged"
-                                               Label="Custom Kit Modifier:" 
-                                               Style="width: 120px;" />
-                        }
-
-                        <div style="background-color: var(--neutral-fill-subtle-rest); padding: 10px; border-radius: 4px; font-size: 13px;">
-                            <div><strong>Precision Modifier:</strong> +@Content.Adventure.Adventurer.Precision</div>
-                            <div><strong>Kit Modifier:</strong> +@kitModifier</div>
-                            <div><strong>Total Modifier:</strong> +@(Content.Adventure.Adventurer.Precision + kitModifier)</div>
-                        </div>
-
-                        <FluentButton Appearance="Appearance.Accent" OnClick="RollToPick" IconStart="@(new Icons.Regular.Size16.Key())" Disabled="lockpickingAttempted">
-                            Roll to Pick
-                        </FluentButton>
-
-                        @if (pickDiceResult.PrimaryDice > 0)
-                        {
-                            <div style="margin-top: 10px; text-align: center;">
-                                <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@pickDiceResult.PrimaryDice" Animate="true" />
-                                <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@pickDiceResult.SecondaryDice" Animate="true" />
-                                <div style="margin-top: 8px;">
-                                    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Color="@(pickSuccess ? Color.Success : Color.Error)">
-                                        @pickResultText
-                                    </FluentLabel>
-                                    <FluentLabel Typo="Typography.Body" Size="DesignTokenSize.Small">
-                                        Roll: @pickDiceResult.PrimaryDice + @pickDiceResult.SecondaryDice + @Content.Adventure.Adventurer.Precision (Precision) + @kitModifier (Kit) = @pickTotal
-                                    </FluentLabel>
+                                <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@patrolDiceResult.PrimaryDice" Animate="true" />
+                                @if (patrolDiceResult.SecondaryDice > 0)
+                                {
+                                    <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
+                                }
+                                <div style="margin-top: 8px; text-align: left; padding: 10px; background-color: var(--colorSubtleBackgroundHover); border-radius: 4px;">
+                                    <div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-fill-rest);">
+                                        Patrol Roll: @(patrolDiceResult.SecondaryDice > 0 ? (patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice) : patrolDiceResult.PrimaryDice)
+                                    </div>
+                                    <div style="font-size: 13px; line-height: 1.4; margin-bottom: 5px;">
+                                        @patrolResultText
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--neutral-foreground-hint); border-top: 1px solid var(--neutral-stroke-rest); padding-top: 5px; margin-top: 5px;">
+                                        @patrolLog
+                                    </div>
                                 </div>
                             </div>
                         }
 
-                        @if (pickSuccess)
+                        @if (showPatrolFinishedButton)
                         {
-                            <FluentButton Appearance="Appearance.Lightweight" OnClick="CloseDialog" Style="margin-top: 10px;">Proceed</FluentButton>
+                            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="CloseDialog" Style="margin-top: 10px; width: 100%;">
+                                @(Content.CombatInitiated ? "Enter Combat" : "Proceed")
+                            </FluentButton>
                         }
-                    }
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-
-        <!-- Column 2: Wait for Patrol -->
-        <FluentGridItem XS="12" SM="6">
-            <FluentCard Style="height: 100%; min-height: 380px;">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
-                    <FluentLabel Typo="Typography.H4">
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Clock())" Color="@Color.Accent" Slot="start" />
-                        Wait for Patrol
-                    </FluentLabel>
-
-                    <FluentLabel Typo="Typography.Body">Waiting costs resources but allows you to bypass the door by waiting for a patrol to open it.</FluentLabel>
-
-                    <div style="background-color: var(--neutral-fill-subtle-rest); padding: 12px; border-radius: 4px;">
-                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Select Rest Option:</FluentLabel>
-                        <FluentRadioGroup Name="rations" @bind-Value="rationChoice">
-                            <FluentRadio Value="@("use")" Disabled="@(!canUseRations)">
-                                Use 1 Ration (Consumes 1 ration, heals +2 HP)
-                                <FluentBadge Style="margin-left: 5px;">Rations: @Content.Adventure.Adventurer.Rations</FluentBadge>
-                            </FluentRadio>
-                            <FluentRadio Value="@("none")">
-                                Suffer damage (No ration used, suffer -@(2 * Content.Adventure.Adventurer.Level) HP)
-                            </FluentRadio>
-                        </FluentRadioGroup>
-                    </div>
-
-                    <FluentButton Appearance="Appearance.Accent" OnClick="RollPatrol" IconStart="@(new Icons.Regular.Size16.Clock())" Disabled="patrolAttempted">
-                        Wait for Patrol
-                    </FluentButton>
-
-                    @if (patrolDiceResult.PrimaryDice > 0)
-                    {
-                        <div style="margin-top: 10px; text-align: center;">
-                            <Dice color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="@patrolDiceResult.PrimaryDice" Animate="true" />
-                            @if (patrolDiceResult.SecondaryDice > 0)
-                            {
-                                <Dice color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="@patrolDiceResult.SecondaryDice" Animate="true" />
-                            }
-                            <div style="margin-top: 8px; text-align: left; padding: 10px; background-color: var(--neutral-fill-subtle-rest); border-radius: 4px;">
-                                <div style="font-weight: bold; margin-bottom: 5px; color: var(--accent-fill-rest);">
-                                    Patrol Roll: @(patrolDiceResult.SecondaryDice > 0 ? (patrolDiceResult.PrimaryDice + patrolDiceResult.SecondaryDice) : patrolDiceResult.PrimaryDice)
-                                </div>
-                                <div style="font-size: 13px; line-height: 1.4; margin-bottom: 5px;">
-                                    @patrolResultText
-                                </div>
-                                <div style="font-size: 12px; color: var(--neutral-foreground-hint); border-top: 1px solid var(--neutral-stroke-rest); padding-top: 5px; margin-top: 5px;">
-                                    @patrolLog
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if (showPatrolFinishedButton)
-                    {
-                        <FluentButton Appearance="Appearance.Accent" OnClick="CloseDialog" Style="margin-top: 10px; width: 100%;">
-                            @(Content.CombatInitiated ? "Enter Combat" : "Proceed")
-                        </FluentButton>
-                    }
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-    </FluentGrid>
-</div>
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+    </div>
+</FluentDialogBody>
 
 @code {
-    [Parameter]
-    public ResolveLockedDoorDialogData Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
-
     private DiceResult qualityDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private DiceResult pickDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
     private DiceResult patrolDiceResult = new DiceResult { PrimaryDice = 0, SecondaryDice = 0 };
@@ -328,7 +324,7 @@
             Content.Exit.IsLocked = false;
             Content.Unlocked = true;
             pickResultText = "Success! The lock clicks open.";
-            ToastService.ShowToast(ToastIntent.Success, "Door unlocked successfully!");
+            _ = ToastService.ShowSuccessToastAsync("Door unlocked successfully!");
             Content.Adventure.AppendJournal($"Successfully picked the lock of the door to the {Content.Direction}.");
             await SaveAdventure();
         }
@@ -337,7 +333,7 @@
             pickSuccess = false;
             Content.Exit.IsDamaged = true;
             pickResultText = "Failure! The lock jams and is permanently damaged.";
-            ToastService.ShowToast(ToastIntent.Error, "Failed to pick the lock. It is now damaged.");
+            _ = ToastService.ShowErrorToastAsync("Failed to pick the lock. It is now damaged.");
 
             // Decrement uses
             if (selectedKit != null)
@@ -430,7 +426,7 @@
             Content.Unlocked = true;
             
             patrolLog += $"Hostile encounter initiated! Fighting {encounterText}.";
-            ToastService.ShowToast(ToastIntent.Warning, $"Hostile patrol: Face a {encounterText}!");
+            _ = ToastService.ShowWarningToastAsync($"Hostile patrol: Face a {encounterText}!");
             journalLog += $" Hostile patrol encountered: {encounterText}!";
         }
         else
@@ -439,7 +435,7 @@
             Content.Unlocked = true;
             
             patrolLog += "Non-hostile encounter. The door is now unlocked.";
-            ToastService.ShowToast(ToastIntent.Success, "A non-hostile patrol bypassed the door and unlocked it!");
+            _ = ToastService.ShowSuccessToastAsync("A non-hostile patrol bypassed the door and unlocked it!");
             journalLog += " Non-hostile patrol passed and unlocked the door.";
         }
 
@@ -488,6 +484,6 @@
 
     private async Task CloseDialog()
     {
-        await Dialog.CloseAsync(Content);
+        await CloseAsync(Content);
     }
 }

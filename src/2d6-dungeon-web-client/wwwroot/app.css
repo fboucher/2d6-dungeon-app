@@ -3,8 +3,8 @@
 body {
     --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-family: var(--body-font);
-    font-size: var(--type-ramp-base-font-size);
-    line-height: var(--type-ramp-base-line-height);
+    font-size: var(--fontSizeBase300);
+    line-height: var(--lineHeightBase300);
     margin: 0;
 }
 
@@ -14,7 +14,7 @@ body {
 
 .main {
     min-height: calc(100dvh - 86px);
-    color: var(--neutral-foreground-rest);
+    color: var(--colorNeutralForeground1);
     align-items: stretch !important;
 }
 
@@ -36,14 +36,14 @@ body {
 }
 
 footer {
-    background: var(--neutral-layer-4);
-    color: var(--neutral-foreground-rest);
+    background: var(--colorNeutralBackground4);
+    color: var(--colorNeutralForeground1);
     align-items: center;
     padding: 10px 10px;
 }
 
     footer a {
-        color: var(--neutral-foreground-rest);
+        color: var(--colorNeutralForeground1);
         text-decoration: none;
     }
 
@@ -57,7 +57,7 @@ footer {
         }
 
 .alert {
-    border: 1px dashed var(--accent-fill-rest);
+    border: 1px dashed var(--colorBrandBackground);
     padding: 5px;
 }
 
@@ -69,9 +69,9 @@ footer {
 }
 
 .documentation-nav {
-    background: var(--neutral-layer-2);
-    border: 1px solid var(--neutral-stroke-divider-rest);
-    border-radius: var(--control-corner-radius, 4px);
+    background: var(--colorNeutralBackground2);
+    border: 1px solid var(--colorNeutralStroke2);
+    border-radius: var(--borderRadiusMedium, 4px);
     flex: 0 0 280px;
     padding: 0.5rem;
     position: sticky;
@@ -92,7 +92,7 @@ footer {
 }
 
 .documentation-article pre {
-    background: var(--neutral-layer-2);
+    background: var(--colorNeutralBackground2);
     overflow-x: auto;
     padding: 1rem;
 }
@@ -184,31 +184,27 @@ code {
 /* Dungeon Theme - Medieval D&D aesthetic */
 body.dungeon-theme {
     --fill-color: #4A3728;
-    --neutral-layer-1: #3a2a1e;
-    --neutral-layer-2: #4A3728;
-    --neutral-layer-3: #5a4738;
-    --neutral-layer-4: #2a1a0e;
-    --neutral-foreground-rest: #f5e6d3;
-    --neutral-foreground-hover: #ffffff;
-    --accent-fill-rest: #8b6f47;
-    --accent-fill-hover: #a0845a;
-    --accent-fill-active: #6f5837;
-    --accent-foreground-rest: #f5e6d3;
-    --neutral-stroke-rest: #8b6f47;
-    --neutral-stroke-hover: #a0845a;
-    --neutral-fill-rest: rgba(139, 111, 71, 0.1);
-    --neutral-fill-hover: rgba(139, 111, 71, 0.2);
-    --neutral-fill-active: rgba(139, 111, 71, 0.3);
+    --colorNeutralBackground1: #3a2a1e;
+    --colorNeutralBackground2: #4A3728;
+    --colorNeutralBackground3: #5a4738;
+    --colorNeutralBackground4: #2a1a0e;
+    --colorNeutralForeground1: #f5e6d3;
+    --colorNeutralForeground1Hover: #ffffff;
+    --colorBrandBackground: #8b6f47;
+    --colorBrandBackgroundHover: #a0845a;
+    --colorBrandBackgroundPressed: #6f5837;
+    --colorNeutralForegroundOnBrand: #f5e6d3;
+    --colorNeutralStroke1: #8b6f47;
+    --colorNeutralStroke1Hover: #a0845a;
     background: linear-gradient(135deg, #4A3728 0%, #3a2a1e 100%);
 }
 
-body.dungeon-theme fluent-design-system-provider,
-body.dungeon-theme fluent-card,
-body.dungeon-theme fluent-text-field,
-body.dungeon-theme fluent-select,
+body.dungeon-theme .fluent-card,
+body.dungeon-theme fluent-text-input,
+body.dungeon-theme fluent-dropdown,
 body.dungeon-theme fluent-button {
-    --neutral-layer-1: #3a2a1e;
-    --neutral-foreground-rest: #f5e6d3;
+    --colorNeutralBackground1: #3a2a1e;
+    --colorNeutralForeground1: #f5e6d3;
 }
 
 /* Dice Rolling Animation */
@@ -378,9 +374,9 @@ body.dungeon-theme fluent-button {
     top: 10px;
     right: 10px;
     z-index: 100;
-    background: var(--neutral-layer-3, #5a4738);
-    color: var(--neutral-foreground-rest, #f5e6d3);
-    border: 2px solid var(--accent-fill-rest, #8b6f47);
+    background: var(--colorNeutralBackground3, #5a4738);
+    color: var(--colorNeutralForeground1, #f5e6d3);
+    border: 2px solid var(--colorBrandBackground, #8b6f47);
     border-radius: 8px;
     padding: 6px 12px;
     cursor: pointer;
@@ -392,7 +388,7 @@ body.dungeon-theme fluent-button {
 }
 
 .legend-floating-btn:hover {
-    background: var(--accent-fill-hover, #a0845a);
+    background: var(--colorBrandBackgroundHover, #a0845a);
     transform: scale(1.05);
 }
 
@@ -562,4 +558,82 @@ fluent-dialog .fluent-wizard.new-room-wizard[position="left"] {
 .fluent-wizard.new-room-wizard .fluent-wizard-content {
     min-height: 0;
     overflow-y: auto;
+}
+
+/* Fluent UI v5 removed FluentHeader/FluentFooter. These rules keep the v4 look of the
+   app header, footer and the coloured section headers used inside cards. */
+.app-header {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 24px;
+    background: var(--colorBrandBackground);
+    color: var(--colorNeutralForegroundOnBrand);
+    font-size: var(--fontSizeBase400);
+    font-weight: var(--fontWeightSemibold);
+}
+
+.app-footer {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    background: var(--colorNeutralBackground4);
+    color: var(--colorNeutralForeground1);
+    font-size: var(--fontSizeBase200);
+}
+
+    .app-footer a {
+        color: var(--colorNeutralForeground1);
+        text-decoration: none;
+    }
+
+        .app-footer a:hover {
+            text-decoration: underline;
+        }
+
+.card-header {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 24px;
+    background: var(--colorBrandBackground);
+    color: var(--colorNeutralForegroundOnBrand);
+    font-size: var(--fontSizeBase400);
+    font-weight: var(--fontWeightSemibold);
+    box-sizing: border-box;
+}
+
+/* Navigation rail: collapsed shows only the icons, like the v4 FluentNavMenu. */
+.navmenu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+    .navmenu.collapsed .fluent-nav-item .fluent-nav-text,
+    .navmenu.collapsed fluent-nav-item span:not(:has(svg)) {
+        display: none;
+    }
+
+/* Tick labels under the adventurer sheet sliders (replaces v4 FluentSliderLabel). */
+.slider-with-ticks {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 6px;
+    font-size: var(--fontSizeBase200);
+    color: var(--colorNeutralForeground2);
+}
+
+/* Replaces v4 FluentPersona on the adventurer card. */
+.adventurer-persona {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    cursor: pointer;
 }

@@ -1,41 +1,36 @@
 @using c5m._2d6Dungeon
 @inject D6Service D6Service
 
-@implements IDialogContentComponent<MagicScroll>
+@inherits AppDialogBase<MagicScroll>
 
 @rendermode InteractiveServer
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
-    @if (scrolls == null)
-    {
-        <FluentProgressRing />
-    }
-    else
-    {
-        <FluentListbox TOption="MagicScroll"
-                       Items="@scrolls"
-                       OptionValue="@(s => s.Id.ToString())"
-                       OptionText="@(s => string.IsNullOrEmpty(s.Modifier) ? s.ScrollType : $"{s.ScrollType} | {s.Modifier}")"
-                       SelectedOptionChanged="@OnSelectionChanged"
-                       Height="120px"
-                       style="width: 100%;" />
-    }
-</FluentStack>
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="min-width: 360px;">
+        @if (scrolls == null)
+        {
+            <FluentSpinner />
+        }
+        else
+        {
+            <FluentListbox TOption="MagicScroll" TValue="MagicScroll"
+                           Items="@scrolls"
+                           OptionText="@(s => s == null ? string.Empty : string.IsNullOrEmpty(s.Modifier) ? s.ScrollType : $"{s.ScrollType} | {s.Modifier}")"
+                           ValueChanged="@OnSelectionChanged"
+                           Height="120px"
+                           style="width: 100%;" />
+        }
+    </FluentStack>
+</FluentDialogBody>
 
 @code {
-    [Parameter]
-    public MagicScroll Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
-
     private List<MagicScroll>? scrolls;
 
     protected override async Task OnInitializedAsync()
     {
         var scrollList = await D6Service.GetMagicScrolls();
         scrolls = scrollList.value;
-        Dialog.TogglePrimaryActionButton(false);
+        TogglePrimaryActionButton(false);
     }
 
     private void OnSelectionChanged(MagicScroll? scroll)
@@ -52,6 +47,6 @@
             Content.Fail = scroll.Fail;
             Content.Modifier = scroll.Modifier;
         }
-        Dialog.TogglePrimaryActionButton(scroll != null);
+        TogglePrimaryActionButton(scroll != null);
     }
-}
+}

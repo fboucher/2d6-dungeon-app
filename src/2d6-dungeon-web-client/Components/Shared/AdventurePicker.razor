@@ -9,7 +9,7 @@
 
 <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" >
 
-    <FluentLabel Typo="Typography.H3">Select the Adventure you would like to continue.</FluentLabel>
+    <FluentText As="TextTag.H3">Select the Adventure you would like to continue.</FluentText>
 
     <FluentDataGrid Items="@AdventurePreviews" 
                     ShowHover="true"  
@@ -32,11 +32,11 @@
             </TemplateColumn>
         </ChildContent>
         <EmptyContent>
-            <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Accent" />&nbsp; Nothing so far, a Create a new one to get started!
+            <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Primary" />&nbsp; Nothing so far, a Create a new one to get started!
         </EmptyContent>
     </FluentDataGrid>
 
-    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Filled.Size20.Add())" OnClick="CreateNewAdventure">Create a new adventure</FluentButton>
+    <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Filled.Size20.Add())" OnClick="CreateNewAdventure">Create a new adventure</FluentButton>
 
 </FluentStack>
 
@@ -98,22 +98,19 @@
             Name = currentName
         };
 
-        DialogParameters parameters = new()
+        var result = await DialogService.ShowDialogAsync<EditAdventureNameDialog>(options =>
         {
-            Title = "Rename Adventure",
-            PrimaryAction = "Save",
-            SecondaryAction = "Cancel",
-            Width = "400px",
-            TrapFocus = true,
-            Modal = true
-        };
+            options.Header.Title = "Rename Adventure";
+            options.Footer.PrimaryAction.Label = "Save";
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "400px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(EditAdventureNameDialog.Content), dialogData);
+        });
 
-        IDialogReference dialog = await DialogService.ShowDialogAsync<EditAdventureNameDialog>(dialogData, parameters);
-        DialogResult? result = await dialog.Result;
-
-        if (!result.Cancelled && result.Data != null)
+        if (!result.Cancelled)
         {
-            var resultData = result.Data as EditAdventureNameDialogData;
+            var resultData = result.GetValue<EditAdventureNameDialogData>();
             if (resultData != null && !string.IsNullOrWhiteSpace(resultData.Name))
             {
                 var adventure = await D6Service.GetAdventure(id);

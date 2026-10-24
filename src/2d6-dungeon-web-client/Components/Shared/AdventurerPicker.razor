@@ -1,4 +1,4 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @using System.Text.Json;
 @inject D6Service D6Service;
 @inject NavigationManager Navigation;
@@ -13,7 +13,7 @@ else
 {
     <FluentStack Orientation="Orientation.Vertical">
 
-        <FluentLabel Typo="Typography.Body" Color="@Color.Warning">@errorMessage</FluentLabel>
+        <FluentText Block="true" Color="@Color.Warning">@errorMessage</FluentText>
 
         <FluentDataGrid 
                 Items="@adventurersQueryable" 
@@ -31,7 +31,7 @@ else
         </FluentDataGrid>
     
 
-        <FluentButton @onclick=CreateNewAdventurer Appearance="Appearance.Accent">New</FluentButton>
+        <FluentButton @onclick=CreateNewAdventurer Appearance="ButtonAppearance.Primary">New</FluentButton>
     
     </FluentStack>
 }

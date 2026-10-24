@@ -1,4 +1,4 @@
-@implements IDialogContentComponent<NewRoomDialogData>
+@inherits AppDialogBase<NewRoomDialogData>
 @inject IJSRuntime JSRuntime 
 @inject D6Service d6Service;
 
@@ -6,133 +6,129 @@
 
 
 
-<FluentWizard StepperPosition="StepperPosition.Left"
-              StepSequence="WizardStepSequence.Linear"
-              DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
-              Border="WizardBorder.Outside"
-              StepTitleHiddenWhen="@GridItemHidden.XsAndDown"
-              Height="300px"
-              Class="new-room-wizard"
-              OnFinish="@OnFinishedAsync">
+<FluentDialogBody>
+    <FluentWizard StepperPosition="StepperPosition.Left"
+                  StepSequence="WizardStepSequence.Linear"
+                  DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
+                  Border="WizardBorder.Outside"
+                  StepTitleHiddenWhen="@GridItemHidden.XsAndDown"
+                  Height="300px"
+                  Class="new-room-wizard"
+                  OnFinish="@OnFinishedAsync">
 
-    <Steps>
-        <FluentWizardStep   Label="Dimensions"
-                            Summary="Determine the dimension of the room"
-                          OnChange="@OnStepChange">
-            <FluentStack Orientation="Orientation.Vertical">
-                <p>@(gameTurn!.Message ?? string.Empty)</p>
-                <FluentButton @onclick=RollDiceForRoomDimensions Appearance="Appearance.Accent" disabled="@(isSizeSet)">Roll 2D6 </FluentButton>
-
-                <div style="padding:20px;">
-                    @* Keyed on the roll count so both dice roll again on a second roll, even when a die lands on the same face. *@
-                    <span style="@(sizeDiceResult.PrimaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="sizeDiceA" @key="sizeRollCount" face="@sizeDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
-                    </span>
-                    <span style="@(sizeDiceResult.SecondaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="sizeDiceB" @key="sizeRollCount" face="@sizeDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
-                    </span>
-                </div>
-            </FluentStack>
-        </FluentWizardStep>
-        <FluentWizardStep Label="Exits"
-                          Summary="Determines the number of exits in the room"
-                          OnChange="@OnStepChange">
-            <FluentStack Orientation="Orientation.Vertical">
-                <p>@(gameTurn!.Message ?? string.Empty)</p>
-                <FluentButton @onclick=RollDiceForExits Appearance="Appearance.Accent" disabled="@(isExitsSet)">Roll 1D6</FluentButton>
-
-                <div style="padding:20px;">
-                    <span style="@(exitsDiceResult.PrimaryDice == 0 ? "display:none" : "")">
-                        <Dice  face="@exitsDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
-                    </span>
-                </div>
-            </FluentStack>
-        </FluentWizardStep>
-        <FluentWizardStep Label="Description"
-                          Summary="Determine what is in the room"
-                          IconPrevious="@(new Icons.Filled.Size24.Star())"
-                          IconCurrent="@(new Icons.Filled.Size24.StarEmphasis())"
-                          IconNext="@(new Icons.Regular.Size24.Star())"
-                          DisplayStepNumber="false"
-                          OnChange="@OnStepChange"
-                          Disabled="@(isCorridor)">
-            <FluentStack Orientation="Orientation.Vertical">
-                <p>@(gameTurn!.Message ?? string.Empty)</p>
-                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Gap="10">
-                    <FluentButton @onclick=RollDiceForDescription Appearance="Appearance.Accent" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
-                    @if (isDescriptionSet && gameTurn.CurrentRoom?.IsUnique == true)
-                    {
-                        <FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge>
-                    }
-                </FluentStack>
-
-                <div style="padding:20px;">
-                    <span style="@(DescriptionDiceResult.PrimaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="descDiceA" face="@DescriptionDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
-                    </span>
-                    <span style="@(DescriptionDiceResult.SecondaryDice == 0 ? "display:none" : "")">
-                        <Dice @ref="descDiceB" face="@DescriptionDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
-                    </span>
-                </div>
-            </FluentStack>
-        </FluentWizardStep>
-        <FluentWizardStep Label="Locks"
-                          Summary="Check for locked doors"
-                          OnChange="@OnStepChange"
-                          Disabled="@(isCorridor || hasNoExits || !GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))">
-            <FluentStack Orientation="Orientation.Vertical">
-                @if (hasNoExits)
-                {
-                    <p>There are no doors in this room, so there's nothing to lock.</p>
-                }
-                else if (!GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))
-                {
-                    <p>The doors in this room are @(gameTurn.CurrentRoom?.ExitsType?.ToLower() ?? "non-lockable types"), which cannot be locked.</p>
-                }
-                else
-                {
+        <Steps>
+            <FluentWizardStep   Label="Dimensions"
+                                Summary="Determine the dimension of the room"
+                              OnChange="@OnStepChange">
+                <FluentStack Orientation="Orientation.Vertical">
                     <p>@(gameTurn!.Message ?? string.Empty)</p>
-                    <FluentButton @onclick=RollDiceForLocks Appearance="Appearance.Accent" disabled="@(isLocksSet)">Roll 1D6</FluentButton>
+                    <FluentButton @onclick=RollDiceForRoomDimensions Appearance="ButtonAppearance.Primary" disabled="@(isSizeSet)">Roll 2D6 </FluentButton>
 
                     <div style="padding:20px;">
-                        <span style="@(locksDiceResult.PrimaryDice == 0 ? "display:none" : "")">
-                            <Dice face="@locksDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        @* Keyed on the roll count so both dice roll again on a second roll, even when a die lands on the same face. *@
+                        <span style="@(sizeDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                            <Dice @ref="sizeDiceA" @key="sizeRollCount" face="@sizeDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        </span>
+                        <span style="@(sizeDiceResult.SecondaryDice == 0 ? "display:none" : "")">
+                            <Dice @ref="sizeDiceB" @key="sizeRollCount" face="@sizeDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
                         </span>
                     </div>
-                }
-            </FluentStack>
-        </FluentWizardStep>
-        <FluentWizardStep   Label="Summary"
-                            Summary="Summary of the new room"
-                            OnChange="@OnStepChange">
-            <div style="padding:20px;">
-            @if(isSizeSet && isExitsSet && isDescriptionSet && isLocksSet)
-            {
-                <p>The room is @gameTurn.CurrentRoom!.Width by @gameTurn.CurrentRoom.Height</p>
-                <p>Excluding the door you used to ge in, there @gameTurn.CurrentRoom.ExitsCount other door(s)</p>
-                if(!hasNoExits)
+                </FluentStack>
+            </FluentWizardStep>
+            <FluentWizardStep Label="Exits"
+                              Summary="Determines the number of exits in the room"
+                              OnChange="@OnStepChange">
+                <FluentStack Orientation="Orientation.Vertical">
+                    <p>@(gameTurn!.Message ?? string.Empty)</p>
+                    <FluentButton @onclick=RollDiceForExits Appearance="ButtonAppearance.Primary" disabled="@(isExitsSet)">Roll 1D6</FluentButton>
+
+                    <div style="padding:20px;">
+                        <span style="@(exitsDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                            <Dice  face="@exitsDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        </span>
+                    </div>
+                </FluentStack>
+            </FluentWizardStep>
+            <FluentWizardStep Label="Description"
+                              Summary="Determine what is in the room"
+                              IconPrevious="@(new Icons.Filled.Size24.Star())"
+                              IconCurrent="@(new Icons.Filled.Size24.StarEmphasis())"
+                              IconNext="@(new Icons.Regular.Size24.Star())"
+                              DisplayStepNumber="false"
+                              OnChange="@OnStepChange"
+                              Disabled="@(isCorridor)">
+                <FluentStack Orientation="Orientation.Vertical">
+                    <p>@(gameTurn!.Message ?? string.Empty)</p>
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Gap="10">
+                        <FluentButton @onclick=RollDiceForDescription Appearance="ButtonAppearance.Primary" disabled="@(isDescriptionSet)">Roll 2 Dice</FluentButton>
+                        @if (isDescriptionSet && gameTurn.CurrentRoom?.IsUnique == true)
+                        {
+                            <FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;" Content="✨ UNIQUE ROOM ✨" />
+                        }
+                    </FluentStack>
+
+                    <div style="padding:20px;">
+                        <span style="@(DescriptionDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                            <Dice @ref="descDiceA" face="@DescriptionDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                        </span>
+                        <span style="@(DescriptionDiceResult.SecondaryDice == 0 ? "display:none" : "")">
+                            <Dice @ref="descDiceB" face="@DescriptionDiceResult.SecondaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.purple" Animate="true"></Dice>
+                        </span>
+                    </div>
+                </FluentStack>
+            </FluentWizardStep>
+            <FluentWizardStep Label="Locks"
+                              Summary="Check for locked doors"
+                              OnChange="@OnStepChange"
+                              Disabled="@(isCorridor || hasNoExits || !GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))">
+                <FluentStack Orientation="Orientation.Vertical">
+                    @if (hasNoExits)
+                    {
+                        <p>There are no doors in this room, so there's nothing to lock.</p>
+                    }
+                    else if (!GameTurn.IsDoorTypeLockable(gameTurn.CurrentRoom?.ExitsType))
+                    {
+                        <p>The doors in this room are @(gameTurn.CurrentRoom?.ExitsType?.ToLower() ?? "non-lockable types"), which cannot be locked.</p>
+                    }
+                    else
+                    {
+                        <p>@(gameTurn!.Message ?? string.Empty)</p>
+                        <FluentButton @onclick=RollDiceForLocks Appearance="ButtonAppearance.Primary" disabled="@(isLocksSet)">Roll 1D6</FluentButton>
+
+                        <div style="padding:20px;">
+                            <span style="@(locksDiceResult.PrimaryDice == 0 ? "display:none" : "")">
+                                <Dice face="@locksDiceResult.PrimaryDice" size="Dice.DiceSize.regular" color="Dice.DiceColor.red" Animate="true"></Dice>
+                            </span>
+                        </div>
+                    }
+                </FluentStack>
+            </FluentWizardStep>
+            <FluentWizardStep   Label="Summary"
+                                Summary="Summary of the new room"
+                                OnChange="@OnStepChange">
+                <div style="padding:20px;">
+                @if(isSizeSet && isExitsSet && isDescriptionSet && isLocksSet)
                 {
-                    <p>Door(s): @gameTurn.CurrentRoom.ExitsType?.ToLower()</p> 
+                    <p>The room is @gameTurn.CurrentRoom!.Width by @gameTurn.CurrentRoom.Height</p>
+                    <p>Excluding the door you used to ge in, there @gameTurn.CurrentRoom.ExitsCount other door(s)</p>
+                    if(!hasNoExits)
+                    {
+                        <p>Door(s): @gameTurn.CurrentRoom.ExitsType?.ToLower()</p> 
+                    }
+                    <p>@gameTurn.CurrentRoom.Description</p>
+                    @if (gameTurn.CurrentRoom.IsUnique)
+                    {
+                        <p><FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;" Content="✨ UNIQUE ROOM ✨" /></p>
+                    }
+                    <p>@(gameTurn!.Message ?? string.Empty)</p>
                 }
-                <p>@gameTurn.CurrentRoom.Description</p>
-                @if (gameTurn.CurrentRoom.IsUnique)
-                {
-                    <p><FluentBadge Style="background-color: #ECD5B0; color: #2A2420; font-weight: bold; border: 1px solid #2A2420;">✨ UNIQUE ROOM ✨</FluentBadge></p>
-                }
-                <p>@(gameTurn!.Message ?? string.Empty)</p>
-            }
-            </div>
-        </FluentWizardStep>
-    </Steps>
-</FluentWizard>
+                </div>
+            </FluentWizardStep>
+        </Steps>
+    </FluentWizard>
+</FluentDialogBody>
 
 @code {
-
-    [Parameter]
-    public required NewRoomDialogData Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog? Dialog { get; set; } = default!;
 
     private GameTurn gameTurn = new GameTurn();
 
@@ -208,7 +204,7 @@
             return;
         }
         Content.Room = gameTurn.CurrentRoom!;
-        await Dialog!.CloseAsync(Content);
+        await CloseAsync(Content);
     }
 
     private async Task RollDiceForRoomDimensions()

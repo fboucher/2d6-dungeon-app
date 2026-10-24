@@ -1,11 +1,11 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 
-<FluentStack Orientation="Orientation.Vertical" Width="40">
+<FluentStack Orientation="Orientation.Vertical" Width="40px">
     <FluentButton   IconEnd="@(new Icons.Regular.Size12.CaretUp())" 
-                    @onclick=GoUp Appearance="Appearance.Accent" 
+                    @onclick=GoUp Appearance="ButtonAppearance.Primary" 
                     disabled="@(isUpDisable)"></FluentButton>
     <FluentButton   IconEnd="@(new Icons.Regular.Size12.CaretDown())"
-                    @onclick=GoDown Appearance="Appearance.Accent" 
+                    @onclick=GoDown Appearance="ButtonAppearance.Primary" 
                     disabled="@(isDownDisable)"></FluentButton>
 </FluentStack>
 

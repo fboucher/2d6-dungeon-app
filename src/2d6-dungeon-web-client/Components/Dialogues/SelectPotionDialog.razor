@@ -1,41 +1,35 @@
 @using c5m._2d6Dungeon
 @inject D6Service D6Service
 
-@implements IDialogContentComponent<MagicPotion>
+@inherits AppDialogBase<MagicPotion>
 
 @rendermode InteractiveServer
 
-<FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="width: 100%;">
-    @if (potions == null)
-    {
-        <FluentProgressRing />
-    }
-    else
-    {
-        <FluentListbox TOption="MagicPotion"
-                       Items="@potions"
-                       OptionValue="@(p => p.Id.ToString())"
-                       OptionText="@(p => string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} | {p.Modifier}")"
-                       OptionTitle="@(p => $"Modifier: {p.Modifier}\nDuration: {p.Duration}")"
-                       SelectedOptionChanged="@OnSelectionChanged"
-                       Width="100%"
-                       Height="400px" />
-    }
-</FluentStack>
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" style="width: 100%;">
+        @if (potions == null)
+        {
+            <FluentSpinner />
+        }
+        else
+        {
+            <FluentListbox TOption="MagicPotion" TValue="MagicPotion"
+                           Items="@potions"
+                           OptionText="@(p => p == null ? string.Empty : string.IsNullOrEmpty(p.Modifier) ? p.PotionType : $"{p.PotionType} | {p.Modifier}")"
+                           ValueChanged="@OnSelectionChanged"
+                           Width="100%"
+                           Height="400px" />
+        }
+    </FluentStack>
+</FluentDialogBody>
 
 @code {
-    [Parameter]
-    public MagicPotion Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
-
     private List<MagicPotion>? potions;
 
     protected override async Task OnInitializedAsync()
     {
         potions = await D6Service.GetMagicPotions();
-        Dialog.TogglePrimaryActionButton(false);
+        TogglePrimaryActionButton(false);
     }
 
     private void OnSelectionChanged(MagicPotion? potion)
@@ -48,6 +42,6 @@
             Content.Duration = potion.Duration;
             Content.Cost = potion.Cost;
         }
-        Dialog.TogglePrimaryActionButton(potion != null);
+        TogglePrimaryActionButton(potion != null);
     }
 }

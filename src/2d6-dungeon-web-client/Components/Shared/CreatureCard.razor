@@ -1,4 +1,4 @@
-﻿@using c5m._2d6Dungeon;
+@using c5m._2d6Dungeon;
 @inject D6Service D6Service;
 
 @rendermode InteractiveServer
@@ -7,14 +7,14 @@
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
         <div><b>Name:</b> @creature.name</div>
         <div>L@(creature.level.ToString())</div>
-        <FluentBadge Circular="true" Fill="lowlight" BackgroundColor="#000" Color="#fff" >@creature.creature_type.Substring(0,1)</FluentBadge>
+        <FluentBadge Shape="BadgeShape.Circular" BackgroundColor="#000" Style="color: #fff;" Content="@(creature.creature_type.Substring(0,1))" />
     </FluentStack>
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
         <div>
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 @if(Editable)
                 {
-                    <span><b>HP:</b> <FluentNumberField @bind-Value="creature.health_points" @bind-Value:after="CheckHealth" style="width: 70px;"/></span>
+                    <span><b>HP:</b> <FluentNumberInput @bind-Value="creature.health_points" @bind-Value:after="CheckHealth" style="width: 70px;"/></span>
                 }
                 else 
                 {

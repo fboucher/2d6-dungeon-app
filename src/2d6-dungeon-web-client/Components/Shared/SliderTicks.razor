@@ -1,0 +1,12 @@
+@* Fluent UI v5 removed FluentSliderLabel. This draws the same 0..Max tick labels under a slider. *@
+<div class="slider-ticks">
+    @for (var i = Min; i <= Max; i++)
+    {
+        <span>@i</span>
+    }
+</div>
+
+@code {
+    [Parameter] public int Min { get; set; }
+    [Parameter] public int Max { get; set; }
+}

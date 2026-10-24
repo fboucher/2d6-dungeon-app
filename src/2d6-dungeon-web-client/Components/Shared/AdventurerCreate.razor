@@ -11,25 +11,26 @@
 
 <FluentStack Orientation="Orientation.Vertical">
     <FluentCard>
-        <FluentHeader Height="18">Adventurer Details</FluentHeader>
-        <FluentTextField    Label="Name"
-                            Required
+        <div class="card-header" style="height: 18px;">Adventurer Details</div>
+        <FluentTextInput    Label="Name"
+                            Required="true"
                             Immediate="true"
-                            @bind-Value="ParentAdventurer!.Name"></FluentTextField>
+                            @bind-Value="ParentAdventurer!.Name"></FluentTextInput>
     </FluentCard>
 
 
-    <FluentCard AreaRestricted=false>
-        <FluentHeader Height="18">Weapon</FluentHeader>
+    <FluentCard>
+        <div class="card-header" style="height: 18px;">Weapon</div>
 
-        <FluentCombobox Items=@(weapons?.value ?? new List<Weapon>())
-                        Appearance="Appearance.Filled"
+        <FluentCombobox TOption="Weapon" TValue="Weapon"
+                        Items=@(weapons?.value ?? new List<Weapon>())
+                        Appearance="ListAppearance.FilledDarker"
                         Label="Weapons"
                         Multiple=false
-                        Required
-                        OptionText="@(w => w.Name)"
-                        OptionValue="@(w => w.Id.ToString())"
-                        SelectedOptionChanged = "@( (Weapon w) => WeaponSelected(w))"
+                        Required="true"
+                        OptionText="@(w => w?.Name ?? string.Empty)"
+                        Value="@selectedWeapon"
+                        ValueChanged="@( (Weapon? w) => WeaponSelected(w!))"
                         Disabled="@isSwitchWeaponPossible"
                         Placeholder="Select a Weapon"
                         />
@@ -38,68 +39,65 @@
 
 
     <FluentCard Height="200px">
-        <FluentHeader Height="18">Manoeuvres</FluentHeader>
-        <FluentLabel>Choose up to two manoeuvres for your selected weapon: @weaponName</FluentLabel>
-        <FluentSelect   Items=@manoeuvresQueryable
+        <div class="card-header" style="height: 18px;">Manoeuvres</div>
+        <FluentText Block="true">Choose up to two manoeuvres for your selected weapon: @weaponName</FluentText>
+        @* v5 FluentSelect has no "Open" parameter: a FluentListbox keeps the list always visible, as before. *@
+        <FluentListbox  TOption="WeaponManoeuvre" TValue="WeaponManoeuvre"
+                        Items=@manoeuvresQueryable
                         Label="Manoeuvres (description | modifier | dice set)"
                         Multiple=true
                         Height="100px"
                         Width="400px"
-                        Open=@selectManoeuvreOpen
-                        Required
-                        OptionText="@(m => m.Description + " | " + m.Modifier  + " | " + m.DiceSet)"
-                        OptionValue="@(m => m.Id.ToString())"
-                        SelectedOptionsChanged = "@( (IEnumerable<WeaponManoeuvre> selMans) => SelectManoeuvre(selMans))"
+                        Required="true"
+                        OptionText="@(m => m == null ? string.Empty : m.Description + " | " + m.Modifier  + " | " + m.DiceSet)"
+                        SelectedItems="@(selectedManoeuvres ?? Enumerable.Empty<WeaponManoeuvre>())"
+                        SelectedItemsChanged = "@( (IEnumerable<WeaponManoeuvre> selMans) => SelectManoeuvre(selMans))"
                         Id="selManoeuvres"
-                        Placeholder=@manoeuvrePlaceholder
                         />
 
     </FluentCard>
 
-    <FluentCard AreaRestricted=false>
-        <FluentHeader Height="18">Armour Piece</FluentHeader>
-        <FluentCombobox Items=@armourPiecesQueryable
-                        Appearance="Appearance.Filled"
-                        @bind-Value=@selectedArmourId
-                        @bind-SelectedOption=@selectedArmour
+    <FluentCard>
+        <div class="card-header" style="height: 18px;">Armour Piece</div>
+        <FluentCombobox TOption="ArmourPiece" TValue="ArmourPiece"
+                        Items=@armourPiecesQueryable
+                        Appearance="ListAppearance.FilledDarker"
+                        @bind-Value=@selectedArmour
                         Label="Armour Piece (name | modifier | dice set)"
                         Multiple=false
-                        Required
+                        Required="true"
                         Width="100%"
-                        Open=false
-                        OptionText="@(a => a.Name + " | " + a.Modifier  + " | " + a.DiceSet)"
-                        OptionValue="@(a => a.Id.ToString())"
+                        OptionText="@(a => a == null ? string.Empty : a.Name + " | " + a.Modifier  + " | " + a.DiceSet)"
                         Placeholder="Select an Armour Piece"
                         />
     </FluentCard>
 
 
-    <FluentCard AreaRestricted=false>
-        <FluentHeader Height="18">Magic Scroll</FluentHeader>
-        <FluentCombobox     Items=@magicScollsQueryable
+    <FluentCard>
+        <div class="card-header" style="height: 18px;">Magic Scroll</div>
+        <FluentCombobox     TOption="MagicScroll" TValue="MagicScroll"
+                            Items=@magicScollsQueryable
                             Label="Magic Scroll (type | description)"
                             Placeholder="Select a Magic Scroll"
-                            Appearance="Appearance.Filled"
+                            Appearance="ListAppearance.FilledDarker"
                             Multiple=false
-                            Required
+                            Required="true"
                             Width="100%"
-                            Open=false
-                            OptionText="@(s => s.ScrollType + " | " + s.Description)"
-                            OptionValue="@(s => s.Id.ToString())"
-                            SelectedOptionChanged = "@( (MagicScroll s) => SelectMagicScroll(s))"
+                            OptionText="@(s => s == null ? string.Empty : s.ScrollType + " | " + s.Description)"
+                            ValueChanged = "@( (MagicScroll? s) => SelectMagicScroll(s!))"
                             />
     </FluentCard>
 
 
-    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="Appearance.Accent">Save Adventurer</FluentButton>
+    <FluentButton @onclick="CreateAndSaveAdventurer" Appearance="ButtonAppearance.Primary">Save Adventurer</FluentButton>
 
     @if (saveAttempted && creationErrors.Count > 0)
     {
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-            <FluentLabel Color="Color.Error">Before saving:</FluentLabel>
+            <FluentText Block="true" Color="Color.Error">Before saving:</FluentText>
             @foreach (var error in creationErrors)
             {
-                <FluentLabel Color="Color.Error">@error</FluentLabel>
+                <FluentText Block="true" Color="Color.Error">@error</FluentText>
             }
         </FluentStack>
     }
@@ -124,7 +122,6 @@
     private IQueryable<WeaponManoeuvre>? manoeuvresQueryable = new List<WeaponManoeuvre>().AsQueryable();
     private List<ArmourPiece>? armourPiecesQueryable;
     private List<MagicScroll>? magicScollsQueryable;
-    private bool selectManoeuvreOpen = true;
     private IEnumerable<WeaponManoeuvre>? selectedManoeuvres;
     private bool isSwitchWeaponPossible = false;
 
@@ -134,7 +131,6 @@
     private List<string> creationErrors => BuildCandidate().GetCreationErrors();
     private bool saveAttempted = false;
 
-    private string manoeuvrePlaceholder = "Select a weapon first";
 
     protected override async Task OnInitializedAsync()
     {
@@ -165,7 +161,6 @@
                 weaponName = weapons?.value?.Where(w => w!.Id == selectedWeaponId).Select(w => w.Name).FirstOrDefault()! ;
                 var manoeuvres = await D6Service.GetWeaponManoeuvreList(selectedWeaponId, 1);
                 manoeuvresQueryable = manoeuvres!.value.AsQueryable();
-                manoeuvrePlaceholder = "Select up to two manoeuvres";
             }
         }
         catch(Exception ex){
@@ -178,9 +173,6 @@
         selectedManoeuvres = selManoeuvres.ToList();
         if(selManoeuvres != null && selManoeuvres.Count() > 0){
             isSwitchWeaponPossible = true;
-            if(selManoeuvres.Count() == 2){
-                selectManoeuvreOpen = false;
-            }
             if(selManoeuvres.Count() > 2){
                 await ShowMaxManoeuvresReached();
             }
@@ -195,9 +187,7 @@
     {
         if(!warningShowed){
             warningShowed = true;
-            var dialog = await DialogService.ShowErrorAsync("Maximum of two weapon manoeuvres");
-            var result = await dialog.Result;
-            var canceled = result.Cancelled;
+            await DialogService.ShowErrorAsync("Maximum of two weapon manoeuvres");
         }
 
     }

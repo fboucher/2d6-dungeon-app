@@ -5,73 +5,77 @@
 @rendermode InteractiveServer
 
 
-<FluentPersona Name="@(Player.Name)" ImageSize="50px" Status="PresenceStatus.Available"
-               StatusSize="PresenceBadgeSize.Small" OnClick="@(() => ToggleExtended())"
-               Style="width: 100%;">
+@* Fluent UI v5 removed FluentPersona: an avatar with a presence badge, next to the details. *@
+<div class="adventurer-persona" @onclick="@(() => ToggleExtended())">
+    <FluentPresenceBadge Status="PresenceStatus.Available" Size="BadgeSize.Small" Positioning="Positioning.BelowEnd">
+        <AnchorContent>
+            <FluentAvatar Name="@(Player.Name)" Size="AvatarSize.Size48" Color="AvatarColor.Brand" />
+        </AnchorContent>
+    </FluentPresenceBadge>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Width="100%">
-            <FluentLabel Typo="Typography.H3">@Player.Name</FluentLabel>
+            <FluentText As="TextTag.H3">@Player.Name</FluentText>
             <FluentSpacer />
-            <FluentLabel Typo="Typography.Body"><b>Level:</b> @Player.Level</FluentLabel>
+            <FluentText Block="true"><b>Level:</b> @Player.Level</FluentText>
         </FluentStack>
 
         @if (!Extented)
         {
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
                          HorizontalGap="5">
-                <FluentLabel Typo="Typography.Body"><b>HP:</b> @Player.HealthPoints / @Player.MaxHealthPoints</FluentLabel>
-                <FluentSpacer Width="50" />
-                <FluentLabel Typo="Typography.Body"><b>XP:</b> @Player.XP</FluentLabel>
+                <FluentText Block="true"><b>HP:</b> @Player.HealthPoints / @Player.MaxHealthPoints</FluentText>
+                <FluentSpacer Width="50px" />
+                <FluentText Block="true"><b>XP:</b> @Player.XP</FluentText>
             </FluentStack>
         }
     </FluentStack>
-</FluentPersona>
+</div>
 @if (Extented)
 {
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Width="550px">
 
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
             <b>XP:</b>
-            <FluentNumberField @bind-Value="@Player.XP" style="width: 100px;" />
-            <FluentNumberField @bind-Value="@_xpDelta" Min="1" Placeholder="Add XP" style="width: 80px;" />
-            <FluentButton Appearance="Appearance.Accent" OnClick="@AddXp" IconStart="@(new Icons.Filled.Size16.Add())">Add
+            <FluentNumberInput @bind-Value="@Player.XP" style="width: 100px;" />
+            <FluentNumberInput @bind-Value="@_xpDelta" Min="1" Placeholder="Add XP" style="width: 80px;" />
+            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@AddXp" IconStart="@(new Icons.Filled.Size16.Add())">Add
             </FluentButton>
-            <FluentSpacer Width="50" />
-            <FluentLabel Typo="Typography.Body"><b>Level:</b>
-                <FluentNumberField @bind-Value="@Player.Level" style="width: 80px;" />
-            </FluentLabel>
+            <FluentSpacer Width="50px" />
+            <FluentText Block="true"><b>Level:</b>
+                <FluentNumberInput @bind-Value="@Player.Level" style="width: 80px;" />
+            </FluentText>
         </FluentStack>
 
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                      Width="100%" Wrap="true">
-            <FluentLabel Typo="Typography.Body"><b>HP:</b></FluentLabel>
-            <FluentNumberField @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" Max="@Player.MaxHealthPoints.ToString()" style="width: 80px;" />
-            <FluentLabel Typo="Typography.Body"><b>Max HP:</b></FluentLabel>
-            <FluentNumberField @bind-Value="@Player.MaxHealthPoints" @bind-Value:after="CheckHealth" Min="1" style="width: 80px;" />
+            <FluentText Block="true"><b>HP:</b></FluentText>
+            <FluentNumberInput @bind-Value="@Player.HealthPoints" @bind-Value:after="CheckHealth" Max="@Player.MaxHealthPoints" style="width: 80px;" />
+            <FluentText Block="true"><b>Max HP:</b></FluentText>
+            <FluentNumberInput @bind-Value="@Player.MaxHealthPoints" @bind-Value:after="CheckHealth" Min="1" style="width: 80px;" />
         </FluentStack>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                          Width="100%" Wrap="true">
-                <FluentLabel Typo="Typography.Body"><b>SHIFT </b></FluentLabel> @Player.Shift.ToString()
-                <FluentSpacer Width="50" />
+                <FluentText Block="true"><b>SHIFT </b></FluentText> @Player.Shift.ToString()
+                <FluentSpacer Width="50px" />
 
-                <FluentLabel Typo="Typography.Body"><b>Discipline</b></FluentLabel> @Player.Discipline.ToString()
-                <FluentSpacer Width="50" />
+                <FluentText Block="true"><b>Discipline</b></FluentText> @Player.Discipline.ToString()
+                <FluentSpacer Width="50px" />
 
-                <FluentLabel Typo="Typography.Body"><b>Precision</b></FluentLabel> @Player.Precision.ToString()
+                <FluentText Block="true"><b>Precision</b></FluentText> @Player.Precision.ToString()
             </FluentStack>
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5"
                          Width="100%" Wrap="true">
-                <FluentLabel Typo="Typography.Body"><b>WEAPON</b></FluentLabel>
-                <FluentLabel Typo="Typography.Body">@((Player.Weapon?.Name ?? "None"))</FluentLabel>
-                <FluentSpacer Width="50" />
+                <FluentText Block="true"><b>WEAPON</b></FluentText>
+                <FluentText Block="true">@((Player.Weapon?.Name ?? "None"))</FluentText>
+                <FluentSpacer Width="50px" />
 
-                <FluentLabel Typo="Typography.Body"><b>Applied Runes:</b></FluentLabel>
-                <FluentLabel Typo="Typography.Body">@Player.AppliedRunes.ToString()</FluentLabel>
+                <FluentText Block="true"><b>Applied Runes:</b></FluentText>
+                <FluentText Block="true">@Player.AppliedRunes.ToString()</FluentText>
             </FluentStack>
         </FluentCard>
 
@@ -79,7 +83,7 @@
 
 
         
-        <FluentCard MinimalStyle="true"  Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle"  Width="90%">
             <div class="sheetTitle"><b>MANOEUVRES</b></div>
             @if (Player.WeaponManoeuvres != null && Player.WeaponManoeuvres.Count > 0)
             {
@@ -92,99 +96,75 @@
             }
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <ArmourPieces armourPiece="@Player.ArmourPieces" OnArmourPiecesChanged="@HandleArmourPiecesChanged" />
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%" >
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%" >
             <MagicScrolls magicScrolls="@Player.MagicScrolls" OnScrollDeleted="@HandleScrollDeleted" OnScrollAdded="@HandleScrollAdded" />
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <MagicPotions magicPotions="@Player.MagicPotions" OnPotionDeleted="@HandlePotionDeleted" OnPotionAdded="@HandlePotionAdded" />
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="1">
-                <FluentLabel Typo="Typography.Body">LEGEND STATUS LEVEL TRACKER</FluentLabel>
-                <FluentSlider Min="0" Max="10" Step="1" @bind-Value="@Player.LegendStatusLevelTracker"
-                              Style="width: 200px;">
-                    <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                    <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                    <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                    <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                    <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                    <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                    <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                    <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                    <FluentSliderLabel Position="9">9</FluentSliderLabel>
-                    <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                </FluentSlider>
+                <FluentText Block="true">LEGEND STATUS LEVEL TRACKER</FluentText>
+                <div class="slider-with-ticks" style="width: 200px;">
+                    <FluentSlider Min="0" Max="10" Step="1" @bind-Value="@Player.LegendStatusLevelTracker" Style="width: 100%;" />
+                    <SliderTicks Min="0" Max="10" />
+                </div>
             </FluentStack>
         </FluentCard>
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
                 <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="width: 90px;"><b>BLOODIED</b></FluentLabel>
-                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Bloodied" Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                    </FluentSlider>
-                    <FluentLabel Typo="Typography.Body"><b>FEVER -1 HP</b> per room until washed</FluentLabel>
+                    <FluentText Block="true" Style="width: 90px;"><b>BLOODIED</b></FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Bloodied" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="8" />
+                    </div>
+                    <FluentText Block="true"><b>FEVER -1 HP</b> per room until washed</FluentText>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="width: 90px;"><b>SOAKED</b></FluentLabel>
-                    <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Soaked" Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                    </FluentSlider>
-                    <FluentLabel Typo="Typography.Body"><b>PNEUMONIA -1 HP</b> per room until heated</FluentLabel>
+                    <FluentText Block="true" Style="width: 90px;"><b>SOAKED</b></FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="8" Step="1" @bind-Value="@Player.Soaked" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="8" />
+                    </div>
+                    <FluentText Block="true"><b>PNEUMONIA -1 HP</b> per room until heated</FluentText>
                 </FluentStack>
             </FluentStack>
         </FluentCard>
 
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
 
             <FluentStack Orientation="Orientation.Horizontal" VerticalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                     <div class="sheetTitle"><b>COINS</b></div>
                     @* <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5" Wrap="true"> *@
-                    <FluentNumberField Label="Gold" @bind-Value="@Player.Coins.GoldCoins" />
-                    <FluentNumberField Label="Silver" @bind-Value="@Player.Coins.SilverCoins" />
-                    <FluentNumberField Label="Copper" @bind-Value="@Player.Coins.CupperCoins" />
+                    <FluentNumberInput Label="Gold" @bind-Value="@Player.Coins.GoldCoins" />
+                    <FluentNumberInput Label="Silver" @bind-Value="@Player.Coins.SilverCoins" />
+                    <FluentNumberInput Label="Copper" @bind-Value="@Player.Coins.CupperCoins" />
                     @* </FluentStack> *@
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>TREASURE</b></FluentLabel>
-                    <FluentTextArea @bind-Value="@Player.Treasures" Rows="7" Resize="TextAreaResize.Both"
+                    <FluentText Block="true"><b>TREASURE</b></FluentText>
+                    <FluentTextArea @bind-Value="@Player.Treasures" Height="152px" Resize="TextAreaResize.Both"
                                     Placeholder="Treasure Notes" Style="width: 100%;" />
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>LIBERATED PRISONERS</b></FluentLabel>
-                    <FluentNumberField @bind-Value="@Player.LiberatedPrisoners" style="width: 100%;" />
+                    <FluentText Block="true"><b>LIBERATED PRISONERS</b></FluentText>
+                    <FluentNumberInput @bind-Value="@Player.LiberatedPrisoners" style="width: 100%;" />
 
-                    <FluentLabel Typo="Typography.Body"><b>SIDE QUESTS</b></FluentLabel>
-                    <FluentTextArea @bind-Value="@Player.SideQuests" Rows="4" Resize="TextAreaResize.Both"
+                    <FluentText Block="true"><b>SIDE QUESTS</b></FluentText>
+                    <FluentTextArea @bind-Value="@Player.SideQuests" Height="92px" Resize="TextAreaResize.Both"
                                     Placeholder="Side Quests Notes" Style="width: 100%;" />
                 </FluentStack>
 
@@ -192,111 +172,75 @@
         </FluentCard>
 
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="25">
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 50%;"><b>FAVOUR OF THE GODS</b></FluentLabel>
-                    <FluentLabel Typo="Typography.Body"><b>FAVOUR POINTS</b></FluentLabel>
+                    <FluentText Block="true" Style="Width: 50%;"><b>FAVOUR OF THE GODS</b></FluentText>
+                    <FluentText Block="true"><b>FAVOUR POINTS</b></FluentText>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>GRAKADA</b> THE CORE</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Grakada"
-                                  Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>GRAKADA</b> THE CORE</FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Grakada" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>INTUNERIC</b> THE MURK</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Intuneric"
-                                  Style="width: 200px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>INTUNERIC</b> THE MURK</FluentText>
+                    <div class="slider-with-ticks" style="width: 200px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Intuneric" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>MADUVA</b> THE ROT</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Maduva"
-                                  Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>MADUVA</b> THE ROT</FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Maduva" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>MURATAYNIE</b> THE PULP</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Murataynie"
-                                  Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>MURATAYNIE</b> THE PULP</FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Murataynie" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>NEVAZATOR</b> THE BLIND</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Nevazator"
-                                  Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>NEVAZATOR</b> THE BLIND</FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Nevazator" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentLabel Typo="Typography.Body" Style="Width: 30%;"><b>RADACINA</b> THE RADIX</FluentLabel>
-                    <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Radacina"
-                                  Style="width: 300px;">
-                        <FluentSliderLabel Position="0">0</FluentSliderLabel>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                    </FluentSlider>
+                    <FluentText Block="true" Style="Width: 30%;"><b>RADACINA</b> THE RADIX</FluentText>
+                    <div class="slider-with-ticks" style="width: 300px;">
+                        <FluentSlider Min="0" Max="6" Step="1" @bind-Value="@Player.FavorOfTheGods.Radacina" Style="width: 100%;" />
+                        <SliderTicks Min="0" Max="6" />
+                    </div>
                 </FluentStack>
             </FluentStack>
         </FluentCard>
 
 
-        <FluentCard MinimalStyle="true" Width="90%">
+        <FluentCard Appearance="CardAppearance.Subtle" Width="90%">
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>LARGE AND HEAVY ITEMS</b></FluentLabel>
-                    <FluentListbox TOption="int" Width="300px"
+                    <FluentText Block="true"><b>LARGE AND HEAVY ITEMS</b></FluentText>
+                    <FluentListbox TOption="int" TValue="int" Width="300px"
                                  Items="@Enumerable.Range(0, LargeAndHeavyItemDisplayItems.Count)"
                                  OptionText="@(i => LargeAndHeavyItemDisplayItems[i])"
-                                 @bind-SelectedOption="@_selectedLargeAndHeavyItemIndex">
+                                 @bind-Value="@_selectedLargeAndHeavyItemIndex">
                     </FluentListbox>
                     <div>
-                        <FluentButton Appearance="Appearance.Accent"
+                        <FluentButton Appearance="ButtonAppearance.Primary"
                                       OnClick="@OpenEditLargeAndHeavyItemDialog"
                                       IconStart="@(new Icons.Filled.Size16.Edit())"></FluentButton>
                         <FluentButton
@@ -305,21 +249,21 @@
                             IconStart="@(new Icons.Filled.Size16.Delete())"></FluentButton>
                     </div>
 
-                    <FluentLabel Typo="Typography.Body"><b>ADDITIONAL NOTES</b></FluentLabel>
-                    <FluentTextArea @bind-Value="@Player.AdditionalNotes" Rows="10" Resize="TextAreaResize.Both"
+                    <FluentText Block="true"><b>ADDITIONAL NOTES</b></FluentText>
+                    <FluentTextArea @bind-Value="@Player.AdditionalNotes" Height="212px" Resize="TextAreaResize.Both"
                                     Placeholder="Additional Notes" Style="width: 100%;" />
 
-                    <FluentLabel Typo="Typography.Body"><b>RATIONS</b></FluentLabel>
-                    <FluentNumberField @bind-Value="@Player.Rations" Min="0" style="width: 120px;" />
+                    <FluentText Block="true"><b>RATIONS</b></FluentText>
+                    <FluentNumberInput @bind-Value="@Player.Rations" Min="0" style="width: 120px;" />
                 </FluentStack>
 
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
-                    <FluentLabel Typo="Typography.Body"><b>SMALL ITEMS</b></FluentLabel>
-                    <FluentTextArea @bind-Value="@Player.SmallItems" Rows="25" Resize="TextAreaResize.Both"
+                    <FluentText Block="true"><b>SMALL ITEMS</b></FluentText>
+                    <FluentTextArea @bind-Value="@Player.SmallItems" Height="512px" Resize="TextAreaResize.Both"
                                     Placeholder="Small Items Notes" Style="width: 100%;" />
 
-                    <FluentLabel Typo="Typography.Body"><b>LOOT LOCKUP</b></FluentLabel>
-                    <FluentTextArea @bind-Value="@Player.LootLockup" Rows="6" Resize="TextAreaResize.Both"
+                    <FluentText Block="true"><b>LOOT LOCKUP</b></FluentText>
+                    <FluentTextArea @bind-Value="@Player.LootLockup" Height="132px" Resize="TextAreaResize.Both"
                                     Placeholder="Loot Lockup" Style="width: 100%;" />
                 </FluentStack>
             </FluentStack>
@@ -421,20 +365,18 @@
                 : string.Empty
         };
 
-        var dialog = await DialogService.ShowDialogAsync<EditLargeAndHeavyItemDialog>(
-            dialogData,
-            new DialogParameters()
-            {
-                Title = "Edit Large and Heavy Item",
-                PrimaryAction = "Save",
-                PrimaryActionEnabled = !string.IsNullOrWhiteSpace(dialogData.Text),
-                SecondaryAction = "Cancel",
-                Width = "420px",
-                Modal = true,
-            });
+        var result = await DialogService.ShowDialogAsync<EditLargeAndHeavyItemDialog>(options =>
+        {
+            options.Header.Title = "Edit Large and Heavy Item";
+            options.Footer.PrimaryAction.Label = "Save";
+            options.Footer.PrimaryAction.Disabled = string.IsNullOrWhiteSpace(dialogData.Text);
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "420px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(EditLargeAndHeavyItemDialog.Content), dialogData);
+        });
 
-        var result = await dialog.Result;
-        if (!result.Cancelled && result.Data is EditLargeAndHeavyItemDialogData resultData)
+        if (!result.Cancelled && result.GetValue<EditLargeAndHeavyItemDialogData>() is EditLargeAndHeavyItemDialogData resultData)
         {
             SetLargeAndHeavyItemText(SelectedLargeAndHeavyItemIndex, resultData.Text);
             await PlayerChanged.InvokeAsync(Player);

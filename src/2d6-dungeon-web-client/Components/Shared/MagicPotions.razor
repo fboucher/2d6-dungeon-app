@@ -19,13 +19,13 @@
             <FluentButton @onclick="@(async () => await PotionDelete(context!))"
                             IconEnd="@(new Icons.Filled.Size16.HandLeft())" 
                             stopPropagation="true"
-                            ToolTip="Use this Potion"/>
+                            Title="Use this Potion"/>
         </TemplateColumn>
     </FluentDataGrid>
     <FluentButton @onclick="@(async () => await PotionShowlist())"
                             IconEnd="@(new Icons.Filled.Size20.BeakerAdd())" 
                             stopPropagation="true"
-                            ToolTip="Add a Potion to your inventory"/>
+                            Title="Add a Potion to your inventory"/>
 }
 
 @code {
@@ -63,21 +63,19 @@
 
     private async Task PotionShowlist()
     {
-        var dialog = await DialogService.ShowDialogAsync<SelectPotionDialog>(
-            new MagicPotion { PotionType = "" },
-            new DialogParameters()
-            {
-                Title = "Select a Potion",
-                PrimaryAction = "Add",
-                PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel",
-                Width = "600px",
-                Height = "560px",
-                Modal = true,
-            });
+        var result = await DialogService.ShowDialogAsync<SelectPotionDialog>(options =>
+        {
+            options.Header.Title = "Select a Potion";
+            options.Footer.PrimaryAction.Label = "Add";
+            options.Footer.PrimaryAction.Disabled = true;
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "600px";
+            options.Height = "560px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(SelectPotionDialog.Content), new MagicPotion { PotionType = "" });
+        });
 
-        var result = await dialog.Result;
-        if (!result.Cancelled && result.Data is MagicPotion potion)
+        if (!result.Cancelled && result.GetValue<MagicPotion>() is MagicPotion potion)
         {
             magicPotions?.Add(potion);
             potions = magicPotions?.AsQueryable(); 

@@ -1,11 +1,11 @@
-﻿@rendermode InteractiveServer
+@rendermode InteractiveServer
 
 <h3>Combat Journal</h3>
 
-<FluentListbox Items="@journalEntries">
+<FluentListbox TOption="string" TValue="string" Items="@journalEntries">
 </FluentListbox>
 <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowRepeatAllOff())"
-                @onclick=Refresh Appearance="Appearance.Accent"></FluentButton>
+                @onclick=Refresh Appearance="ButtonAppearance.Primary"></FluentButton>
 
 @code {
 

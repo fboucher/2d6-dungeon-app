@@ -4,38 +4,38 @@
 @inject D6Service d6Service;
 @inject IJSRuntime JSRuntime;
 @inject IDialogService DialogService;
-@inject IToastService ToastService;
+@inject INotificationService ToastService;
 
 @rendermode InteractiveServer
 
 <PageTitle>Play</PageTitle>
 
-<FluentButton @onclick="@( () => SaveAventure())" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Save())" />
+<FluentButton @onclick="@( () => SaveAventure())" Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Save())" />
 
 @if (currentAdventure == null)
 {
-    <FluentProgressRing Style="margin: 20px;" />
+    <FluentSpinner Style="margin: 20px;" />
     <p style="margin: 20px;">Loading adventure...</p>
 }
 else
 {
-    <FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
+    <FluentTabs @bind-ActiveTabId="@activeid" ActiveTabChanged="HandleOnTabChange">
 
 
-        <FluentTab Id="tab-map" Label="Dungeon Map" Icon="@(new Icons.Regular.Size24.Map())">
+        <FluentTab Id="tab-map" Header="Dungeon Map" IconStart="@(new Icons.Regular.Size24.Map())">
         <FluentStack Orientation="Orientation.Vertical">
 
             <FluentAccordion  OnAccordionItemChange="HandleOnAccordionItemChange" Style="width: 100%;">
-                <FluentAccordionItem Heading="Current Room Details" Expanded="true">
-                    <FluentIcon Value="@(new Icons.Regular.Size20.ConferenceRoom())" Color="@Color.Neutral"
+                <FluentAccordionItem Header="Current Room Details" Expanded="true">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.ConferenceRoom())" Color="@Color.Default"
                         Slot="start" />
                     <FluentStack Orientation="Orientation.Horizontal">
                         <div>
-                            <FluentLabel Typo="Typography.H4">Room:</FluentLabel> @currentRoom!.Description
-                            <FluentLabel Typo="Typography.Body">@gameTurnInstructions</FluentLabel> 
+                            <FluentText As="TextTag.H4">Room:</FluentText> @currentRoom!.Description
+                            <FluentText Block="true">@gameTurnInstructions</FluentText> 
                         </div>
                         <div>
-                            <FluentLabel Typo="Typography.H4">Encounter:</FluentLabel> @(string.IsNullOrEmpty(currentRoom!.Encounter) ? "None" : currentRoom!.Encounter)
+                            <FluentText As="TextTag.H4">Encounter:</FluentText> @(string.IsNullOrEmpty(currentRoom!.Encounter) ? "None" : currentRoom!.Encounter)
                         </div>
                     </FluentStack>
                     
@@ -43,9 +43,9 @@ else
             </FluentAccordion>
 
             <FluentStack Orientation="Orientation.Horizontal">
-                <FluentButton @onclick=RollDice Appearance="Appearance.Accent" disabled="@(isRollDiceDisable)">Roll
+                <FluentButton @onclick=RollDice Appearance="ButtonAppearance.Primary" disabled="@(isRollDiceDisable)">Roll
                     Dice</FluentButton>
-                <FluentButton @onclick=PickADoor Appearance="Appearance.Accent">Pick a Door</FluentButton>
+                <FluentButton @onclick=PickADoor Appearance="ButtonAppearance.Primary">Pick a Door</FluentButton>
             </FluentStack>
 
             <div style="padding:20px;">
@@ -128,24 +128,24 @@ else
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="6">
                                     <FluentIcon Value="@(new Icons.Regular.Size16.Map())" />
-                                    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Map view</FluentLabel>
+                                    <FluentText Block="true" Weight="TextWeight.Bold">Map view</FluentText>
                                 </FluentStack>
-                                <FluentButton @onclick=RefreshCanvas Appearance="Appearance.Accent" disabled="@(nextRoom != null)">Refresh Canvas</FluentButton>
+                                <FluentButton @onclick=RefreshCanvas Appearance="ButtonAppearance.Primary" disabled="@(nextRoom != null)">Refresh Canvas</FluentButton>
                                 <div style="width: 110px;">
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                        <FluentButton @onclick="@( () => PanMap("left"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="Pan left (←)" />
+                                        <FluentButton @onclick="@( () => PanMap("left"))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="Pan left (←)" />
                                         <FluentStack Orientation="Orientation.Vertical">
-                                            <FluentButton @onclick="@( () => PanMap("up"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronUp())" Title="Pan up (↑)" />
-                                            <FluentButton @onclick="@( () => PanMap("down"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronDown())" Title="Pan down (↓)" />
+                                            <FluentButton @onclick="@( () => PanMap("up"))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronUp())" Title="Pan up (↑)" />
+                                            <FluentButton @onclick="@( () => PanMap("down"))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronDown())" Title="Pan down (↓)" />
                                         </FluentStack>
-                                        <FluentButton @onclick="@( () => PanMap("right"))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="Pan right (→)" />
+                                        <FluentButton @onclick="@( () => PanMap("right"))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="Pan right (→)" />
                                     </FluentStack>
                                 </div>
                                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                                    <FluentButton @onclick=CenterOnCurrentRoom Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Location())" Title="Center on current room">Center</FluentButton>
-                                    <FluentButton @onclick=ResetPan Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" Title="Reset view to origin">Reset</FluentButton>
+                                    <FluentButton @onclick=CenterOnCurrentRoom Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Location())" Title="Center on current room">Center</FluentButton>
+                                    <FluentButton @onclick=ResetPan Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" Title="Reset view to origin">Reset</FluentButton>
                                 </FluentStack>
-                                <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Use arrow keys or buttons to pan. Move ~2 squares at a time.</FluentLabel>
+                                <FluentText Block="true" Color="@Color.Disabled" Style="font-size: 11px;">Use arrow keys or buttons to pan. Move ~2 squares at a time.</FluentText>
                             </FluentStack>
                         </FluentCard>
 
@@ -160,16 +160,16 @@ else
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="6">
                                         <FluentIcon Value="@(new Icons.Regular.Size20.ArrowMove())" />
-                                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Position</FluentLabel>
+                                        <FluentText Block="true" Weight="TextWeight.Bold">Position</FluentText>
                                     </FluentStack>
                                     <div style="width: 100px;">
                                         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                                            <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" Title="Move room left" />
+                                            <FluentButton @onclick="@( () => MoveRoom("LEFT"))" Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.ArrowLeft())" Title="Move room left" />
                                             <FluentStack Orientation="Orientation.Vertical">
-                                                <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowUp())" Title="Move room up" />
-                                                <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowDown())" Title="Move room down" />
+                                                <FluentButton @onclick="@( () => MoveRoom("UP"))" Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.ArrowUp())" Title="Move room up" />
+                                                <FluentButton @onclick="@( () => MoveRoom("DOWN"))" Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.ArrowDown())" Title="Move room down" />
                                             </FluentStack>
-                                            <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.ArrowRight())" Title="Move room right" />
+                                            <FluentButton @onclick="@( () => MoveRoom("RIGHT"))" Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.ArrowRight())" Title="Move room right" />
                                         </FluentStack>
                                     </div>
                                 </FluentStack>
@@ -180,23 +180,23 @@ else
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="6">
                                         <FluentIcon Value="@(new Icons.Regular.Size16.ArrowMaximize())" />
-                                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Size</FluentLabel>
+                                        <FluentText Block="true" Weight="TextWeight.Bold">Size</FluentText>
                                     </FluentStack>
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
                                         <span style="width: 50px;">Width</span>
-                                        <FluentButton @onclick="@( () => ResizeRoom(-1, 0))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Narrower" disabled="@(currentRoom.Width <= widthRange.Min)" />
+                                        <FluentButton @onclick="@( () => ResizeRoom(-1, 0))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Narrower" disabled="@(currentRoom.Width <= widthRange.Min)" />
                                         <span style="min-width: 20px; text-align: center;">@currentRoom.Width</span>
-                                        <FluentButton @onclick="@( () => ResizeRoom(1, 0))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="Wider" disabled="@(currentRoom.Width >= widthRange.Max)" />
+                                        <FluentButton @onclick="@( () => ResizeRoom(1, 0))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Add())" Title="Wider" disabled="@(currentRoom.Width >= widthRange.Max)" />
                                     </FluentStack>
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5">
                                         <span style="width: 50px;">Height</span>
-                                        <FluentButton @onclick="@( () => ResizeRoom(0, -1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Shorter" disabled="@(currentRoom.Height <= heightRange.Min)" />
+                                        <FluentButton @onclick="@( () => ResizeRoom(0, -1))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Subtract())" Title="Shorter" disabled="@(currentRoom.Height <= heightRange.Min)" />
                                         <span style="min-width: 20px; text-align: center;">@currentRoom.Height</span>
-                                        <FluentButton @onclick="@( () => ResizeRoom(0, 1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="Taller" disabled="@(currentRoom.Height >= heightRange.Max)" />
+                                        <FluentButton @onclick="@( () => ResizeRoom(0, 1))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Add())" Title="Taller" disabled="@(currentRoom.Height >= heightRange.Max)" />
                                     </FluentStack>
                                     @if (currentRoom.IsCorridor)
                                     {
-                                        <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">A corridor keeps its 1-wide side; the other side goes from 2 to 6.</FluentLabel>
+                                        <FluentText Block="true" Color="@Color.Disabled" Style="font-size: 11px;">A corridor keeps its 1-wide side; the other side goes from 2 to 6.</FluentText>
                                     }
                                 </FluentStack>
                             </FluentCard>
@@ -206,7 +206,7 @@ else
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="6">
                                         <FluentIcon Value="@(new Icons.Regular.Size16.Door())" />
-                                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Doors</FluentLabel>
+                                        <FluentText Block="true" Weight="TextWeight.Bold">Doors</FluentText>
                                     </FluentStack>
                                     @foreach (var wall in doorWalls)
                                     {
@@ -217,16 +217,16 @@ else
                                             <span style="width: 45px;">@aWall</span>
                                             @if (hasDoor)
                                             {
-                                                <FluentButton @onclick="@( () => MoveDoor(aWall, -1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="@($"Move {aWall} door back")" />
+                                                <FluentButton @onclick="@( () => MoveDoor(aWall, -1))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronLeft())" Title="@($"Move {aWall} door back")" />
                                                 <span style="min-width: 32px; text-align: center;">@currentRoom.Exits![aWall].PositionOnWall / @GetWallLength(aWall)</span>
-                                                <FluentButton @onclick="@( () => MoveDoor(aWall, 1))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="@($"Move {aWall} door forward")" />
+                                                <FluentButton @onclick="@( () => MoveDoor(aWall, 1))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.ChevronRight())" Title="@($"Move {aWall} door forward")" />
                                                 @if (currentRoom.CanRemoveDoor(aWall))
                                                 {
-                                                    <FluentButton @onclick="@( () => RemoveDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Delete())" Title="@($"Remove {aWall} door")" />
+                                                    <FluentButton @onclick="@( () => RemoveDoor(aWall))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Delete())" Title="@($"Remove {aWall} door")" />
                                                 }
                                                 else if (currentAdventure!.Dungeon.CanDisconnectDoor(currentRoom, aWall))
                                                 {
-                                                    <FluentButton @onclick="@( () => DisconnectDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.LinkDismiss())" Title="@($"Disconnect the {aWall} door")" />
+                                                    <FluentButton @onclick="@( () => DisconnectDoor(aWall))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.LinkDismiss())" Title="@($"Disconnect the {aWall} door")" />
                                                 }
                                                 else
                                                 {
@@ -235,8 +235,8 @@ else
                                             }
                                             else
                                             {
-                                                <FluentLabel Color="@Color.Disabled">no door</FluentLabel>
-                                                <FluentButton @onclick="@( () => AddDoor(aWall))" Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Add())" Title="@($"Add a door on the {aWall} wall")" />
+                                                <FluentText Block="true" Color="@Color.Disabled">no door</FluentText>
+                                                <FluentButton @onclick="@( () => AddDoor(aWall))" Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Add())" Title="@($"Add a door on the {aWall} wall")" />
                                             }
                                             @if (wallIssue != null)
                                             {
@@ -246,12 +246,12 @@ else
                                         var candidate = hasDoor ? currentAdventure!.Dungeon.FindConnectCandidate(currentRoom, aWall) : null;
                                         @if (candidate != null)
                                         {
-                                            <FluentButton @onclick="@( () => ConnectDoor(aWall))" Appearance="Appearance.Lightweight" IconStart="@(new Icons.Regular.Size16.Link())">Connect to @candidate.Value.Room.DisplayName</FluentButton>
+                                            <FluentButton @onclick="@( () => ConnectDoor(aWall))" Appearance="ButtonAppearance.Transparent" IconStart="@(new Icons.Regular.Size16.Link())">Connect to @candidate.Value.Room.DisplayName</FluentButton>
                                         }
                                     }
                                     @if (!string.IsNullOrEmpty(doorErrorMessage))
                                     {
-                                        <FluentLabel Color="@Color.Error" Style="font-size: 11px; white-space: pre-line;">@doorErrorMessage</FluentLabel>
+                                        <FluentText Block="true" Color="@Color.Error" Style="font-size: 11px; white-space: pre-line;">@doorErrorMessage</FluentText>
                                     }
                                 </FluentStack>
                             </FluentCard>
@@ -259,8 +259,8 @@ else
                             <!-- Finish -->
                             <FluentCard Style="padding: 12px; width: 100%;">
                                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                                    <FluentButton @onclick=EditRoom Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Checkmark())">Done Editing</FluentButton>
-                                    <FluentButton @onclick=CancelEditingRoom Appearance="Appearance.Neutral" IconStart="@(new Icons.Regular.Size16.Dismiss())">Cancel</FluentButton>
+                                    <FluentButton @onclick=EditRoom Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Regular.Size16.Checkmark())">Done Editing</FluentButton>
+                                    <FluentButton @onclick=CancelEditingRoom Appearance="ButtonAppearance.Default" IconStart="@(new Icons.Regular.Size16.Dismiss())">Cancel</FluentButton>
                                 </FluentStack>
                             </FluentCard>
                         }
@@ -271,11 +271,11 @@ else
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="6">
                                         <FluentIcon Value="@(new Icons.Regular.Size16.TargetEdit())" />
-                                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Edit room</FluentLabel>
+                                        <FluentText Block="true" Weight="TextWeight.Bold">Edit room</FluentText>
                                     </FluentStack>
-                                    <FluentLabel Color="@Color.Disabled" Style="font-size: 11px;">Move or resize the current room and change its doors.</FluentLabel>
+                                    <FluentText Block="true" Color="@Color.Disabled" Style="font-size: 11px;">Move or resize the current room and change its doors.</FluentText>
                                     <FluentButton @onclick=EditRoom
-                                                  Appearance="Appearance.Accent"
+                                                  Appearance="ButtonAppearance.Primary"
                                                   IconStart="@(new Icons.Regular.Size16.TargetEdit())"
                                                   disabled="@(currentRoom == null)">Edit Room</FluentButton>
                                 </FluentStack>
@@ -289,28 +289,28 @@ else
     </FluentTab>
 
 
-    <FluentTab Id="tab-adventurer" Label="Adventurer" Icon="@(new Icons.Regular.Size24.NotepadPerson())">
+    <FluentTab Id="tab-adventurer" Header="Adventurer" IconStart="@(new Icons.Regular.Size24.NotepadPerson())">
         <AdventurerCard @bind-Player="currentAdventure!.Adventurer" Extented="true"></AdventurerCard>
     </FluentTab>
 
 
-    <FluentTab Id="tab-combat" Label="Combat Screen" Icon="@(new Icons.Regular.Size24.Shield())">
+    <FluentTab Id="tab-combat" Header="Combat Screen" IconStart="@(new Icons.Regular.Size24.Shield())">
         <Combat @bind-CombatState="currentAdventure!.CombatState" OnJournalLog="AppendJournalEntry"></Combat>
     </FluentTab>
 
-    <FluentTab Id="tab-tables" Label="Tables" Icon="@(new Icons.Regular.Size24.Table())">
+    <FluentTab Id="tab-tables" Header="Tables" IconStart="@(new Icons.Regular.Size24.Table())">
         <TableViewer />
     </FluentTab>
 
 
-    <FluentTab Id="tab-note" Label="Game Notes" Icon="@(new Icons.Regular.Size24.ArchiveSettings())">
+    <FluentTab Id="tab-note" Header="Game Notes" IconStart="@(new Icons.Regular.Size24.ArchiveSettings())">
 
-        <FluentTextArea @bind-Value=@currentAdventure!.Notes Label="Notes:" Rows="15" style="width: 100%;height: 100%;"/>
+        <FluentTextArea @bind-Value=@currentAdventure!.Notes Label="Notes:" Height="312px" style="width: 100%;height: 100%;"/>
     </FluentTab>
 
-    <FluentTab Id="tab-journal" Label="Game Journal" Icon="@(new Icons.Regular.Size24.Book())">
+    <FluentTab Id="tab-journal" Header="Game Journal" IconStart="@(new Icons.Regular.Size24.Book())">
 
-        <FluentTextArea @bind-Value=@currentAdventure!.Journal Label="Journal:" Rows="15" style="width: 100%;height: 100%;"/>
+        <FluentTextArea @bind-Value=@currentAdventure!.Journal Label="Journal:" Height="312px" style="width: 100%;height: 100%;"/>
     </FluentTab>
 
 </FluentTabs>
@@ -399,7 +399,7 @@ else
         }
     }
 
-    private void HandleOnTabChange(FluentTab tab)
+    private void HandleOnTabChange(FluentTab? tab)
     {
         changedto = tab;
     }
@@ -430,18 +430,15 @@ else
                     Direction = directionTo.Value
                 };
 
-                DialogParameters parameters = new()
+                await DialogService.ShowDialogAsync<ResolveLockedDoorDialog>(options =>
                 {
-                    Title = $"Locked Door",
-                    PrimaryAction = "Close",
-                    PrimaryActionEnabled = true,
-                    Width = "800px",
-                    TrapFocus = true,
-                    Modal = true
-                };
-
-                IDialogReference dialog = await DialogService.ShowDialogAsync<ResolveLockedDoorDialog>(dialogData, parameters);
-                DialogResult? result = await dialog.Result;
+                    options.Header.Title = "Locked Door";
+                    options.Footer.PrimaryAction.Label = "Close";
+                    options.Footer.SecondaryAction.Visible = false;
+                    options.Width = "800px";
+                    options.Modal = true;
+                    options.Parameters.Add(nameof(ResolveLockedDoorDialog.Content), dialogData);
+                });
 
                 await SaveAventure();
                 await RefreshCanvas();
@@ -459,7 +456,7 @@ else
                 var destinationRoom = currentAdventure!.Dungeon.GetRoom(exit.TargetRoomId.Value);
                 if (destinationRoom is null)
                 {
-                    ToastService.ShowToast(ToastIntent.Warning, "Destination room could not be found.");
+                    _ = ToastService.ShowWarningToastAsync("Destination room could not be found.");
                     return;
                 }
                 currentAdventure!.Dungeon.ChangeRoom(currentRoom!, destinationRoom);
@@ -490,27 +487,21 @@ else
     }
     private async Task<Direction?> OpenSelectDoorDialogDialogAsync()
     {
-        DialogParameters parameters = new()
-            {
-                Title = $"To get out of the current room you have {currentRoom!.ExitsCount} options.",
-                PrimaryAction = "Open",
-                PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel",
-                Width = "500px",
-                TrapFocus = true,
-                Modal = true,
-                PreventScroll = true
-            };
+        var possibleExits = new DoorSelections(currentRoom!.Exits!);
 
-        var possibleExits = new DoorSelections(currentRoom.Exits!);
-
-
-        IDialogReference dialog = await DialogService.ShowDialogAsync<SelectDoorDialog>(possibleExits, parameters);
-        DialogResult? result = await dialog.Result;
-
-        if (!result.Cancelled && result.Data != null)
+        var result = await DialogService.ShowDialogAsync<SelectDoorDialog>(options =>
         {
-            DoorSelections dSelect = (DoorSelections)result.Data;
+            options.Header.Title = $"To get out of the current room you have {currentRoom!.ExitsCount} options.";
+            options.Footer.PrimaryAction.Label = "Open";
+            options.Footer.PrimaryAction.Disabled = true;
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "500px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(SelectDoorDialog.Content), possibleExits);
+        });
+
+        if (!result.Cancelled && result.GetValue<DoorSelections>() is DoorSelections dSelect)
+        {
             Direction goingTo = dSelect.SelectedExit!.Direction;
             return goingTo;
         }
@@ -520,18 +511,6 @@ else
 
     private async Task<int?> OpenNewRoomDialog(Direction directionFrom, int entranceDoorX, int entranceDoorY, string? entranceDoorType)
     {
-        DialogParameters parameters = new()
-            {
-                Title = $"Let's see what room you are getting in!",
-                // The wizard has its own Previous/Next/Finish buttons; the dialog's close button cancels.
-                PrimaryAction = null,
-                SecondaryAction = null,
-                ShowDismiss = true,
-                Width = "800px",
-                TrapFocus = true,
-                Modal = true
-            };
-
         nextRoom = currentAdventure!.Dungeon.GetNewRoom();
 
         var dialogData = new NewRoomDialogData 
@@ -540,12 +519,21 @@ else
             Dungeon = currentAdventure!.Dungeon 
         };
 
-        IDialogReference dialog = await DialogService.ShowDialogAsync<NewRoomDialog>(dialogData, parameters);
-        DialogResult? result = await dialog.Result;
+        var result = await DialogService.ShowDialogAsync<NewRoomDialog>(options =>
+        {
+            options.Header.Title = "Let's see what room you are getting in!";
+            // The wizard has its own Previous/Next/Finish buttons; the dialog's close button cancels.
+            options.Footer.PrimaryAction.Visible = false;
+            options.Footer.SecondaryAction.Visible = false;
+            options.Header.CloseAction.Visible = true;
+            options.Width = "800px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(NewRoomDialog.Content), dialogData);
+        });
 
         if (!result.Cancelled)
         {
-            var resultData = result.Data as NewRoomDialogData;
+            var resultData = result.GetValue<NewRoomDialogData>();
             nextRoom = resultData?.Room;
 
             if (nextRoom is null)
@@ -555,7 +543,7 @@ else
 
             if (!nextRoom.HasDimensions)
             {
-                ToastService.ShowToast(ToastIntent.Warning, "The room dimensions were not rolled, so the room was not added.");
+                _ = ToastService.ShowWarningToastAsync("The room dimensions were not rolled, so the room was not added.");
                 nextRoom = null;
                 return null;
             }
@@ -821,16 +809,16 @@ else
         }
     }
     FluentAccordionItem? changed;
-    private void HandleOnAccordionItemChange(FluentAccordionItem item)
+    private void HandleOnAccordionItemChange(AccordionItemEventArgs args)
     {
-        changed = item;
+        changed = args.Item;
     }
 
 
     private async Task SaveAventure()
     {
         await d6Service.AdventureSave(currentAdventure!);
-        ToastService.ShowToast(ToastIntent.Success, "Adventure saved!");
+        _ = ToastService.ShowSuccessToastAsync("Adventure saved!");
     }
 
     private async Task AppendJournalEntry(string entry)

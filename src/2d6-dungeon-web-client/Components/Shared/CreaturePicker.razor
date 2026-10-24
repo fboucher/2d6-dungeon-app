@@ -17,12 +17,12 @@ else
         <PropertyColumn Title="Name" 
                         Property="@(c => c.name)" 
                         Sortable="true" 
-                        InitialSortDirection=SortDirection.Ascending 
+                        InitialSortDirection=DataGridSortDirection.Ascending 
                         IsDefaultSortColumn=true 
                         Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
             <ColumnOptions>
                 <div class="search-box">
-                    <FluentSearch type="search" Autofocus=true @bind-Value=nameFilter @oninput="HandleNameFilter" @bind-Value:after="HandleNameClear" Placeholder="Creature name..." />
+                    <FluentTextInput Autofocus="true" @bind-Value=nameFilter @oninput="HandleNameFilter" @bind-Value:after="HandleNameClear" Placeholder="Creature name..."><StartTemplate><FluentIcon Value="@(new Icons.Regular.Size16.Search())" /></StartTemplate></FluentTextInput>
                 </div>
             </ColumnOptions>
         </PropertyColumn>
@@ -34,7 +34,7 @@ else
                         Filtered="!string.IsNullOrWhiteSpace(levelFilter)">
             <ColumnOptions>
                 <div class="search-box">
-                    <FluentSearch type="search" Autofocus=true @bind-Value=levelFilter @oninput="HandleLevelFilter" @bind-Value:after="HandleLevelClear" Placeholder="Creature level..." />
+                    <FluentTextInput Autofocus="true" @bind-Value=levelFilter @oninput="HandleLevelFilter" @bind-Value:after="HandleLevelClear" Placeholder="Creature level..."><StartTemplate><FluentIcon Value="@(new Icons.Regular.Size16.Search())" /></StartTemplate></FluentTextInput>
                 </div>
             </ColumnOptions>
         </PropertyColumn>

@@ -3,7 +3,7 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
     <div class="sheetTitle"><b>ARMOUR PIECES</b></div>
-    <FluentButton Appearance="Appearance.Accent" OnClick="@OpenEditArmourPiecesDialog" IconStart="@(new Icons.Regular.Size16.ShieldSettings())" ToolTip="Edit Armour Pieces" />
+    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@OpenEditArmourPiecesDialog" IconStart="@(new Icons.Regular.Size16.ShieldSettings())" Title="Edit Armour Pieces" />
 </div>
 @if(armourPiece != null){
     <FluentDataGrid Items="@pieces" style="width: 100%;" MultiLine="true">
@@ -44,20 +44,18 @@
     {
         var currentPieces = armourPiece?.Where(a => a is not null).ToList() ?? new List<ArmourPiece>();
         
-        var dialog = await DialogService.ShowDialogAsync<SelectArmourPiecesDialog>(
-            currentPieces,
-            new DialogParameters()
-            {
-                Title = "Edit Armour Pieces",
-                PrimaryAction = "Save",
-                PrimaryActionEnabled = currentPieces.Count <= 3,
-                SecondaryAction = "Cancel",
-                Width = "450px",
-                Modal = true,
-            });
+        var result = await DialogService.ShowDialogAsync<SelectArmourPiecesDialog>(options =>
+        {
+            options.Header.Title = "Edit Armour Pieces";
+            options.Footer.PrimaryAction.Label = "Save";
+            options.Footer.PrimaryAction.Disabled = currentPieces.Count > 3;
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "450px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(SelectArmourPiecesDialog.Content), currentPieces);
+        });
 
-        var result = await dialog.Result;
-        if (!result.Cancelled && result.Data is List<ArmourPiece> selectedPieces)
+        if (!result.Cancelled && result.GetValue<List<ArmourPiece>>() is List<ArmourPiece> selectedPieces)
         {
             if (armourPiece != null)
             {

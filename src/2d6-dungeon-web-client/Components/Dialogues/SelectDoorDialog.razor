@@ -1,30 +1,24 @@
-@implements IDialogContentComponent<DoorSelections>
+@inherits AppDialogBase<DoorSelections>
 
 @rendermode InteractiveServer
 
-<FluentMessageBarProvider Section="Test" MaxMessageCount="1" />
-
-@if (Dialog != null)
-{
-    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
-        <span>Which door do you want to open?</span>
-        <FluentButton Disabled=@(!isDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
-        <FluentStack Orientation="Orientation.Horizontal"  HorizontalAlignment="HorizontalAlignment.Center">
-            <FluentButton Disabled=@(!isDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
-            <FluentIcon Value="@(new Icons.Regular.Size32.Globe())" />
-            <FluentButton Disabled=@(!isDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
+<FluentDialogBody>
+    @if (DialogInstance != null)
+    {
+        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+            <span>Which door do you want to open?</span>
+            <FluentButton Disabled=@(!isDoorN) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.North))" IconStart="@iconDoorN">Door to the North</FluentButton>
+            <FluentStack Orientation="Orientation.Horizontal"  HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentButton Disabled=@(!isDoorW) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.West))" IconStart="@iconDoorW">Door to the West</FluentButton>
+                <FluentIcon Value="@(new Icons.Regular.Size32.Globe())" />
+                <FluentButton Disabled=@(!isDoorE) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.East))" IconStart="@iconDoorE">Door to the East</FluentButton>
+            </FluentStack>
+            <FluentButton Disabled=@(!isDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
         </FluentStack>
-        <FluentButton Disabled=@(!isDoorS) OnClick="@(() => ToggleDialogPrimaryActionButton(Direction.South))" IconStart="@iconDoorS">Door to the South</FluentButton>
-    </FluentStack>
-}
+    }
+</FluentDialogBody>
 
 @code {
-
-    [Parameter]
-    public DoorSelections Content { get; set; } = default!;
-
-    [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
 
     private bool isDoorN = false;
     private bool isDoorS = false;
@@ -46,7 +40,7 @@
 
     private void ToggleDialogPrimaryActionButton(Direction clickedDoor)
     {
-        Dialog.TogglePrimaryActionButton(true);
+        TogglePrimaryActionButton(true);
         Content.SelectedExit = Content.Exits[clickedDoor];
     }
 
@@ -80,6 +74,6 @@
 
     private async Task SaveAsync()
     {
-        await Dialog.CloseAsync(Content);
+        await CloseAsync(Content);
     }
 }

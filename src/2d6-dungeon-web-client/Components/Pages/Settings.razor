@@ -1,47 +1,47 @@
 @page "/settings"
 
-@using Microsoft.FluentUI.AspNetCore.Components.Extensions
 @using Microsoft.JSInterop
 @inject ILogger<Settings> Logger
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject IThemeService ThemeService
 
 
 @rendermode InteractiveServer
-
-<FluentDesignTheme @bind-Mode="@Mode"
-				   @bind-OfficeColor="@OfficeColor"
-				   @bind-CustomColor="@CustomColor"
-				   StorageName="theme" />
 
 <h3>Settings</h3>
 
 <div style="padding: 20px;">
 	<FluentStack Orientation="Orientation.Horizontal" VerticalGap="20" HorizontalGap="20"> 
-		<FluentSelect   Label="Theme" Width="150px"
-						Items="@(Enum.GetValues<DesignThemeModes>())"
-						@bind-SelectedOption="@Mode" />
-		<FluentSelect   Label="Color"
-						Items="@(Enum.GetValues<OfficeColor>().Select(i => (OfficeColor?)i))"
-			Height="200px" Width="250px" @bind-SelectedOption="@OfficeColor">
+		<FluentSelect   TOption="ThemeMode" TValue="ThemeMode"
+						Label="Theme" Width="150px"
+						Items="@(Enum.GetValues<ThemeMode>())"
+						Value="@Mode" ValueChanged="@OnModeChangedAsync" />
+		<FluentSelect   TOption="BrandColorOption" TValue="BrandColorOption"
+						Label="Color"
+						Items="@BrandColors"
+						OptionText="@(i => i?.Name ?? string.Empty)"
+						Height="200px" Width="250px"
+						Value="@SelectedBrandColor" ValueChanged="@OnBrandColorChangedAsync">
 			<OptionTemplate>
 				<FluentStack>
 					<FluentIcon Value="@(new Icons.Filled.Size20.RectangleLandscape())" Color="Color.Custom"
-						CustomColor="@(@context.ToAttributeValue() != "default" ? context.ToAttributeValue() : "#036ac4" )" />
-					<FluentLabel>@context</FluentLabel>
+						CustomColor="@(context?.Color ?? "#036ac4")" />
+					<FluentText Block="true">@(context?.Name ?? string.Empty)</FluentText>
 				</FluentStack>
 			</OptionTemplate>
 		</FluentSelect>
-		<FluentSelect   Label="Custom Theme"
+		<FluentSelect   TOption="CustomThemeOption" TValue="CustomThemeOption"
+						Label="Custom Theme"
 						Items="@CustomThemes"
-						@bind-SelectedOption="@SelectedCustomTheme"
+						Value="@SelectedCustomTheme" ValueChanged="@(v => SelectedCustomTheme = v)"
 						Width="250px"
 						OptionText="@(i => i?.Name ?? string.Empty)">
 			<OptionTemplate>
 				<FluentStack>
 					<FluentIcon Value="@(new Icons.Filled.Size20.RectangleLandscape())" Color="Color.Custom"
 						CustomColor="@(context?.Color ?? string.Empty)" />
-					<FluentLabel>@(context?.Name ?? string.Empty)</FluentLabel>
+					<FluentText Block="true">@(context?.Name ?? string.Empty)</FluentText>
 				</FluentStack>
 			</OptionTemplate>
 		</FluentSelect>
@@ -50,9 +50,49 @@
 
 
 @code {
-    public DesignThemeModes Mode { get; set; }
-    public OfficeColor? OfficeColor { get; set; }
+    public ThemeMode Mode { get; set; } = ThemeMode.System;
     public string? CustomColor { get; set; }
+
+    // Fluent UI v5 dropped the OfficeColor enum; the theme is now generated from a brand color.
+    public record BrandColorOption(string Name, string? Color);
+
+    public List<BrandColorOption> BrandColors { get; set; } = new()
+    {
+        new BrandColorOption("Default", null),
+        new BrandColorOption("Word", "#185ABD"),
+        new BrandColorOption("Excel", "#107C41"),
+        new BrandColorOption("PowerPoint", "#C43E1C"),
+        new BrandColorOption("Teams", "#6264A7"),
+        new BrandColorOption("OneNote", "#7719AA"),
+        new BrandColorOption("Outlook", "#0F6CBD"),
+    };
+
+    public BrandColorOption? SelectedBrandColor { get; set; }
+
+    private async Task OnModeChangedAsync(ThemeMode mode)
+    {
+        Mode = mode;
+        await ApplyThemeAsync();
+    }
+
+    private async Task OnBrandColorChangedAsync(BrandColorOption? option)
+    {
+        SelectedBrandColor = option;
+        await ApplyThemeAsync();
+    }
+
+    private async Task ApplyThemeAsync()
+    {
+        var color = CustomColor ?? SelectedBrandColor?.Color;
+        if (string.IsNullOrEmpty(color))
+        {
+            await ThemeService.SetThemeAsync(Mode);
+        }
+        else
+        {
+            await ThemeService.SetThemeAsync(new ThemeSettings(color, 0, 0, Mode, false));
+        }
+    }
 
     public record CustomThemeOption(string Name, string Color);
 
@@ -70,26 +110,31 @@
         {
             _selectedCustomTheme = value;
             CustomColor = string.IsNullOrEmpty(value?.Color) ? null : value?.Color;
-            // Clear OfficeColor when using custom theme
-            if (!string.IsNullOrEmpty(CustomColor))
-            {
-                OfficeColor = null;
-            }
             // Apply CSS class for Dungeon theme
             ApplyThemeClass();
+            _ = ApplyThemeAsync();
         }
     }
 
     protected override void OnInitialized()
     {
-        // Initialize to 'None' theme, but allow FluentDesignTheme to restore from storage
         _selectedCustomTheme = CustomThemes[0];
+        SelectedBrandColor = BrandColors[0];
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            // Restore the theme stored by Fluent UI (localStorage "fluentui-blazor:theme-settings").
+            var stored = await ThemeService.GetThemeSettingsAsync();
+            if (stored is not null)
+            {
+                Mode = stored.Mode;
+                CustomColor = CustomThemes.Any(t => t.Color == stored.Color) ? stored.Color : null;
+                SelectedBrandColor = BrandColors.FirstOrDefault(b => string.Equals(b.Color, stored.Color, StringComparison.OrdinalIgnoreCase)) ?? BrandColors[0];
+                StateHasChanged();
+            }
             if (!string.IsNullOrEmpty(CustomColor))
             {
                 // Sync the dropdown with the restored CustomColor from storage
@@ -126,14 +171,4 @@
         }
     }
 
-    void OnLoaded(LoadedEventArgs e)
-    {
-        Logger.LogInformation($"Loaded: {(e.Mode == DesignThemeModes.System ? "System" : "")} {(e.IsDark ? "Dark" : "Light")}");
-    }
-
-    void OnLuminanceChanged(LuminanceChangedEventArgs e)
-    {
-        Logger.LogInformation($"Changed: {(e.Mode == DesignThemeModes.System ? "System" : "")} {(e.IsDark ? "Dark" : "Light")}");
-    }
-
-}
+}

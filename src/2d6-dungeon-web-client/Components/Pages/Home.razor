@@ -11,17 +11,17 @@
     <img src="images/logo-with-name-transparent.png" alt="2d6 Dungeon App" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
 
-<FluentLabel Style="margin:16px 0px; padding: 16px 0px; width: 600px;">
+<FluentText Block="true" Style="margin:16px 0px; padding: 16px 0px; width: 600px;">
     Welcome to <b>2d6 Dungeon App</b>! This is a digital adaptation of the dice & paper <a href="https://d-r-games.itch.io/2d6-dungeon-demo" target="_blank">2d6 Dungeon</a> game. You still need to buy the game to be able to play.
-</FluentLabel>
+</FluentText>
 
-<FluentLabel>@savedGamesTips</FluentLabel>
+<FluentText Block="true">@savedGamesTips</FluentText>
 
 <FluentStack Orientation="Orientation.Horizontal">
-    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Filled.Size20.Add())" OnClick="CreateAdventure">Create a new adventure</FluentButton> 
+    <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Filled.Size20.Add())" OnClick="CreateAdventure">Create a new adventure</FluentButton> 
 @if (savedGames > 0)
 { 
-    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Filled.Size20.ArrowCircleUpRight())" OnClick="LoadAdventure">Load an adventure</FluentButton>
+    <FluentButton Appearance="ButtonAppearance.Primary" IconStart="@(new Icons.Filled.Size20.ArrowCircleUpRight())" OnClick="LoadAdventure">Load an adventure</FluentButton>
 }
 </FluentStack>
 
@@ -59,4 +59,4 @@
 
 
 
-}
+}

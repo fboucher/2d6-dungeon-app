@@ -10,7 +10,12 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
     
-builder.Services.AddFluentUIComponents();
+builder.Services.AddFluentUIComponents(config =>
+{
+    // Fluent UI v4 applied a 10px gap to every FluentStack; v5 applies none. Keep the v4 spacing.
+    config.DefaultValues.For<FluentStack>().Set(p => p.HorizontalGap, "10px");
+    config.DefaultValues.For<FluentStack>().Set(p => p.VerticalGap, "10px");
+});
 
 builder.Services.AddHttpClient<D6Service>(client =>
 {

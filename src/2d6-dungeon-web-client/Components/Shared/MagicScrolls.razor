@@ -1,4 +1,4 @@
-﻿
+
 @inject IDialogService DialogService
 
 @if(magicScrolls != null){
@@ -25,13 +25,13 @@
             <FluentButton @onclick="@(async () => await ScrollDelete(context!.Id))"
                           IconEnd="@(new Icons.Filled.Size16.HandLeft())" 
                           stopPropagation="true"
-                          ToolTip="Remove this Scroll"/>
+                          Title="Remove this Scroll"/>
         </TemplateColumn>
     </FluentDataGrid>
     <FluentButton @onclick="@(async () => await ScrollShowlist())"
                             IconEnd="@(new Icons.Filled.Size20.DocumentAdd())" 
                             stopPropagation="true"
-                            ToolTip="Add a Scroll to your inventory"/>
+                            Title="Add a Scroll to your inventory"/>
 }
 
 @code {
@@ -61,20 +61,18 @@
 
     private async Task ScrollShowlist()
     {
-        var dialog = await DialogService.ShowDialogAsync<SelectScrollDialog>(
-            new MagicScroll { ScrollType = "", Description = "" },
-            new DialogParameters()
-            {
-                Title = "Select a Scroll",
-                PrimaryAction = "Add",
-                PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel",
-                Width = "420px",
-                Modal = true,
-            });
+        var result = await DialogService.ShowDialogAsync<SelectScrollDialog>(options =>
+        {
+            options.Header.Title = "Select a Scroll";
+            options.Footer.PrimaryAction.Label = "Add";
+            options.Footer.PrimaryAction.Disabled = true;
+            options.Footer.SecondaryAction.Label = "Cancel";
+            options.Width = "420px";
+            options.Modal = true;
+            options.Parameters.Add(nameof(SelectScrollDialog.Content), new MagicScroll { ScrollType = "", Description = "" });
+        });
 
-        var result = await dialog.Result;
-        if (!result.Cancelled && result.Data is MagicScroll scroll)
+        if (!result.Cancelled && result.GetValue<MagicScroll>() is MagicScroll scroll)
         {
             magicScrolls?.Add(scroll);
             scrolls = magicScrolls?.AsQueryable(); 

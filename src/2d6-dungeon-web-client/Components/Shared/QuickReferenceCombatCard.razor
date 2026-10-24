@@ -1,8 +1,8 @@
-﻿
-<FluentTabs @bind-ActiveTabId="@activeid" OnTabChange="HandleOnTabChange">
+
+<FluentTabs @bind-ActiveTabId="@activeid" ActiveTabChanged="HandleOnTabChange">
 
     @* Fatigue and Shift *@
-    <FluentTab Id="tab-fat" Label="Fatigue and Shift" Icon="@(new Icons.Regular.Size24.BinderTriangle())">
+    <FluentTab Id="tab-fat" Header="Fatigue and Shift" IconStart="@(new Icons.Regular.Size24.BinderTriangle())">
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
             <span class="sheetTitle">Combat FATIGUE and SHIFT adjustment platform</span>
             <div>Combat Fatigue</div>
@@ -23,7 +23,7 @@
     </FluentTab>
 
     @* Roll to Hit Shifting the dice *@
-    <FluentTab Id="tab-card1" Label="Hit  and Shifting" Icon="@(new Icons.Regular.Size24.TargetEdit())">
+    <FluentTab Id="tab-card1" Header="Hit  and Shifting" IconStart="@(new Icons.Regular.Size24.TargetEdit())">
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
             <div>Roll to Hit</div>
             <div>
@@ -62,7 +62,7 @@
 
     }
 
-    private void HandleOnTabChange(FluentTab tab)
+    private void HandleOnTabChange(FluentTab? tab)
     {
         changedto = tab;
     }

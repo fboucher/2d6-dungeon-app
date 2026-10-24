@@ -9,7 +9,7 @@
 
 @if(CombatState.Creature == null)
 {
-    <FluentLabel Typo="Typography.Body">Select the creature mentioned in the room description.</FluentLabel>
+    <FluentText Block="true">Select the creature mentioned in the room description.</FluentText>
     <CreaturePicker ParentCreature="CombatState.Creature" ParentCreatureChanged="CreatureUpdated" ></CreaturePicker>
 }
 else{
@@ -17,7 +17,7 @@ else{
 
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Width="100%">
             <h3>Turn @CombatState.TurnCounter - @currentFighter.ToString()</h3> 
-            <FluentButton   Appearance="Appearance.Accent" @onclick=StartNewFight IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
+            <FluentButton   Appearance="ButtonAppearance.Primary" @onclick=StartNewFight IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
                             Title="Start a new fight - resets the combat screen">Start a new fight</FluentButton>
         </FluentStack>
         <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="2" >
@@ -26,15 +26,15 @@ else{
                             ShiftLeft="@shiftLeft" 
                             Disabled="combatEnded"
                             DiceShifted="PrimaryDiceShifted"></ShiftButtons>
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" HorizontalGap="0" Width="145">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" HorizontalGap="0" Width="145px">
                 <span>
                     <Dice @ref="primaryDiceRef" color="Dice.DiceColor.red" size="Dice.DiceSize.regular" face="primaryShiftedDice" Animate="true" AnimateType="diceAnimationType" />
                     <Dice @ref="secondaryDiceRef" color="Dice.DiceColor.purple" size="Dice.DiceSize.regular" face="secondaryShiftedDice" Animate="true" AnimateType="diceAnimationType" />
                 </span>
                 @shiftLeft shift left
                 <span>
-                    <FluentButton   Appearance="Appearance.Accent" @onclick=Roll2Dice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.Cube())">Roll</FluentButton>
-                    <FluentButton   Appearance="Appearance.Accent" @onclick=ResetDice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
+                    <FluentButton   Appearance="ButtonAppearance.Primary" @onclick=Roll2Dice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.Cube())">Roll</FluentButton>
+                    <FluentButton   Appearance="ButtonAppearance.Primary" @onclick=ResetDice Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowCounterclockwise())" 
                                     Title="Resets the Dice before any shift adjustment" >Reset</FluentButton>
                 </span>
             </FluentStack>
@@ -44,17 +44,17 @@ else{
                             Disabled="combatEnded"
                             DiceShifted="SecondaryDiceShifted"></ShiftButtons>
 
-            <FluentSpacer Width="50"></FluentSpacer>
+            <FluentSpacer Width="50px"></FluentSpacer>
 
             <FluentCard Width="400px" Height="139px">
                 
-                <FluentLabel><FluentIcon Value="@(new Icons.Regular.Size24.TargetArrow())" Title="Damage" Color="Color.Error" /> Damage</FluentLabel>
+                <FluentText Block="true"><FluentIcon Value="@(new Icons.Regular.Size24.TargetArrow())" Title="Damage" Color="Color.Error" /> Damage</FluentText>
                 
 
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom">
                     <div>
-                        <FluentButton OnClick="@(() => RollDamageDice(1))" Appearance="Appearance.Accent">Roll 1D6</FluentButton>
-                        <FluentButton OnClick="@(() => RollDamageDice(2))" Appearance="Appearance.Accent">Roll 2D6</FluentButton>
+                        <FluentButton OnClick="@(() => RollDamageDice(1))" Appearance="ButtonAppearance.Primary">Roll 1D6</FluentButton>
+                        <FluentButton OnClick="@(() => RollDamageDice(2))" Appearance="ButtonAppearance.Primary">Roll 2D6</FluentButton>
                     </div>
 
                     <div style="padding-left:20px;">
@@ -67,9 +67,9 @@ else{
                 </FluentStack>
             </FluentCard>
 
-            <FluentSpacer Width="50"></FluentSpacer>
+            <FluentSpacer Width="50px"></FluentSpacer>
 
-            <FluentButton Appearance="Appearance.Accent" @onclick=NextTurn Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowNext())">End Turn</FluentButton>
+            <FluentButton Appearance="ButtonAppearance.Primary" @onclick=NextTurn Disabled="combatEnded" IconStart="@(new Icons.Regular.Size16.ArrowNext())">End Turn</FluentButton>
         </FluentStack>
 
 
@@ -77,7 +77,7 @@ else{
             <FluentCard Width="550px" id="adventurer-card-combat" Style="@GetCardStyle(FighterType.Adventurer)"> 
                 @if (IsCurrentFighter(FighterType.Adventurer))
                 {
-                    <FluentBadge Appearance="Appearance.Accent" Icon="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;">Current turn</FluentBadge>
+                    <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand" IconStart="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;" Content="Current turn" />
                 }
                 <AdventurerCard @ref="adventurerCardRef" Player="CombatState.Player" Extented=true Editable=true OnHealthDepleted="OnAdventurerDefeated" PlayerChanged="OnPlayerChanged"></AdventurerCard>
             </FluentCard>
@@ -89,7 +89,7 @@ else{
             <FluentCard Width="400px" id="creature-card-combat" Style="@GetCardStyle(FighterType.Creature)">
                 @if (IsCurrentFighter(FighterType.Creature))
                 {
-                    <FluentBadge Appearance="Appearance.Accent" Icon="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;">Current turn</FluentBadge>
+                    <FluentBadge Appearance="BadgeAppearance.Filled" Color="BadgeColor.Brand" IconStart="@(new Icons.Regular.Size16.Clock())" Style="margin-bottom:6px;" Content="Current turn" />
                 }
                 <CreatureCard @ref="creatureCardRef" creature="CombatState.Creature" Editable=true OnHealthDepleted="OnCreatureDefeated"></CreatureCard> 
             </FluentCard>
@@ -202,23 +202,21 @@ else{
     private async Task ShowSelectFirstFighterDialog()
     {
         dialogShowing = true;
-        var dialog = await DialogService.ShowDialogAsync<SelectFirstFighterDialog>(
-            FighterType.Adventurer,
-            new DialogParameters()
-            {
-                Title = "Combat Initiative",
-                PrimaryAction = null,
-                SecondaryAction = null,
-                Width = "400px",
-                Height = "200px",
-                Modal = true,
-                PreventDismissOnOverlayClick = true
-            });
-
-        var result = await dialog.Result;
+        var result = await DialogService.ShowDialogAsync<SelectFirstFighterDialog>(options =>
+        {
+            options.Header.Title = "Combat Initiative";
+            options.Header.CloseAction.Visible = false;
+            options.Footer.PrimaryAction.Visible = false;
+            options.Footer.SecondaryAction.Visible = false;
+            options.Width = "400px";
+            options.Height = "200px";
+            options.Modal = true;
+            options.PreventDismissOnEscape = true;
+            options.Parameters.Add(nameof(SelectFirstFighterDialog.Content), FighterType.Adventurer);
+        });
         dialogShowing = false;
 
-        if (!result.Cancelled && result.Data is FighterType selectedFighter)
+        if (!result.Cancelled && result.GetValue<FighterType?>() is FighterType selectedFighter)
         {
             firstFighter = selectedFighter;
             CombatState.FirstFighter = selectedFighter;
