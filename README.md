@@ -61,8 +61,8 @@ Want to play 2D6 Dungeon? Follow these simple steps:
 
 4. **Start the game**
    - Run this command:
-     ```
-     docker-compose up -d --build
+     ```bash
+     docker compose up -d
      ```
    - Wait a minute for everything to download and start
 
@@ -70,7 +70,26 @@ Want to play 2D6 Dungeon? Follow these simple steps:
    - Open your web browser and go to: `http://localhost:8080`
    - Start your adventure!
 
-**To stop playing:** Run `docker-compose down` in your game folder.
+**To stop playing:** Run `docker compose down` in your game folder.
+
+##### Upgrading
+
+When a new version of the app is released, follow these steps in your game folder to update to the latest version:
+
+1. **Stop the running containers:**
+   ```bash
+   docker compose down
+   ```
+2. **Pull the updated Docker images:**
+   ```bash
+   docker compose pull
+   ```
+3. **Restart the game:**
+   ```bash
+   docker compose up -d
+   ```
+
+> 💡 **Note:** Your campaign and adventurer data are stored in a Docker volume (`db_data`) and are preserved across upgrades.
 
 
 #### For Developers
