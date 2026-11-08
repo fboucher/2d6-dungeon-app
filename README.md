@@ -1,4 +1,7 @@
 # 2d6 Dungeon App
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ![.NET](https://img.shields.io/badge/10.0-512BD4?logo=dotnet&logoColor=fff)   [![.NET](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/build-dotnet.yml/badge.svg)](https://github.com/FBoucher/2d6-dungeon-app/actions/workflows/build-dotnet.yml)  [![Publish Docker images](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-docker-images.yml/badge.svg)](https://github.com/fboucher/2d6-dungeon-app/actions/workflows/publish-docker-images.yml)  ![Docker Image Version](https://img.shields.io/docker/v/fboucher/2d6-dungeon-app?style=flat&labelColor=brown&color=beige&link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Ffboucher%2F2d6-dungeon-app%2F)
 
@@ -104,3 +107,25 @@ Once everything is ✅ Running, click on the Endpoint of the webApp
 Take a look at [CONTRIBUTING](/CONTRIBUTING.md) for details.
 
 Join the [Discord](https://discord.gg/6zA3jKw) community to discuss the project, ask questions, and share your ideas.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Gwydione"><img src="https://avatars.githubusercontent.com/u/33662754?v=4?s=100" width="100px;" alt="Gwydione"/><br /><sub><b>Gwydione</b></sub></a><br /><a href="https://github.com/fboucher/2d6-dungeon-app/issues?q=author%3AGwydione" title="Bug reports">🐛</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
