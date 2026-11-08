@@ -40,7 +40,7 @@
                         GridTemplateColumns="1fr 4fr"
                         MultiLine="true">
             <ChildContent>
-                <PropertyColumn Property="@(t => t.Roll)" Sortable="true" />
+                <PropertyColumn Property="@(t => t.Roll)" Sortable="true" SortBy="@rollSort" />
                 <PropertyColumn Title="@secondColTitle" Property="@(t => t.Description)" Sortable="true" />
             </ChildContent>
             <EmptyContent>
@@ -58,6 +58,7 @@
     private DiceResult? diceResult = null;
     private SimpleTable2D6? selectedTableData = null;
     private IQueryable<SimpleTable2D6Row>? selectedTableDataRows = null;
+    private readonly GridSort<SimpleTable2D6Row> rollSort = GridSort<SimpleTable2D6Row>.ByAscending(t => t.RollSortKey);
     private string secondColTitle = string.Empty;
     private string selectedTableName = string.Empty;
 
