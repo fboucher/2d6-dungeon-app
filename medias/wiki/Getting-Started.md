@@ -115,4 +115,27 @@ When you are done playing, you can safely shut down the containers to free up sy
 docker compose down
 ```
 
-Your campaign data is stored in a Docker volume, so your adventurers and map progress will be fully saved for your next session!
+Your campaign data is stored in a Docker volume (`db_data`), so your adventurers and map progress will be fully saved for your next session!
+
+---
+
+## 🔄 Upgrading the App
+
+When a new release is available, you can update your local installation by pulling the latest Docker images and recreating the containers:
+
+1. **Stop the running containers:**
+   ```bash
+   docker compose down
+   ```
+
+2. **Pull the updated Docker images:**
+   ```bash
+   docker compose pull
+   ```
+
+3. **Restart the containers in the background:**
+   ```bash
+   docker compose up -d
+   ```
+
+> 💡 **Note:** Your campaign and adventurer data are stored in the `db_data` Docker volume and are preserved across upgrades.
