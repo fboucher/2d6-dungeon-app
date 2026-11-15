@@ -23,8 +23,7 @@ A hosted beta of the app is available at **[2d6.c5m-demo.com](https://2d6.c5m-de
 ### Features
 
 - [X] Help with the construction of your adventurer.
-- [X] Save and load adventurers.
-- [X] Save and load adventures.
+- [X] Save and load adventurers & adventures.
 - [X] Help with the rules when creating a new room.
 - [X] No need of physical dice.
 - [X] digital map.
